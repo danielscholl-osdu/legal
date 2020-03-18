@@ -13,8 +13,11 @@
 # limitations under the License.
 FROM amazoncorretto:8
 
+ARG JAR_VERSION
+ENV JAR_FILE=legal-aws-${JAR_VERSION}-spring-boot.jar
+
 WORKDIR /
-COPY provider/legal-aws/target/legal-aws-0.0.1-SNAPSHOT-spring-boot.jar legal-aws-0.0.1-SNAPSHOT-spring-boot.jar
+COPY provider/legal-aws/target/$JAR_FILE $JAR_FILE
 EXPOSE 8080
 
-CMD ["java","-jar", "legal-aws-0.0.1-SNAPSHOT-spring-boot.jar"]
+CMD java -jar $JAR_FILE
