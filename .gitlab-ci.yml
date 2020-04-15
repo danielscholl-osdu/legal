@@ -1,0 +1,18 @@
+variables:
+  AWS_BUILD_SUBDIR: provider/legal-aws
+  AWS_APPLICATION_NAME: os-legal
+  AWS_ENVIRONMENT: dev
+  GCP_BUILD_SUBDIR: provider/legal-gcp
+  GCP_INT_TEST_SUBDIR: testing/legal-test-gcp
+  GCP_APPLICATION_NAME: os-legal
+  GCP_ENVIRONMENT: dev
+  GCP_PROJECT: opendes
+  GCP_TENANT_NAME: opendes
+  GCP_DEPLOY_ENV: p4d
+  GCP_DOMAIN: cloud.slb-ds.com
+  GCP_STORAGE_URL: https://os-legal-dot-opendes.appspot.com/api/legal/v2/
+
+include:
+  - project: 'osdu/platform/ci-cd-pipelines'
+    ref: 'master'
+    file: 'service.gitlab-ci.yml'
