@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: os-legal-service
+  labels:
+    app: os-legal-service
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app: os-legal-service
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: os-legal-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: os-legal-service
+        version: v1
+    spec:
+      containers:
+        - name: os-legal-app
+          envFrom:
+            - configMapRef:
+                name: os-service-config
+          image: gcr.io/opendes/os-legal-app
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080

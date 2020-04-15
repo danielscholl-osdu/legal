@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <docker.image.prefix>opendes</docker.image.prefix>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.7.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>org.opengroup.osdu.legal</groupId>
+    <artifactId>legal-service</artifactId>
+    <version>0.0.5-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>legal-service</name>
+    <description>Legal service</description>
+
+    <profiles>
+        <profile>
+            <id>legal-core</id>
+            <activation>
+                <!-- this profile is active by default -->
+                <activeByDefault>true</activeByDefault>
+                <!-- activate if system properties 'env=legal-core' -->
+                <property>
+                    <name>env</name>
+                    <value>legal-core</value>
+                </property>
+            </activation>
+            <modules>
+                <module>legal-core</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>legal-gcp</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>legal-gcp</value>
+                </property>
+            </activation>
+            <modules>
+                <module>provider/legal-gcp</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>legal-byoc</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>legal-byoc</value>
+                </property>
+            </activation>
+            <modules>
+                <module>provider/legal-byoc</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>legal-azure</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>legal-azure</value>
+                </property>
+            </activation>
+            <modules>
+                <module>provider/legal-azure</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>legal-aws</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>legal-aws</value>
+                </property>
+            </activation>
+            <modules>
+                <module>provider/legal-aws</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>os-core</id>
+            <url>https://pkgs.dev.azure.com/slb-des-ext-collaboration/_packaging/os-core/maven/v1</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>
