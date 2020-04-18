@@ -30,6 +30,9 @@ phases:
       - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
       - echo $JAVA_HOME
       - mvn -version
+      - echo "Look below for M2 bucket name:"
+      - echo $M2_REPO_S3_BUCKET
+      - aws s3 sync s3://$M2_REPO_S3_BUCKET /root/.m2 # copy previous state of the shared libraries' .m2 folder from S3 to local
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2& # start the Docker Daemon
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done" # wait for Docker to be ready before proceeding to the build steps
   pre_build:
@@ -45,21 +48,26 @@ phases:
       - java -version
       - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
       - mvn -version
-      - echo Setting environment variables from CloudFormation Exports... # use the AWS CLI commands to query for the CloudFormation export values created in the previous step and set the required environment variables
+      - echo Setting variables from CloudFormation Exports... # use the AWS CLI commands to query for the CloudFormation export values created in the previous step and set the required environment variables
       - echo Environment - $ENVIRONMENT
       - echo AWSRegion - $AWS_REGION
       - echo AWSAccountID - $AWS_ACCOUNT_ID
-      - export SNS_TOPIC_NAME=$(aws cloudformation list-exports --query "Exports[?Name=='$ENVIRONMENT-OSDUStorageSNSTopic'].[Value]" --output text --region $AWS_REGION)
-      - export S3_LEGAL_CONFIG_BUCKET=$(aws cloudformation list-exports --query "Exports[?Name=='$ENVIRONMENT-S3BucketLegalConfig'].[Value]" --output text --region $AWS_REGION)
+      - export VERSIONNUMBER=$(aws cloudformation list-exports --query "Exports[?Name=='$ENVIRONMENT-$APPLICATION_NAME-JarVersionNumber'].[Value]" --output text --region $AWS_REGION)
+      - export SERVICE=$(aws cloudformation list-exports --query "Exports[?Name=='$ENVIRONMENT-$APPLICATION_NAME-JarServiceName'].[Value]" --output text --region $AWS_REGION)
       - echo ...finished setting environment variables!
       - echo All environment variables
       - printenv
-      - mvn clean test -e -pl legal-core,provider/legal-aws -Ddeployment.environment=$ENVIRONMENT -Daws.accessKeyId=$AWS_SECRET_KEY -Daws.secretKey=$AWS_ACCESS_KEY_ID -Dazure.devops.token=$VSTS_FEED_TOKEN -Dazure.devops.username=$VSTS_FEED_USER -DSNS_TOPIC_NAME=$SNS_TOPIC_NAME -DS3_LEGAL_CONFIG_BUCKET=$S3_LEGAL_CONFIG_BUCKET -DAWS_ACCOUNT_ID=$AWS_ACCOUNT_ID -DAWS_REGION=$AWS_REGION -DaltSnapshotDeploymentRepository=snapshot::default::file:../../local-snapshots-dir -DaltReleaseDeploymentRepository=release::default::file:../../local-release-dir -DaltDeploymentRepository=release::default::file:../../local-release-dir
+      - mvn clean test -pl legal-core,provider/legal-aws
       - echo ...os-legal Java build completed on `date`.
       - echo os-legal beginning packaging to jar...
-      - mvn clean deploy -e -pl legal-core,provider/legal-aws -Ddeployment.environment=$ENVIRONMENT -Dazure.devops.token=$VSTS_FEED_TOKEN -Dazure.devops.username=$VSTS_FEED_USER -DaltSnapshotDeploymentRepository=snapshot::default::file:../../local-snapshots-dir -DaltReleaseDeploymentRepository=release::default::file:../../local-release-dir -DaltDeploymentRepository=release::default::file:../../local-release-dir
+      # NOTE: we have to be extremely specific in this command, both with the profiles AND the modules to do two things:
+      # (1) ensure that the core is explicitly built first, so that it doesn't look for artifacts that may not exist yet on
+      # ADO in order to build the AWS provider module, and (2) exclude GCP so that it doesn't fail due to errors that the
+      # GCP resources don't exist (we aren't building them on AWS, so they definitely are 'missing', and are missing
+      # dependencies for the GCP tests to pass, anyway).
+      - mvn clean install '-Plegal-aws,!legal-gcp' -pl legal-core,provider/legal-aws -Dversion.number=$VERSIONNUMBER -Ddeployment.environment=$ENVIRONMENT
       - echo os-legal Docker image build started on `date`...
-      - docker build -f provider/legal-aws/Dockerfile -t $REPOSITORY_URI:latest .
+      - docker build -f provider/legal-aws/Dockerfile -t $REPOSITORY_URI:latest --build-arg versionNumber=$VERSIONNUMBER --build-arg service=$SERVICE .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
       - echo ...os-legal Docker image build completed on `date`.
       - echo Pushing the Docker image to ECR...

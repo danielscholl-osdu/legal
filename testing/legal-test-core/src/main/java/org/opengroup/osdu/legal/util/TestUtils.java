@@ -29,7 +29,6 @@ public class TestUtils {
 
 	public TestUtils(boolean enforceHttp){
 		baseUrl = System.getProperty("HOST_URL", System.getenv("HOST_URL"));
-		//baseUrl = System.getenv("HOST_URL");
 		if(baseUrl == null || baseUrl.contains("-null")) {
 			baseUrl = "https://localhost:8443/api/legal/v1/";
 		}
@@ -48,7 +47,6 @@ public class TestUtils {
 
 	public static String getMyProjectAccountId(){
 		return System.getProperty("MY_TENANT_PROJECT", System.getenv("MY_TENANT_PROJECT"));
-		//return System.getenv("MY_TENANT_PROJECT");
 	}
 
 	public String getBaseHost() {return baseUrl.substring(8,baseUrl.length()-1);}
@@ -60,7 +58,6 @@ public class TestUtils {
 	
 	public static String getMyDataPartition(){
 		return System.getProperty("MY_TENANT", System.getenv("MY_TENANT"));
-		//return System.getenv("MY_TENANT");
 	}
 
 	public ClientResponse send(String path, String httpMethod, String token, String requestBody, String query)

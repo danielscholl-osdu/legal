@@ -27,19 +27,19 @@
 
     <artifactId>legal-aws</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.5-SNAPSHOT</version>
 
     <properties>
-        <aws.version>1.11.637</aws.version>
+        <aws.version>1.11.651</aws.version>
         <deployment.environment>dev</deployment.environment>
+        <version.number>0.0.5-SNAPSHOT</version.number>
     </properties>
 
     <dependencies>
         <!-- Internal packages -->
         <dependency>
             <groupId>org.opengroup.osdu.core.aws</groupId>
-            <artifactId>aws-osdu-util</artifactId>
-            <version>0.0.9</version>
+            <artifactId>os-core-lib-aws</artifactId>
+            <version>0.0.10</version>
         </dependency>
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
@@ -49,30 +49,30 @@
         <dependency>
             <groupId>org.opengroup.osdu.legal</groupId>
             <artifactId>legal-core</artifactId>
-            <version>0.0.5-SNAPSHOT</version>
+            <version>${version.number}</version>
         </dependency>
 
         <!-- AWS-managed packages -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-bom</artifactId>
-            <version>1.11.651</version>
+            <version>${aws.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.651</version>
+            <version>${aws.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.11.651</version>
+            <version>${aws.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.11.651</version>
+            <version>${aws.version}</version>
         </dependency>
 
         <!-- Third party Apache 2.0 license packages -->
@@ -116,15 +116,22 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>2.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
             <version>2.0.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -176,5 +183,44 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>aws-dev</id>
+            <activation>
+                <property>
+                    <name>deployment.environment</name>
+                    <value>dev</value>
+                </property>
+            </activation>
+            <properties>
+                <aws.version>1.11.651</aws.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>aws-uat</id>
+            <activation>
+                <property>
+                    <name>deployment.environment</name>
+                    <value>uat</value>
+                </property>
+            </activation>
+            <properties>
+                <aws.version>1.11.632</aws.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>aws-prod</id>
+            <activation>
+                <property>
+                    <name>deployment.environment</name>
+                    <value>prod</value>
+                </property>
+            </activation>
+            <properties>
+                <aws.version>1.11.632</aws.version>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

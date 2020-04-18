@@ -22,7 +22,7 @@ public abstract class LegalTagUtils extends TestUtils {
 	public abstract String accessToken() throws Exception; 
 
     private static InputStream getTestFileInputStream(String fileName) throws IOException {
-        return LegalTagUtils.class.getClass().getResourceAsStream("/" + fileName);
+        return LegalTagUtils.class.getResourceAsStream("/" + fileName);
     }
 
     protected static String readTestFile(String fileName) throws IOException {

@@ -27,8 +27,14 @@ target/
 /.nb-gradle/
 build/
 
+/provider/*/bin
+/legal-core/bin
+
 ### VS Code ###
 .vscode/
 
 ### macOS ###
 *.DS_Store
+
+# Environment configuration
+*.env

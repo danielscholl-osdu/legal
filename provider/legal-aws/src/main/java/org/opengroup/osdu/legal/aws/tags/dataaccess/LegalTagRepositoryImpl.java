@@ -19,9 +19,9 @@ import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
 import org.opengroup.osdu.core.aws.dynamodb.QueryPageResult;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
-import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 
 import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 

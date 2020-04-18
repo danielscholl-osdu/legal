@@ -2,7 +2,6 @@
   "Parameters" : {
     "Environment" : "dev",
     "DeploymentRegion" : "us-east-1",
-    "ChildTemplateBasePath" : "https://s3.amazonaws.com/dev-os-legal-cloudformation-scripts/Automated/",
     "ApplicationName" : "os-legal",
     "KeyName": "legal-ecs-keypair",
     "DesiredCapacity": "1",
@@ -15,9 +14,14 @@
     "LegalServiceIamKeyRotationSerial": "1",
     "LegalServiceSNSTopicName": "osdu-legal-messages",
     "LegalServiceSQSQueueName": "osdu-legal-queue",
-    "ECSPort": "80",
+    "ECSPort": "443",
     "ECSCPUAllocation": "1024",
-    "ECSMemoryAllocation": "3072"
+    "ECSMemoryAllocation": "3072",
+    "DomainName": "",
+    "HostedZoneName": "",
+    "AcmCertificateArn": "",
+    "ServiceName": "legal",
+    "VersionNumber": "0.0.5-SNAPSHOT"
   },
   "Tags" : {
     "Environment" : "dev"
