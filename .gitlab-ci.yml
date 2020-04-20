@@ -16,3 +16,8 @@ include:
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: 'master'
     file: 'temp-service.gitlab-ci.yml'
+
+unit-tests: 
+  variables: 
+    GOOGLE_CLOUD_PROJECT: opendes
+  
