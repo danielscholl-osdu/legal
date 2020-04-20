@@ -7,7 +7,6 @@ variables:
   GCP_APPLICATION_NAME: osdu-legal
   GCP_ENVIRONMENT: dev
   GCP_PROJECT: opendes
-  GOOGLE_CLOUD_PROJECT: opendes
   GCP_TENANT_NAME: opendes
   GCP_DEPLOY_ENV: p4d
   GCP_DOMAIN: cloud.slb-ds.com
