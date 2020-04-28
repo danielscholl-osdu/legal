@@ -21,7 +21,7 @@ import org.opengroup.osdu.core.aws.s3.S3Config;
 
 public class AwsLegalTagUtils extends LegalTagUtils {
     private static final String FILE_NAME = "Legal_COO.json";
-    private static final String BUCKET_NAME_AWS = "dev-osdu-legal-config";
+    private static final String BUCKET_NAME_AWS = System.getProperty("S3_LEGAL_CONFIG_BUCKET", System.getenv("S3_LEGAL_CONFIG_BUCKET"));
 
     private final static String COGNITO_CLIENT_ID_PROPERTY = "AWS_COGNITO_CLIENT_ID";
     private final static String COGNITO_AUTH_FLOW_PROPERTY = "AWS_COGNITO_AUTH_FLOW";

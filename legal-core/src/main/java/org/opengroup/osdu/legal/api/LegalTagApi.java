@@ -10,6 +10,7 @@ import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.model.legal.ServiceConfig;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 import javax.inject.Inject;
 
@@ -86,6 +87,9 @@ public class LegalTagApi {
     @PreAuthorize("@authorizationFilter.hasPermission('" + ServiceConfig.LEGAL_USER + "', '" + ServiceConfig.LEGAL_EDITOR + "', '" + ServiceConfig.LEGAL_ADMIN + "')")
     @GetMapping("/legaltags")
     public ResponseEntity<LegalTagDtos> listLegalTags(@RequestParam(name = "valid", required = false, defaultValue = "true") boolean valid) {
+    	if (requestInfo.getTenantInfo() == null) {
+    		throw new ValidationException("No tenant supplied");
+    	}
         LegalTagDtos output = legalTagService.list(valid, requestInfo.getTenantInfo().getName());
         return new ResponseEntity<LegalTagDtos>(output, HttpStatus.OK);
     }

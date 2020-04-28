@@ -32,14 +32,6 @@ Parameters:
     Type: String
     Default: us-east-1
 
-  ChildTemplateBasePath:
-    Description: >-
-      The base path for where child CloudFormation templates are located – can be relative or absolute, e.g.
-      https://s3.amazonaws.com/dev-os-legal-cloudformation-scripts/Automated/
-    Type: String
-    AllowedPattern: '^https:\/\/s3.amazonaws.com\/.*\/$'
-    Default: https://s3.amazonaws.com/dev-os-legal-cloudformation-scripts/Automated/
-
   LegalConfigS3BucketName:
     Description: The name of the legal service config S3 bucket. Defaults to osdu-legal-config.
     AllowedPattern: "^[a-zA-Z]+[0-9a-zA-Z_-]*$"
@@ -205,6 +197,41 @@ Parameters:
     MinValue: 256
     MaxValue: 131072
 
+  DomainName:
+    Description: >-
+      The optional custom DNS name for the ECS service's load balancer. If omitted, the site will only be accessible
+      via the ECS service's Application Load Balancer DNS name. This value is used in the creation and signing of
+      the service's SSL certificate. Leave blank is not using a custom domain for this deployment.
+    Type: String
+    Default: ''
+
+  HostedZoneName:
+    Description: >-
+      The name of the hosted zone (ex: for storage.osdu.slb.com, this would likely be osdu.slb.com).
+      Leave blank is not using a custom domain for this deployment.
+    Type: String
+    Default: ''
+
+  AcmCertificateArn:
+    Description: >-
+      The Amazon Resource Name (ARN) of an existing AWS Certificate Manager (ACM) certificate.
+      If omitted, a new SSL certified will be requested/generated (only if the custom domain name
+      parameter is provided, otherwise the ECS service's ALB will not use SSL/HTTPS).
+    Type: String
+    AllowedPattern: "^(|arn:aws:acm:.*)$"
+    Default: ''
+
+  VersionNumber:
+    Description: The version number for the service jar being produced
+    Type: String
+    Default: '0.0.1'
+
+  ServiceName:
+    Description: >-
+      The service name associated with the jar package for the Dockerfile.
+    Type: String
+    Default: 'legal'
+
 Resources:
 
   #### Shared Resources ################################################################
@@ -212,7 +239,11 @@ Resources:
   IAMCredentialsStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Join [ '', [ !Ref ChildTemplateBasePath, iam-credentials.yml ] ]
+      TemplateURL: !Sub
+        - https://s3.amazonaws.com/${CloudFormationS3Bucket}/${ApplicationName}/Automated/${CFNTemplateFilename}
+        - CloudFormationS3Bucket: !ImportValue
+            'Fn::Sub': '${Environment}-S3BucketCloudFormation'
+          CFNTemplateFilename: iam-credentials.yml
       Parameters:
         Environment: !Ref Environment
         Region: !Ref DeploymentRegion
@@ -222,7 +253,11 @@ Resources:
   MessageBusSNSStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Join [ '', [ !Ref ChildTemplateBasePath, sns-topic.yml ] ]
+      TemplateURL: !Sub
+        - https://s3.amazonaws.com/${CloudFormationS3Bucket}/${ApplicationName}/Automated/${CFNTemplateFilename}
+        - CloudFormationS3Bucket: !ImportValue
+            'Fn::Sub': '${Environment}-S3BucketCloudFormation'
+          CFNTemplateFilename: sns-topic.yml
       Parameters:
         Environment: !Ref Environment
         Region: !Ref DeploymentRegion
@@ -235,18 +270,28 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: IAMCredentialsStack
     Properties:
-      TemplateURL: !Join [ '', [ !Ref ChildTemplateBasePath, ecs-network.yml ] ]
+      TemplateURL: !Sub
+        - https://s3.amazonaws.com/${CloudFormationS3Bucket}/${ApplicationName}/Automated/${CFNTemplateFilename}
+        - CloudFormationS3Bucket: !ImportValue
+            'Fn::Sub': '${Environment}-S3BucketCloudFormation'
+          CFNTemplateFilename: ecs-network.yml
       Parameters:
         Environment: !Ref Environment
         Region: !Ref DeploymentRegion
         ApplicationName: !Ref ApplicationName
         ECSPort: !Ref ECSPort
+        DomainName: !Ref DomainName
+        AcmCertificateArn: !Ref AcmCertificateArn
 
   ECSClusterStack:
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: ECSNetworkStack
     Properties:
-      TemplateURL: !Join [ '', [ !Ref ChildTemplateBasePath, ecs-cluster.yml ] ]
+      TemplateURL: !Sub
+        - https://s3.amazonaws.com/${CloudFormationS3Bucket}/${ApplicationName}/Automated/${CFNTemplateFilename}
+        - CloudFormationS3Bucket: !ImportValue
+            'Fn::Sub': '${Environment}-S3BucketCloudFormation'
+          CFNTemplateFilename: ecs-cluster.yml
       Parameters:
         Environment: !Ref Environment
         Region: !Ref DeploymentRegion
@@ -259,13 +304,21 @@ Resources:
         SNSTopicName: !Ref LegalServiceSNSTopicName
         LegalConfigS3BucketName: !Ref LegalConfigS3BucketName
         ECSMemoryAllocation: !Ref ECSMemoryAllocation
+        DomainName: !Ref DomainName
+        HostedZoneName: !Ref HostedZoneName
+        VersionNumber: !Ref VersionNumber
+        ServiceName: !Ref ServiceName
 
   #### Legal Repository DB #############################################################
 
   LegalRepositoryStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Join [ '', [ !Ref ChildTemplateBasePath, legal-repository.yml ] ]
+      TemplateURL: !Sub
+        - https://s3.amazonaws.com/${CloudFormationS3Bucket}/${ApplicationName}/Automated/${CFNTemplateFilename}
+        - CloudFormationS3Bucket: !ImportValue
+            'Fn::Sub': '${Environment}-S3BucketCloudFormation'
+          CFNTemplateFilename: legal-repository.yml
       Parameters:
         Environment: !Ref Environment
         Region: !Ref DeploymentRegion
@@ -277,7 +330,11 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: IAMCredentialsStack
     Properties:
-      TemplateURL: !Join [ '', [ !Ref ChildTemplateBasePath, config-bucket.yml ] ]
+      TemplateURL: !Sub
+        - https://s3.amazonaws.com/${CloudFormationS3Bucket}/${ApplicationName}/Automated/${CFNTemplateFilename}
+        - CloudFormationS3Bucket: !ImportValue
+            'Fn::Sub': '${Environment}-S3BucketCloudFormation'
+          CFNTemplateFilename: config-bucket.yml
       Parameters:
         Environment: !Ref Environment
         Region: !Ref DeploymentRegion

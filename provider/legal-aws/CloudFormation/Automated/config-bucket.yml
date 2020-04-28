@@ -34,7 +34,7 @@ Parameters:
     Default: us-east-1
 
   LegalConfigBucketName:
-    Description: The name of the legal service config S3 bucket. Defaults to osdu-legal-config.
+    Description: The base name of the legal service config S3 bucket. Will be prefixed by the environment and account ID.
     AllowedPattern: "^[a-zA-Z]+[0-9a-zA-Z_-]*$"
     ConstraintDescription: Must start with a letter. Only numbers, letters, -, and _ accepted. Max. length 64 characters.
     Default: osdu-legal-config
@@ -47,7 +47,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Delete
     Properties:
-      BucketName: !Sub ${Environment}-${LegalConfigBucketName}
+      BucketName: !Sub ${Environment}-${AWS::AccountId}-${LegalConfigBucketName}
 
   LegalConfigS3BucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -70,6 +70,6 @@ Resources:
 Outputs:
   LegalConfigS3BucketName:
     Description: The name of the OSDU legal config S3 bucket.
-    Value: !Ref LegalConfigBucketName
+    Value: !Ref S3BucketLegalConfig
     Export:
       Name: !Sub ${Environment}-S3BucketLegalConfig

@@ -1,0 +1,17 @@
+{
+  "docs": [
+    {
+      "_id": "1001",
+      "name": "TENANT1",
+      "projectId": "PROJECT1",
+      "serviceAccount": "SERVICE1",
+      "complianceRuleSet": "shared",
+      "dataPartitionId": "PARTITION1",
+      "crmAccountIds": [
+        "CRM0001",
+        "CRM0002",
+        "TENANT1"
+      ]
+    }
+  ]
+}

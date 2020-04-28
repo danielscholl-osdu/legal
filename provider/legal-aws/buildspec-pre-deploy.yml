@@ -17,12 +17,11 @@ version: 0.1
 phases:
   build:
     commands:
-      - echo Starting 'Copying CloudFormation scripts to S3://$CFN_S3_BUCKET'
-#      - cd provider/legal-aws
+      - echo Starting 'Copying CloudFormation scripts to S3://$CFN_S3_BUCKET/$APPLICATION_NAME'
       - pwd
       - ls
-      - aws s3 cp ./provider/legal-aws/CloudFormation "s3://$CFN_S3_BUCKET" --exclude "*" --include "*.yml" --recursive --debug
-      - echo Ending 'Ending CloudFormation scripts to S3://$CFN_S3_BUCKET'
+      - aws s3 cp ./provider/legal-aws/CloudFormation "s3://$CFN_S3_BUCKET/$APPLICATION_NAME" --exclude "*" --include "*.yml" --recursive --debug
+      - echo Ending 'Ending CloudFormation scripts to S3://$CFN_S3_BUCKET/$APPLICATION_NAME'
 
 artifacts:
   files:

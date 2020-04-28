@@ -78,29 +78,17 @@ Resources:
               - OSDULegalSQSQueue
               - Arn
           Protocol: sqs
-        - Endpoint:
-            Fn::GetAtt:
-              - OSDUComplianceTrigger
-              - Arn
-          Protocol: lambda
+#        - Endpoint:
+#            Fn::GetAtt:
+#              - OSDUComplianceTrigger
+#              - Arn
+#          Protocol: lambda
 
 
   OSDULegalSQSQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub ${Environment}-${SQSQueueName}
-
-  OSDUComplianceTrigger:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: !Sub ${Environment}-${ComplianceTriggerName}
-      Handler: compliance.ComplianceTriggerFunction::handleRequest
-      Runtime: java8
-      MemorySize: 512
-      Role: arn:aws:iam::888733619319:role/dev-os-legal-lambda-ComplianceTriggerFunctionRole-1RGCZVRE1V91S
-      Code:
-        S3Bucket: dev-os-legal-lambda-cloudformation
-        S3Key: 89ed4d883fb1fb7f6da4a507e607390d
 
   OSDUQueuePolicy:
     Type: AWS::SQS::QueuePolicy
