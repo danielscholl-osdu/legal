@@ -11,13 +11,27 @@ variables:
   GCP_DEPLOY_ENV: p4d
   GCP_DOMAIN: cloud.slb-ds.com
   GCP_STORAGE_URL: https://osdu-legal-dot-opendes.appspot.com/api/legal/v2/
+  AZURE_SERVICE: legal
+  AZURE_BUILD_SUBDIR: provider/legal-azure
+  AZURE_TEST_SUBDIR: testing/legal-test-azure
+
 
 include:
-  - project: 'osdu/platform/ci-cd-pipelines'
-    ref: 'master'
-    file: 'temp-service.gitlab-ci.yml'
+  - project: "osdu/platform/ci-cd-pipelines"
+    ref: "master"
+    file: "standard-setup.yml"
+  - project: "osdu/platform/ci-cd-pipelines"
+    ref: "master"
+    file: "build/maven.yml"
+  - project: "osdu/platform/ci-cd-pipelines"
+    ref: "master"
+    file: "cloud-providers/azure.yml"
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "scanners/fossa.yml"
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "scanners/gitlab-ultimate.yml"
 
-unit-tests: 
-  variables: 
+
+compile-and-unit-test:
+  variables:
     GOOGLE_CLOUD_PROJECT: opendes
-  
