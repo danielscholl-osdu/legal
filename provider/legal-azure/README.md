@@ -88,7 +88,7 @@ Java version: 1.8.0_212, vendor: AdoptOpenJDK, runtime: /usr/lib/jvm/jdk8u212-b0
 ...
 ```
 
-You will need to configure access to the remote maven repository that holds the OSDU dependencies. This file should live within `~/.m2/settings.xml`:
+You may need to configure access to the remote maven repository that holds the OSDU dependencies. This file should live within `~/.m2/settings.xml`:
 ```bash
 $ cat ~/.m2/settings.xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -107,6 +107,8 @@ $ cat ~/.m2/settings.xml
 </settings>
 ```
 
+_A settings file is also conveniently located in ./.mvn/community-maven.settings.xml which is also used for CI/CD processes._
+
 ### Build and run the application
 
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
@@ -123,6 +125,9 @@ $ (cd provider/legal-azure/ && mvn clean package)
 # Note: this assumes that the environment variables for running the service as outlined
 #       above are already exported in your environment.
 $ java -jar $(find provider/legal-azure/target/ -name '*-spring-boot.jar')
+
+# Alternately you can run using the Mavan Task
+$ mvn spring-boot:run
 ```
 
 ### Test the application
@@ -145,18 +150,110 @@ $ (cd testing/legal-test-azure/ && mvn clean test)
 Jet Brains - the authors of Intellij IDEA, have written an [excellent guide](https://www.jetbrains.com/help/idea/debugging-your-first-java-application.html) on how to debug java programs.
 
 
-## Deploying service to Azure
+## Deploying the Service
 
 Service deployments into Azure are standardized to make the process the same for all services. The steps to deploy into
 Azure can be [found here](https://dev.azure.com/slb-des-ext-collaboration/open-data-ecosystem/_git/infrastructure-templates?path=%2Fdocs%2Fosdu%2FSERVICE_DEPLOYMENTS.md&_a=preview)
 
+### Manual Deployment Steps
+
+__Environment Settings__
+
+The following environment variables are necessary to properly deploy a service to an Azure OSDU Environment.
+
+```bash
+# Group Level Variables
+export AZURE_TENANT_ID=""
+export AZURE_SUBSCRIPTION_ID=""
+export AZURE_SUBSCRIPTION_NAME=""
+export AZURE_PRINCIPAL_ID=""
+export AZURE_PRINCIPAL_SECRET=""
+export AZURE_APP_ID=""
+export AZURE_NO_ACCESS_ID=""
+export AZURE_NO_ACCESS_SECRET=""
+export AZURE_OTHER_APP_ID=""
+export AZURE_BASENAME_21=""
+export AZURE_BASENAME=""
+export AZURE_BASE=""
+export AZURE_INVALID_JWT=""
+export AZURE_STORAGE_KEY=""
+
+# Pipeline Level Variable
+export AZURE_SERVICE="legal"
+export AZURE_BUILD_SUBDIR="provider/legal-azure"
+export AZURE_TEST_SUBDIR="testing/legal-test-azure"
+export AZURE_OSDU_TENANT="opendes"
+export AZURE_SERVICE_BUS_TOPIC="legaltags"
+export LEGAL_STORAGE_CONTAINER="legal-service-azure-configuration"
+
+
+# Required for Azure Deployment
+export AZURE_CLIENT_ID="${AZURE_PRINCIPAL_ID}"
+export AZURE_CLIENT_SECRET="${AZURE_PRINCIPAL_SECRET}"
+export AZURE_RESOURCE_GROUP="${AZURE_BASENAME}-osdu-r2-app-rg"
+export AZURE_APPSERVICE_PLAN="${AZURE_BASENAME}-osdu-r2-sp"
+export AZURE_APPSERVICE_NAME="${AZURE_BASENAME_21}-au-${AZURE_SERVICE}"
+
+# Required for Testing
+export HOST_URL="https://${AZURE_BASENAME_21}-au-legal.azurewebsites.net/"
+export ENTITLEMENT_URL="https://${AZURE_BASENAME_21}-au-entitlements.azurewebsites.net/"
+export MY_TENANT="${AZURE_OSDU_TENANT}"
+export AZURE_AD_TENANT_ID="${AZURE_TENANT_ID}"
+export INTEGRATION_TESTER="${AZURE_PRINCIPAL_ID}"
+export AZURE_TESTER_SERVICEPRINCIPAL_SECRET="${AZURE_PRINCIPAL_SECRET}"
+export AZURE_AD_APP_RESOURCE_ID="${AZURE_APP_ID}"
+export AZURE_LEGAL_STORAGE_ACCOUNT="${AZURE_BASE}sa"
+export AZURE_LEGAL_STORAGE_KEY="${AZURE_STORAGE_KEY}"
+export AZURE_LEGAL_SERVICEBUS="Endpoint=sb://${AZURE_BASENAME_21}sb.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=${AZURE_SERVICEBUS_KEY}"
+export AZURE_LEGAL_TOPICNAME="${AZURE_SERVICE_BUS_TOPIC}"
+```
+
+__Azure Service Deployment__
+
+
+1. Deploy the service using the Maven Plugin  _(azure_deploy)_
+
+```bash
+cd $AZURE_BUILD_SUBDIR
+mvn azure-webapp:deploy \
+  -DAZURE_TENANT_ID=$AZURE_TENANT_ID \
+  -Dazure.appservice.subscription=$AZURE_SUBSCRIPTION_ID \
+  -DAZURE_CLIENT_ID=$AZURE_CLIENT_ID \
+  -DAZURE_CLIENT_SECRET=$AZURE_CLIENT_SECRET \
+  -Dazure.appservice.resourcegroup=$AZURE_RESOURCE_GROUP \
+  -Dazure.appservice.plan=$AZURE_APPSERVICE_PLAN \
+  -Dazure.appservice.appname=$AZURE_APPSERVICE_NAME
+```
+
+2. Configure the Web App to start the SpringBoot Application _(azure_config)_
+
+```bash
+az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+
+# Set the JAR FILE as required
+TARGET=$(find ./target/ -name '*-spring-boot.jar')
+JAR_FILE=${TARGET##*/}
+
+JAVA_COMMAND="java -jar /home/site/wwwroot/${JAR_FILE}"
+JSON_TEMPLATE='{"appCommandLine":"%s"}'
+JSON_FILE="config.json"
+echo $(printf "$JSON_TEMPLATE" "$JAVA_COMMAND") > $JSON_FILE
+
+az webapp config set --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_APPSERVICE_NAME --generic-configurations @$JSON_FILE
+```
+
+3. Execute the Integration Tests against the Service Deployment _(azure_test)_
+
+```bash
+mvn clean test -f $AZURE_TEST_SUBDIR/pom.xml
+```
 
 ## License
 Copyright © Microsoft Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at 
+You may obtain a copy of the License at
 
 [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
