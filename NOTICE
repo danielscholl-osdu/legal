@@ -371,8 +371,8 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Logback Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Mockito (from http://www.mockito.org)
 - Mockito (from http://mockito.org)
-- Mockito (from http://www.mockito.org)
 - Mockito (from http://mockito.org)
+- Mockito (from http://www.mockito.org)
 - Mojo's Maven plugin for Cobertura (from http://mojo.codehaus.org/cobertura-maven-plugin/)
 - Netty Reactive Streams Implementation (from )
 - Netty/Buffer (from http://netty.io/)
@@ -571,7 +571,6 @@ The following software have components provided under the terms of this license:
 - ASM library repackaged as OSGi bundle (from )
 - Apache Commons Codec (from http://commons.apache.org/proper/commons-codec/)
 - Apache Commons Codec (from http://commons.apache.org/proper/commons-codec/)
-- Byte Buddy (without dependencies) (from )
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
@@ -977,6 +976,7 @@ unknown
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Byte Buddy (without dependencies) (from )
 - Servlet Specification 2.5 API (from )
 - System Rules (from http://stefanbirkner.github.io/system-rules/)
 - jaxen (from http://jaxen.codehaus.org/)
