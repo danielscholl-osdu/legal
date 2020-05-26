@@ -18,21 +18,19 @@ variables:
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "standard-setup.yml"
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "build/maven.yml"
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "trusted-azure"
+    ref: "master"
     file: "cloud-providers/azure.yml"
-  # - project: 'osdu/platform/ci-cd-pipelines'
-  #   ref: "master"
-  #   file: 'cloud-providers/gcp.yml'
-  # - project: "osdu/platform/ci-cd-pipelines"
-  #   file: "scanners/fossa.yml"
-  # - project: "osdu/platform/ci-cd-pipelines"
-  #   file: "scanners/gitlab-ultimate.yml"
+  - project: 'osdu/platform/ci-cd-pipelines'
+    ref: "master"
+    file: 'cloud-providers/gcp.yml'
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "scanners/fossa.yml"
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "scanners/gitlab-ultimate.yml"
 
 
 compile-and-unit-test:
