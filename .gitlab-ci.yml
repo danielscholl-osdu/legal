@@ -18,17 +18,15 @@ variables:
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "standard-setup.yml"
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "build/maven.yml"
   - project: "osdu/platform/ci-cd-pipelines"
     ref: "master"
     file: "cloud-providers/azure.yml"
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: "master"
-    file: 'cloud-providers/gcp.yml'    
+    file: 'cloud-providers/gcp.yml'
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa.yml"
   - project: "osdu/platform/ci-cd-pipelines"
