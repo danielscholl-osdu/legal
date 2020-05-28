@@ -23,7 +23,13 @@ public class TestValidateLegalTagsApiAcceptance extends ValidateLegalTagsApiAcce
     @Before
     @Override
     public void setup() throws Exception  {
-        this.legalTagUtils = new AwsLegalTagUtils();
+        AwsLegalTagUtils legalTagUtils = new AwsLegalTagUtils();
+
+        // Insert expired legal tag directly for should_return200_withLegalTagNamesAndInvalidExpirationDateReason_when_GivenExistingInvalidLegalTagNames
+        legalTagUtils.insertExpiredLegalTag();
+
+        this.legalTagUtils = legalTagUtils;
+
         super.setup();
     }
 
