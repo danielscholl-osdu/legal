@@ -90,7 +90,7 @@ public class TestDeleteLegalTagApiAcceptance extends DeleteLegalTagApiAcceptance
         ClientResponse response = legalTagUtils.send(this.getApi(), this.getHttpMethod(), legalTagUtils.accessToken(), getBody(), getQuery(), headers);
         assertEquals(expectedResponse, response.getStatus());
         if(expectedResponse == 204)
-            Assert.assertEquals(response.getLength(), 0);
+            Assert.assertTrue(response.getType() == null || response.getLength() == 0 || response.getLength() == -1);
         else if(response.getType() != null) {
             Assert.assertTrue(response.getType().toString().toLowerCase().contains("application/json"));
         }
