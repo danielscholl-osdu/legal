@@ -28,6 +28,8 @@ include:
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: "master"
     file: 'cloud-providers/gcp.yml'
+  - project: 'osdu/platform/ci-cd-pipelines'
+    file: 'cloud-providers/aws.yml'    
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa.yml"
   - project: "osdu/platform/ci-cd-pipelines"
