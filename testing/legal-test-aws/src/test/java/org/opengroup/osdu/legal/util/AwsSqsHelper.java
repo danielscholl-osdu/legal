@@ -15,28 +15,26 @@
 package org.opengroup.osdu.legal.util;
 
 import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.PurgeQueueRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opengroup.osdu.core.aws.sqs.AmazonSQSConfig;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 
 import java.util.List;
 
 public class AwsSqsHelper {
     public static List<Message> getMessages(){
-        String amazonSqsEndpoint = "https://sqs.us-east-1.amazonaws.com/888733619319/dev-osdu-legal-queue";
-        AmazonSQSConfig sqsConfig = new AmazonSQSConfig("us-east-1");
-        AmazonSQS sqs = sqsConfig.AmazonSQS();
+        String amazonSqsEndpoint = System.getenv("LEGAL_QUEUE");
+        AmazonSQS sqs = AmazonSQSClientBuilder.standard().withRegion("us-east-1").build();
         List<Message> messages = sqs.receiveMessage(amazonSqsEndpoint).getMessages();
         return messages;
     }
 
     public static void purgeQueue(){
-        String amazonSqsEndpoint = "https://sqs.us-east-1.amazonaws.com/888733619319/dev-osdu-legal-queue";
-        AmazonSQSConfig sqsConfig = new AmazonSQSConfig("us-east-1");
-        AmazonSQS sqs = sqsConfig.AmazonSQS();
-
+        String amazonSqsEndpoint = System.getenv("LEGAL_QUEUE");;
+        AmazonSQS sqs = AmazonSQSClientBuilder.standard().withRegion("us-east-1").build();
         List<Message> messages = sqs.receiveMessage(amazonSqsEndpoint).getMessages();
         PurgeQueueRequest request = new PurgeQueueRequest();
         request.setQueueUrl(amazonSqsEndpoint);

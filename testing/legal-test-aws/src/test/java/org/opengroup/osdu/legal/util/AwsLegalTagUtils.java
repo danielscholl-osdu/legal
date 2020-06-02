@@ -15,9 +15,16 @@
 package org.opengroup.osdu.legal.util;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.amazonaws.services.s3.AmazonS3;
 import org.opengroup.osdu.core.aws.cognito.AWSCognitoClient;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
 import org.opengroup.osdu.core.aws.s3.S3Config;
+import org.opengroup.osdu.core.common.model.legal.Properties;
+import org.springframework.beans.factory.annotation.Value;
 
 public class AwsLegalTagUtils extends LegalTagUtils {
     private static final String FILE_NAME = "Legal_COO.json";
@@ -27,6 +34,12 @@ public class AwsLegalTagUtils extends LegalTagUtils {
     private final static String COGNITO_AUTH_FLOW_PROPERTY = "AWS_COGNITO_AUTH_FLOW";
     private final static String COGNITO_AUTH_PARAMS_USER_PROPERTY = "AWS_COGNITO_AUTH_PARAMS_USER";
     private final static String COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY = "AWS_COGNITO_AUTH_PARAMS_PASSWORD";
+
+    private final static String TABLE_PREFIX = "TABLE_PREFIX";
+    private final static String DYNAMO_DB_REGION = "DYNAMO_DB_REGION";
+    private final static String DYNAMO_DB_ENDPOINT = "DYNAMO_DB_ENDPOINT";
+
+    private String BearerToken = "";
 
     @Override
     public synchronized void uploadTenantTestingConfigFile() {
@@ -41,16 +54,54 @@ public class AwsLegalTagUtils extends LegalTagUtils {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-    
+
     @Override
     public synchronized String accessToken() throws Exception {
-        String clientId = System.getProperty(COGNITO_CLIENT_ID_PROPERTY, System.getenv(COGNITO_CLIENT_ID_PROPERTY));
-        String authFlow = System.getProperty(COGNITO_AUTH_FLOW_PROPERTY, System.getenv(COGNITO_AUTH_FLOW_PROPERTY));
-        String user = System.getProperty(COGNITO_AUTH_PARAMS_USER_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_USER_PROPERTY));
-        String password = System.getProperty(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY));
+        if (BearerToken == "") {
+            String clientId = System.getProperty(COGNITO_CLIENT_ID_PROPERTY, System.getenv(COGNITO_CLIENT_ID_PROPERTY));
+            String authFlow = System.getProperty(COGNITO_AUTH_FLOW_PROPERTY, System.getenv(COGNITO_AUTH_FLOW_PROPERTY));
+            String user = System.getProperty(COGNITO_AUTH_PARAMS_USER_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_USER_PROPERTY));
+            String password = System.getProperty(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY));
 
-        AWSCognitoClient client = new AWSCognitoClient(clientId, authFlow, user, password);
+            AWSCognitoClient client = new AWSCognitoClient(clientId, authFlow, user, password);
+            BearerToken = client.getToken();
+        }
+        return "Bearer " + BearerToken;
+    }
 
-        return "Bearer " + client.getToken();
+    public void insertExpiredLegalTag() {
+        // directly create expired legal tag document
+        String integrationTagTestName = String.format("%s-dps-integration-test-1566474656479", getMyDataPartition()); // name has to match what's hardcoded in the test
+        LegalDoc doc = new LegalDoc();
+        doc.setDescription("Expired integration test tag");
+        doc.setName(integrationTagTestName);
+        doc.setId(Integer.toString(integrationTagTestName.hashCode()));
+
+        org.opengroup.osdu.core.common.model.legal.Properties properties = new org.opengroup.osdu.core.common.model.legal.Properties();
+        List countryOfOrigin = new ArrayList();
+        Date date = new Date(1234567898765L);
+        countryOfOrigin.add("US");
+        properties.setCountryOfOrigin(countryOfOrigin);
+        properties.setContractId("A1234");
+        properties.setExpirationDate(date);
+        properties.setOriginator("MyCompany");
+        properties.setDataType("Transferred Data");
+        properties.setSecurityClassification("Public");
+        properties.setPersonalData("No Personal Data");
+        properties.setExportClassification("EAR99");
+        doc.setProperties(properties);
+
+        String tablePrefix = String.format("%s%s", System.getenv(TABLE_PREFIX), "-");
+        String dynamoDbRegion = System.getenv(DYNAMO_DB_REGION);
+        String dynamoDbEndpoint = System.getenv(DYNAMO_DB_ENDPOINT);
+
+        DynamoDBQueryHelper queryHelper = new DynamoDBQueryHelper(dynamoDbEndpoint, dynamoDbRegion, tablePrefix);
+
+        // delete legal tag if it exists
+        if(queryHelper.keyExistsInTable(LegalDoc.class, doc)){
+            queryHelper.deleteByPrimaryKey(LegalDoc.class, doc.getId());
+        }
+
+        queryHelper.save(doc);
     }
 }
