@@ -15,16 +15,23 @@
 package org.opengroup.osdu.legal.acceptanceTests;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.opengroup.osdu.legal.util.Constants.DATA_PARTITION_ID;
 
 import com.amazonaws.services.sqs.model.Message;
+import com.sun.jersey.api.client.ClientResponse;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengroup.osdu.legal.util.AwsLegalTagUtils;
 import org.opengroup.osdu.legal.util.AwsSqsHelper;
 import org.opengroup.osdu.legal.util.LegalTagUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TestDeleteLegalTagApiAcceptance extends DeleteLegalTagApiAcceptanceTests {
 
@@ -67,10 +74,28 @@ public class TestDeleteLegalTagApiAcceptance extends DeleteLegalTagApiAcceptance
         int i = 0;
         while (i < 10 && !passed) {
             List<Message> messages = AwsSqsHelper.getMessages();
-            passed = AwsSqsHelper.checkLegalTagNameSent(messages.get(0), name);
+            if(messages.size() > 0)
+                passed = AwsSqsHelper.checkLegalTagNameSent(messages.get(0), name);
             ++i;
             Thread.sleep(1000);
         }
         assertTrue("Pubsub message not received with tag: " + name, passed);
     }
+
+    @Override
+    protected ClientResponse validateAccess(int expectedResponse) throws Exception {
+        Map<String, String> headers = new HashMap<>();
+        headers.put(DATA_PARTITION_ID, LegalTagUtils.getMyDataPartition());
+
+        ClientResponse response = legalTagUtils.send(this.getApi(), this.getHttpMethod(), legalTagUtils.accessToken(), getBody(), getQuery(), headers);
+        assertEquals(expectedResponse, response.getStatus());
+        if(expectedResponse == 204)
+            Assert.assertTrue(response.getType() == null || response.getLength() == 0 || response.getLength() == -1);
+        else if(response.getType() != null) {
+            Assert.assertTrue(response.getType().toString().toLowerCase().contains("application/json"));
+        }
+        return response;
+    }
+
+
 }

@@ -16,7 +16,6 @@ package org.opengroup.osdu.legal.aws.api;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -34,7 +33,6 @@ import java.util.*;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class LegalTagRepositoryImplTest {

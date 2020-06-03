@@ -20,10 +20,15 @@ import org.opengroup.osdu.legal.util.AwsLegalTagUtils;
 
 public class TestListLegalTagsApiAcceptance extends ListLegalTagsApiAcceptanceTests {
 
+    private String testLegalTag1Name = String.format("%s%s", "int-test-legal-tag1-", String.valueOf(System.currentTimeMillis()));
+    private String testLegalTag2Name = String.format("%s%s", "int-test-legal-tag2-", String.valueOf(System.currentTimeMillis()));
+
     @Before
     @Override
     public void setup() throws Exception  {
         this.legalTagUtils = new AwsLegalTagUtils();
+        legalTagUtils.create(testLegalTag1Name);
+        legalTagUtils.create(testLegalTag2Name);
         super.setup();
     }
 
@@ -31,6 +36,8 @@ public class TestListLegalTagsApiAcceptance extends ListLegalTagsApiAcceptanceTe
     @Override
     public void teardown() throws Exception  {
         super.teardown();
+        legalTagUtils.delete(testLegalTag1Name);
+        legalTagUtils.delete(testLegalTag2Name);
         this.legalTagUtils = null;
     }
 }

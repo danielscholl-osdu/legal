@@ -12,17 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version: 0.1
+# https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html
+FROM amazoncorretto:8
 
-phases:
-  build:
-    commands:
-      - echo Starting 'Copying CloudFormation scripts to S3://$CFN_S3_BUCKET/$APPLICATION_NAME'
-      - pwd
-      - ls
-      - aws s3 cp ./provider/legal-aws/CloudFormation "s3://$CFN_S3_BUCKET/$APPLICATION_NAME" --exclude "*" --include "*.yml" --recursive --debug
-      - echo Ending 'Ending CloudFormation scripts to S3://$CFN_S3_BUCKET/$APPLICATION_NAME'
-
-artifacts:
-  files:
-    - '**/*'
+ARG JAR_FILE=provider/legal-aws/target/*spring-boot.jar
+WORKDIR /
+COPY ${JAR_FILE} app.jar
+EXPOSE 8080
+ENTRYPOINT java $JAVA_OPTS -jar /app.jar

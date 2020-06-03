@@ -71,7 +71,7 @@ public class LegalFilter implements Filter {
     
     private boolean validateIsHttps( HttpServletResponse httpServletResponse) {
         String uri = requestInfo.getUri();
-        if(!isLocalHost(uri) && !isCronJob(uri) && !isSwagger(uri)) {
+        if(!isLocalHost(uri) && !isCronJob(uri) && !isSwagger(uri) && !isHealthCheck(uri)) {
             if(!hasJwt()) {
                 httpServletResponse.setStatus(401);
                 return false;
@@ -95,6 +95,10 @@ public class LegalFilter implements Filter {
         return (uri.contains("//localhost") || uri.contains("//127.0.0.1"));
     }
 
+    private boolean isHealthCheck(String uri) {
+        return (!uri.endsWith("/liveness_check") || !uri.endsWith("/readiness_check"));
+    }
+
     private boolean isCronJob(String uri) {
         return uri.contains("/jobs/updateLegalTagStatus");
     }
@@ -103,7 +107,7 @@ public class LegalFilter implements Filter {
     }
     private void logRequest(HttpServletRequest servletRequest, HttpServletResponse servletResponse, long startTime) {
         String uri = requestInfo.getUri();
-        if(!uri.endsWith("/liveness_check") && !uri.endsWith("/readiness_check")) {
+        if(!isHealthCheck(uri)) {
             logger.request(Request.builder()
                     .requestMethod(servletRequest.getMethod())
                     .latency(Duration.ofMillis(System.currentTimeMillis() - startTime))

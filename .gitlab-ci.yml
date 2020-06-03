@@ -1,6 +1,7 @@
 variables:
-  AWS_BUILD_SUBDIR: provider/legal-aws
-  AWS_APPLICATION_NAME: os-legal
+  AWS_BUILD_SUBDIR: provider/legal-aws/build-aws
+  AWS_TEST_SUBDIR: testing/legal-test-aws
+  AWS_SERVICE: legal
   AWS_ENVIRONMENT: dev
 
   GCP_BUILD_SUBDIR: provider/legal-gcp
@@ -27,6 +28,8 @@ include:
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: "master"
     file: 'cloud-providers/gcp.yml'
+  - project: 'osdu/platform/ci-cd-pipelines'
+    file: 'cloud-providers/aws.yml'    
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa.yml"
   - project: "osdu/platform/ci-cd-pipelines"
