@@ -96,7 +96,7 @@ public class LegalFilter implements Filter {
     }
 
     private boolean isHealthCheck(String uri) {
-        return (!uri.endsWith("/liveness_check") || !uri.endsWith("/readiness_check"));
+        return (uri.endsWith("/liveness_check") || uri.endsWith("/readiness_check"));
     }
 
     private boolean isCronJob(String uri) {
