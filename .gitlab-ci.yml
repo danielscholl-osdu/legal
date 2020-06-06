@@ -22,7 +22,7 @@ include:
     file: "standard-setup.yml"
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/maven.yml"
-  - project: "osdu/platform/ci-cd-pipelines"
+  - project: 'osdu/platform/ci-cd-pipelines'
     ref: "master"
     file: "cloud-providers/azure.yml"
   - project: 'osdu/platform/ci-cd-pipelines'
@@ -34,7 +34,6 @@ include:
     file: "scanners/fossa.yml"
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
-
 
 compile-and-unit-test:
   variables:

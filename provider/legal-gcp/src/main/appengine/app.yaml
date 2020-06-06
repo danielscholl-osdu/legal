@@ -34,3 +34,4 @@ handlers:
 
 env_variables:
    SPRING_PROFILES_ACTIVE: "ENVIRONMENT"
+   
