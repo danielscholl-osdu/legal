@@ -1,5 +1,4 @@
-// (C) Copyright IBM Corporation 2019
-// U.S. Government Users Restricted Rights:  Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+//  Copyright 2020 IBM Corp. All Rights Reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -13,20 +12,14 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-package org.opengroup.osdu.legal.ibm.acceptanceTests;
-
+package org.opengroup.osdu.legal.acceptanceTests;
 
 import org.junit.After;
 import org.junit.Before;
-import org.opengroup.osdu.legal.acceptanceTests.DeleteLegalTagApiAcceptanceTests;
-import org.opengroup.osdu.legal.ibm.acceptanceTests.util.IBMLegalTagUtils;
+import org.junit.Test;
+import org.opengroup.osdu.legal.util.IBMLegalTagUtils;
 
-/**
- * @author mbayser
- *
- */
-
-public class TestDeleteLegalTagApiAcceptance extends DeleteLegalTagApiAcceptanceTests {
+public class TestUpdateLegalTagApiAcceptance extends UpdateLegalTagApiAcceptanceTests {
 
     @Before
     @Override
@@ -38,9 +31,21 @@ public class TestDeleteLegalTagApiAcceptance extends DeleteLegalTagApiAcceptance
     @After
     @Override
     public void teardown() throws Exception {
+
         super.teardown();
         this.legalTagUtils = null;
     }
 
-}
+    @Test
+    @Override
+	public void should_return307_when_makingHttpRequest()throws Exception{
+        //services are enforced to run in https on OpenShift
+	}
 
+    @Test
+    @Override
+	public void should_return401_when_makingHttpRequestWithoutToken()throws Exception{
+        //services are enforced to run in https on OpenShift
+	}
+
+}

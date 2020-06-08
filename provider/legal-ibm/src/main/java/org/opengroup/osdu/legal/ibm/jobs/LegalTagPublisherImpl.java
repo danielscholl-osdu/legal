@@ -25,15 +25,12 @@ import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.core.ibm.messagebus.IMessageFactory;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-@ConditionalOnProperty(
-	    value="ibm.legal.publisher.devnull", 
-	    havingValue = "false", 
-	    matchIfMissing = true)
+import net.minidev.json.JSONObject;
+
 @Component
 public class LegalTagPublisherImpl implements ILegalTagPublisher {
 	
@@ -51,13 +48,16 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
 			
 			List<StatusChangedTag> batch = tags.getStatusChangedTags().subList(i,
 					Math.min(tags.getStatusChangedTags().size(), i + BATCH_SIZE));
-			String json = gson.toJson(batch);
+			JSONObject statusChangedTags = new JSONObject();
+			statusChangedTags.appendField("statusChangedTags", batch);
+			String json = gson.toJson(statusChangedTags);
 			message.put("data", json);
 			message.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
 			message.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
 			headers.addCorrelationIdIfMissing();
 			message.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
 			mq.sendMessage(IMessageFactory.LEGAL_QUEUE_NAME, gson.toJson(message));
+			// TODO discover where this message is consumed!
 
 		}
 
