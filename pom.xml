@@ -39,6 +39,7 @@
         <module>provider/legal-byoc</module>
         <module>provider/legal-azure</module>
         <module>provider/legal-aws</module>
+        <module>provider/legal-ibm</module>
     </modules>
 
     <repositories>

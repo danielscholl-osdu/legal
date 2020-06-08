@@ -13,7 +13,7 @@
 	<artifactId>legal-ibm</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<osdu.ibmcore.version>0.0.13-SNAPSHOT</osdu.ibmcore.version>
+		<osdu.ibmcore.version>0.0.14-SNAPSHOT</osdu.ibmcore.version>
 	</properties>
 
 
@@ -70,7 +70,6 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>3.0.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -123,4 +122,17 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>local</build.profile.id>
+				<profileActive>local</profileActive>
+			</properties>
+		</profile>
+	</profiles>
 </project>

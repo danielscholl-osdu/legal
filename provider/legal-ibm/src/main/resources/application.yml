@@ -20,8 +20,6 @@ ibm:
   env:
     prefix: acceptance-test
   legal:
-    publisher:
-      devnull: true
     db:
       name: legal-tags
       credentials: file:/somepath
@@ -33,3 +31,9 @@ ibm:
       url: ${ibm.legal.db.url}
       user: ${ibm.legal.db.user}
       password: ${ibm.legal.db.password}
+
+amqphub:
+  amqp10jms:
+    remote-url: REPLACE_ME
+    username: REPLACE_ME
+    password: REPLACE_ME
