@@ -102,7 +102,7 @@ public class LegalTagApiTests {
         ResponseEntity<LegalTagDto> result = sut.getLegalTag("k");
 
         assertEquals(404, result.getStatusCodeValue());
-        assertEquals(null, result.getBody());
+        assertEquals("{\"error\":\"Not found.\"}", result.getBody());
     }
 
     @Test
