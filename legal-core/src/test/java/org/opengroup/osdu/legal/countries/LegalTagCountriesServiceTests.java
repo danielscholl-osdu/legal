@@ -63,7 +63,7 @@ public class LegalTagCountriesServiceTests {
     @Test
     public void should_returnNormalValidCoo_withoutSpecialDataType() {
         Map<String, String> validCoos = this.sut.getValidCOOs("Public Domain Data");
-        Assert.assertEquals(54, validCoos.size());
+        Assert.assertEquals(59, validCoos.size());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class LegalTagCountriesServiceTests {
             }
         }
         Map<String, String> validCoos = this.sut.getValidCOOs("Public Domain Data");
-        Assert.assertEquals(55, validCoos.size());
+        Assert.assertEquals(60, validCoos.size());
     }
 
     @Test
@@ -103,6 +103,6 @@ public class LegalTagCountriesServiceTests {
         }
         //the empty array should already be there, or null pointer exception would be thrown
         Map<String, String> validCoos = this.sut.getValidCOOs("Public Domain Data");
-        Assert.assertEquals(55, validCoos.size());
+        Assert.assertEquals(60, validCoos.size());
     }
 }

@@ -1,5 +1,6 @@
 package org.opengroup.osdu.legal.api;
 
+import com.google.gson.Gson;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.legal.tags.LegalTagService;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path= "/")
@@ -74,11 +78,11 @@ public class LegalTagApi {
 
     @PreAuthorize("@authorizationFilter.hasPermission('" + ServiceConfig.LEGAL_USER + "', '" + ServiceConfig.LEGAL_EDITOR + "', '" + ServiceConfig.LEGAL_ADMIN + "')")
     @GetMapping("/legaltags/{name}")
-    public ResponseEntity<LegalTagDto> getLegalTag(@PathVariable("name") @ValidName String name) {
+    public ResponseEntity getLegalTag(@PathVariable("name") @ValidName String name) {
         LegalTagDto output = legalTagService.get(name, requestInfo.getTenantInfo().getName());
 
         if (output == null)
-            return new ResponseEntity<LegalTagDto>(output, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(createNotFoundBody(), HttpStatus.NOT_FOUND);
         else {
             return new ResponseEntity<LegalTagDto>(output, HttpStatus.OK);
         }
@@ -136,5 +140,11 @@ public class LegalTagApi {
         auditLogger.readLegalPropertiesSuccess();
 
         return new ResponseEntity<ReadablePropertyValues>(output, HttpStatus.OK);
+    }
+
+    private String createNotFoundBody() {
+        final Map<String, String> body = new HashMap<>();
+        body.put("error", "Not found.");
+        return new Gson().toJson(body);
     }
 }

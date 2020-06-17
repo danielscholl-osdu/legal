@@ -290,7 +290,7 @@
   "name": "Colombia",
   "alpha2": "CO",
   "numeric": 170,
-  "residencyRisk": "Default",
+  "residencyRisk": "No restriction",
   "typesNotApplyDataResidency": ["Transferred Data"]
 }, {
   "name": "Costa Rica",
@@ -326,7 +326,7 @@
   "name": "Czech Republic",
   "alpha2": "CZ",
   "numeric": 203,
-  "residencyRisk": "Default",
+  "residencyRisk": "No restriction",
   "typesNotApplyDataResidency": ["Transferred Data"]
 }, {
   "name": "Germany",
@@ -590,7 +590,7 @@
   "name": "Hungary",
   "alpha2": "HU",
   "numeric": 348,
-  "residencyRisk": "Default",
+  "residencyRisk": "No restriction",
   "typesNotApplyDataResidency": ["Transferred Data"]
 }, {
   "name": "Indonesia",
@@ -1358,7 +1358,7 @@
   "name": "Ukraine",
   "alpha2": "UA",
   "numeric": 804,
-  "residencyRisk": "Default",
+  "residencyRisk": "No restriction",
   "typesNotApplyDataResidency": ["Transferred Data"]
 }, {
   "name": "Uganda",
@@ -1388,7 +1388,7 @@
   "name": "Uzbekistan",
   "alpha2": "UZ",
   "numeric": 860,
-  "residencyRisk": "Default",
+  "residencyRisk": "No restriction",
   "typesNotApplyDataResidency": ["Transferred Data"]
 }, {
   "name": "Saint Vincent and the Grenadines",
