@@ -15,7 +15,7 @@
 * [The LegalTag Changed notification](#The-LegalTag-Changed-notification)
 * [Permissions](#Permissions)
 
-##Introduction<a name="Introduction"></a>
+## Introduction<a name="Introduction"></a>
 This document covers how to remain compliant at the different stages of the data lifecycle inside the Data Ecosystem.
  
 1. When ingesting data
@@ -30,7 +30,7 @@ Records have a Legal section in their schema and this is where the compliance is
 
 Further details can be found in the [Creating a Record](#Creating-a-Record) section.
 
-##API usage<a name="API-usage"></a>
+## API usage<a name="API-usage"></a>
 Details of our APIs including how to create and retrieve LegalTags can be found in our Portal documentation [here.](/solutions/dataecosystem/apis)
 
 You currently need the role **users.datalake.viewers** to access the LegalTag API. When creating a LegalTag you need at least the **users.datalake.editors** role. You need the **users.datalake.admins** role to update legalTags.                                                                                                                                                                                                                                                                                                                                                                                          
@@ -61,7 +61,7 @@ If you are the service initiating the request, you should generate the id. Other
 
 [Back to table of contents](#TOC)
 
-##What is a LegalTag?<a name="What-is-a-LegalTag"></a>
+## What is a LegalTag?<a name="What-is-a-LegalTag"></a>
 A LegalTag is the entity that represents the legal status of data in the Data Ecosystem. It is a collection of *properties* that governs how the data can be consumed and ingested. 
 
 A legal tag is required for data ingestion. Therefore, creation of a legal tag is a necessary first step if there isn't a legal tag already exists for use with the ingested data. The LegalTag name is used for reference.
@@ -72,7 +72,7 @@ For instance, we may not allow ingestion of data from a certain country, or we m
 
 A name needs to be assigned to the LegalTag during creation. The name is a unique identifier for the LegalTag that is used to access it. 
 
-##Ingestion workflow<a name="Ingestion-workflow"></a>
+## Ingestion workflow<a name="Ingestion-workflow"></a>
 
 ![API Security - High level](https://storage.googleapis.com/devportal-live-public/IngestionSequenceDiagram.png)
 
@@ -82,7 +82,7 @@ The above diagram shows the typical sequence of events of a data ingestion. The 
 * The Storage service validates the LegalTag for the data being ingested. 
 * Only after validating a LegalTag exists can we ingest data.  No data should be stored at any point in the Data Ecosystem that does not have a valid LegalTag.
 
-##Creating a LegalTag<a name="Creating-a-LegalTag"></a>
+## Creating a LegalTag<a name="Creating-a-LegalTag"></a>
 Any data being ingested needs a LegalTag associated with it.  You can create a LegalTag by using the POST LegalTag API e.g.
 
     POST /api/legal/v1/legaltags
@@ -133,7 +133,7 @@ When creating LegalTags, the name is automatically prefixed with the data partit
 
 To help with LegalTag creation, it is advised to use the Get LegalTag Properties API to obtain the allowed properties before creating a legal tag. This returns the allowed values for many of the LegalTag properties.
 
-##LegalTag properties<a name="LegalTag-properties"></a>
+## LegalTag properties<a name="LegalTag-properties"></a>
 Below are details of the properties you can supply when creating a LegalTag along with the values you can use. The allowed properties values can be data partition specific. Valid values associated with the property are shown. All values are mandatory unless otherwise stated.
 
 You can get the data partition's specific allowed properties values by using LegalTag Properties api e.g.
@@ -181,50 +181,50 @@ curl --request GET \
 ```
 </details>
 
-####Country of origin
+#### Country of origin
  Valid values: An array of ISO Alpha-2 country code. This is normally one value but can be more. This is required.
  
 Notes: This is the country from where the data originally came, NOT from where the data was sent. The list of allowed countries is below. If ingesting Third Party Data, you can ingest data from any country that is not embargoed, if you have a valid contract associated with it that allows for this.
 
-####Contract Id
+#### Contract Id
  Valid values: This should be the Contract Id associated with the data or 'Unknown' or 'No Contract Related'.
    
  Notes: This is always required for any data types.
  
-####Expiration date
+#### Expiration date
  Valid values: Any date in the future in the format yyyy-MM-dd (e.g. 2099-12-25) or empty.
  
  Notes: This sets the inclusive date when the LegalTag expires and the data it relates to is no longer usable in the Data Ecosystem. This normally is taken from the physical contracts expiration date i.e. when you supply a contract ID. This is non mandatory field, but is required for certain types of data e.g. 3rd party. If the field is not set it will be autopopulated with the value 9999-12-31.
    
-####Originator
+#### Originator
  Valid values: Should be the name of the client, supplier or Self
    
  Notes: This is always required.
    
-####Data type
+#### Data type
  Valid values: 'OSDU Data', 'Public Domain Data', 'EHC Data', 'Index Data', 'Third Party Data', 'Client Data''.
   
  Notes: Different data types are allowed dependent on the data partitions e.g. vendor partitions have different governing rules as opposed to standard partitions. To list the allowed data types for your data partition use the [LegalTag Properties](#LegalTag-properties). 'Third Party Data' is allowed ONLY with a contract ID and expiration date set. 'Client Data' is the ONLY allowed value in Client data partitions, and 'Client Data' can be allowed in OSDU data partitions under exemption, in which case the contract ID and expiration date are required; contract ID and expiration date are not required if ingesting 'Client Data" in client data partitions.
                                                                                                                                                                                                                                                                                   
    
-####Security classification
+#### Security classification
  Valid values: 'Public', 'Private', 'Confidential'
    
  Notes: This is the OSDU standard security classification for the data. We currently do not allow 'Secret' data to be stored in the Data Ecosystem.
    
-####Export classification
+#### Export classification
  Valid values: 'EAR99', 'Not - Technical Data', 'No License Required'
    
  Notes: We currently only allow data with the ECCN classification 'EAR99'
    
-####Personal data
+#### Personal data
  Valid values: 'Personally Identifiable', 'No Personal Data'
    
  Notes: We do not currently allow data that is 'Sensitive Personal Information' and this should not be ingested.
  
  [Back to table of contents](#TOC)
   	 	
-##Creating a Record<a name="Creating-a-Record"></a>
+## Creating a Record<a name="Creating-a-Record"></a>
 This relates to creating Records that are *NOT* derivatives. See the derivative section below for details on Record creation for derivative data.
  
 Once you have a LegalTag created, you can assign it to as many Records as you like. However, it is the data managers' responsibility to assign accurate LegalTags to data.
@@ -317,7 +317,7 @@ curl --request GET \
 ```
 </details>
 
-##What are Derivatives?<a name="What-are-Dervatives"></a>
+## What are Derivatives?<a name="What-are-Dervatives"></a>
 Often when ingesting data into the Data Ecosystem, it is the raw data itself. In these scenarios, you associate a single LegalTag with this data.
 
 However, in the case when the data to be ingested come from multiple sources, it is the case of derivative data. For instance, what if you take multiple Records from the Data Ecosystem and create a whole new Record based on them all? Or what if you run an algorithm over your seismic data and create an attribute associated with this data you want to ingest?
@@ -326,7 +326,7 @@ At this point, you have derivative data (i.e., data derived from data). In these
 
 For instance, I have Data A associated with LegalTag 1, and Data B associated with LegalTag 2. If I create Data C from Data A and Data B, then I need to associate both LegaltTag 1 and LegalTag 2 to Data C.
 
-###Creating derivative Records
+### Creating derivative Records
 When creating Records that represent derivative data, the following must be assigned:
 
 * The Record Id and version of all the Records that are the direct parents of the new derivative. This is added to the *ancestry* section  
@@ -360,7 +360,7 @@ As shown the parent Records are provided as well as the ORDC of where the deriva
 
 [Back to table of contents](#TOC)
 
-##Validating a LegalTag<a name="Validating-a-LegalTag"></a>
+## Validating a LegalTag<a name="Validating-a-LegalTag"></a>
 
 The Storage service validates whether a Record is legally compliant during ingestion and consumption. Therefore, you can delegate the effort to the Record service as the request will fail if the Record is not compliant.
 
@@ -409,7 +409,7 @@ So if you just want to check that the given LegalTag(s) are currently valid, you
 
 Ingestion services forward the request to the LegalTag API using the same _SAuth_ token making the ingestion request. This checks both that a LegalTag exists and that the data has appropriate access to it.
 
-##Updating a LegalTag<a name="Updating-a-LegalTag"></a>
+## Updating a LegalTag<a name="Updating-a-LegalTag"></a>
 One of the main cases where a LegalTag can become invalid is if a contract expiration date passes. This makes both the LegalTag invalid and *all* data associated with that LegalTag including derivatives.
 
 In these situations we can update LegalTags to make them valid again and so make the associated data accessible. Currently we only allow the update of the *description*, *contract ID* and *expiration date* properties. 
@@ -424,7 +424,7 @@ In these situations we can update LegalTags to make them valid again and so make
     
 [Back to table of contents](#TOC)
  
-##Compliance on consumption<a name="Compliance-on-Consumption"></a>
+## Compliance on consumption<a name="Compliance-on-Consumption"></a>
 As previously stated, the Records in the Storage service largely governs data compliance.  This means that if you use the Storage or Search core services, then compliance on consumption is handled on your behalf i.e. these services will not return Records that are no longer legally compliant.
 
 However, there are use cases where you may not use these services all the time e.g. if you have your own operational data store.  In these cases you will need to check the LegalTags associated with your data are still valid before allowing consumption. For this, we have a PubSub topic that can be subscribed to.
@@ -440,7 +440,7 @@ This means you need to make a subscription to every data partition project you w
 
 For more information on subscribing to PubSub topics, please use the Google documentation [here](https://cloud.google.com/pubsub/docs/subscriber).
 
-##The LegalTag Changed notification<a name="The-LegalTag-Changed-notification"></a>
+## The LegalTag Changed notification<a name="The-LegalTag-Changed-notification"></a>
 After subscribing to the topic, you will receive notifications daily. These notifications will list all LegalTags that have changed, and whether the LegalTag has become compliant or non-compliant.
 
     {

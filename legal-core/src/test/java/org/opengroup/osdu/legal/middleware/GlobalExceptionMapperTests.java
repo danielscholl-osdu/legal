@@ -1,17 +1,22 @@
 package org.opengroup.osdu.legal.middleware;
 
 import static org.junit.Assert.assertEquals;
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 import javassist.NotFoundException;
 
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.context.request.WebRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GlobalExceptionMapperTests {
@@ -58,6 +63,14 @@ public class GlobalExceptionMapperTests {
 		assertEquals(404, response.getStatusCodeValue());
 		//assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType().toString());
 		//assertEquals(null, response.getBody().getMessage());
+	}
+	@Test
+	public void should_use405ValueInResponse_When_HttpRequestMethodNotSupportedExceptionIsHandledByGlobalExceptionMapper() {
+		HttpHeaders httpHeaders = mock(HttpHeaders.class);
+		WebRequest webRequest = mock(WebRequest.class);
+		HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("any message");
+		ResponseEntity<Object> response = sut.handleHttpRequestMethodNotSupported(exception, httpHeaders, HttpStatus.METHOD_NOT_ALLOWED, webRequest);
+		assertEquals(405, response.getStatusCodeValue());
 	}
 	@Test
 	public void should_useGenericValuesInResponse_When_ExceptionIsHandledByGlobalExceptionMapper() {

@@ -16,25 +16,28 @@ variables:
   AZURE_BUILD_SUBDIR: provider/legal-azure
   AZURE_TEST_SUBDIR: testing/legal-test-azure
 
+  IBM_BUILD_SUBDIR: provider/legal-ibm
+  IBM_INT_TEST_SUBDIR: testing/legal-test-ibm
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/maven.yml"
-  - project: "osdu/platform/ci-cd-pipelines"
+  - project: 'osdu/platform/ci-cd-pipelines'
     ref: "master"
     file: "cloud-providers/azure.yml"
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: "master"
     file: 'cloud-providers/gcp.yml'
   - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/aws.yml'    
+    file: 'cloud-providers/aws.yml'
+  - project: 'osdu/platform/ci-cd-pipelines'
+    file: 'cloud-providers/ibm.yml'
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa.yml"
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
-
 
 compile-and-unit-test:
   variables:

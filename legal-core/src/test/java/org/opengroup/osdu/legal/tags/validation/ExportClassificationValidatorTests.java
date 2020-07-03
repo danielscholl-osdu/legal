@@ -20,7 +20,7 @@ public class ExportClassificationValidatorTests {
 
     @Test
     public void should_ReturnTrue_When_GivenValidEccnPredefinedValue(){
-        assertTrue(sut.isValid(AllowedLegaltagPropertyValues.EAR99, null));
+        assertTrue(sut.isValid(AllowedLegaltagPropertyValues.ECCN_EAR99, null));
     }
     @Test
     public void should_ReturnTrue_When_GivenValidEccn(){

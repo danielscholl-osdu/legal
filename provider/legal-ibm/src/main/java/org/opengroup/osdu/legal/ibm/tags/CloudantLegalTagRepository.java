@@ -21,6 +21,7 @@ import static com.cloudant.client.api.query.Expression.in;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,6 +33,7 @@ import javax.inject.Inject;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
+import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.core.ibm.auth.ServiceCredentials;
 import org.opengroup.osdu.core.ibm.cloudant.IBMCloudantClientFactory;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
@@ -46,6 +48,7 @@ import com.cloudant.client.api.Database;
 import com.cloudant.client.api.model.Response;
 import com.cloudant.client.api.query.EmptyExpression;
 import com.cloudant.client.api.query.ExecutionStats;
+import com.cloudant.client.api.query.JsonIndex;
 import com.cloudant.client.api.query.QueryBuilder;
 import com.cloudant.client.api.query.QueryResult;
 import com.cloudant.client.api.query.Selector;
@@ -120,7 +123,55 @@ public class CloudantLegalTagRepository implements ILegalTagRepository {
 			.registerTypeAdapter(CloudantBackedLegalTag.class, CloudantBackedLegalTag.serializer)
 			.registerTypeAdapter(CloudantBackedLegalTag.class, CloudantBackedLegalTag.deserializer);
 		this.cloudant = cloudantFactory.getClient();
-		this.db = cloudantFactory.getDatabase(cloudant, dbNamePrefix, dataBaseName);		
+		this.db = cloudantFactory.getDatabase(cloudant, dbNamePrefix, dataBaseName);
+		
+		db.createIndex(JsonIndex.builder().name("is-valid-json-index").asc("is_valid").definition());
+		db.createIndex(JsonIndex.builder().name("id-json-index").asc("_id").definition());
+
+		try {
+			LegalTag tag = new LegalTag();
+			tag.setName("opendes-dps-integration-test-1566474656479");
+			tag.setDescription("invalid date");
+			tag.setIsValid(true);
+			Properties tp = new Properties();
+			tp.setCountryOfOrigin(Arrays.asList("US"));
+			tp.setContractId("A1234");
+			tp.setOriginator("MyCompany");
+			tp.setDataType("Transferred Data");
+			tp.setSecurityClassification("Public");
+			tp.setPersonalData("No Personal Data");
+			tp.setExportClassification("EAR99");
+			tp.setExpirationDate(Date.valueOf("2005-12-11"));
+			tag.setProperties(tp);
+			tag.setDefaultId();
+			db.save(tag);
+			logger.info("Invalid tag created for integration tests.");
+		} catch (DocumentConflictException e) {
+			logger.info("Invalid Tag already exists.");
+		}
+		
+		try {
+			LegalTag tag = new LegalTag();
+			tag.setName("opendes-public-usa-dataset-1");
+			tag.setDescription("test for opendes-storage");
+			tag.setIsValid(true);
+			Properties tp = new Properties();
+			tp.setCountryOfOrigin(Arrays.asList("US"));
+			tp.setContractId(Properties.UNKNOWN_CONTRACT_ID);
+			tp.setOriginator("MyCompany");
+			tp.setDataType("Public Domain Data");
+			tp.setSecurityClassification("Public");
+			tp.setPersonalData("No Personal Data");
+			tp.setExportClassification("EAR99");
+			tp.setExpirationDate(Properties.DEFAULT_EXPIRATIONDATE);
+			tag.setProperties(tp);
+			tag.setDefaultId();
+			db.save(tag);
+			logger.info("Default tag created for integration tests.");
+		} catch (DocumentConflictException e) {
+			logger.info("Default Tag already exists.");
+		}
+		
 	}
 
 	@Override

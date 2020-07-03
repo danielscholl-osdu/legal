@@ -34,6 +34,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import com.cloudant.client.api.Database;
+import com.cloudant.client.api.query.JsonIndex;
+import com.cloudant.client.org.lightcouch.DocumentConflictException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * @author mbayser
  *
@@ -90,6 +96,35 @@ public class StorageReaderFactoryImpl implements IStorageReaderFactory {
 			} 
 				
 			IBMCloudantClientFactory cloudantFactory = new IBMCloudantClientFactory(creds);
+			
+			// Initialize data
+			try {
+				Database db = cloudantFactory.getDatabase(dbNamePrefix, dbName);
+				
+				System.out.println("creating indexes...");
+				db.createIndex(JsonIndex.builder().name("tenant-region-json-index").asc("tenant", "region").definition());
+
+				try {
+					JsonObject json = new JsonObject();
+					json.addProperty("_id", "integratio_test");
+					json.addProperty("name", "Malaysia");
+					json.addProperty("alpha2", "MY");
+					json.addProperty("numeric", 458);
+					json.addProperty("residencyRisk", "Client consent required");
+					JsonArray array = new JsonArray();
+					array.add("Transferred Data");
+					json.add("typesNotApplyDataResidency", array);
+					json.addProperty("tenant", "opendes");
+					json.addProperty("region", "us");
+					db.save(json);
+					logger.info("MY Country created for integration tests.");
+				} catch (DocumentConflictException e) {
+					logger.info("MY Country already exists.");
+				}
+				
+			} catch (MalformedURLException e1) {
+				logger.error("Error initializing country database data.", e1);
+			}
 
 			return getReader(cloudantFactory, tenant, projectRegion, dbNamePrefix, dbName);		
 	}
