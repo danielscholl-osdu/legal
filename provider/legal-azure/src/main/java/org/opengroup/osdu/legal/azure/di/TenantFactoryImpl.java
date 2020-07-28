@@ -14,14 +14,12 @@
 
 package org.opengroup.osdu.legal.azure.di;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import com.azure.cosmos.CosmosContainer;
-import org.opengroup.osdu.azure.CosmosFacade;
+import org.opengroup.osdu.azure.CosmosStore;
 import org.opengroup.osdu.core.common.cache.ICache;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -30,9 +28,18 @@ import java.util.Map;
 
 @Component
 public class TenantFactoryImpl implements ITenantFactory {
-    @Inject
-    @Named("TENANT_INFO_CONTAINER")
-    private CosmosContainer container;
+
+    @Autowired
+    private CosmosStore cosmosStore;
+
+    @Autowired
+    private String tenantInfoContainer;
+
+    @Autowired
+    private String cosmosDBName;
+
+    @Autowired
+    private DpsHeaders headers;
 
     private Map<String, TenantInfo> tenants;
 
@@ -64,7 +71,7 @@ public class TenantFactoryImpl implements ITenantFactory {
 
     private void initTenants() {
         this.tenants = new HashMap<>();
-        CosmosFacade.findAllItems(container, TenantInfoDoc.class).forEach(doc -> {
+        cosmosStore.findAllItems(headers.getPartitionId(), cosmosDBName, tenantInfoContainer, TenantInfoDoc.class).forEach(doc -> {
             TenantInfo ti = new TenantInfo();
             String tenantName = doc.getId();
             ti.setName(tenantName);
