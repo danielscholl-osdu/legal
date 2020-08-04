@@ -53,7 +53,7 @@ phases:
       - printenv
 
       - echo "Building primary service assemblies..."
-      - mvn -B test install '-Plegal-aws,!legal-gcp' -pl legal-core,provider/legal-aws -Ddeployment.environment=prod
+      - mvn -B test install -pl legal-core,provider/legal-aws -Ddeployment.environment=prod
 
 #      Suspended until further notice
 #      - echo "Copying assemblies to dist..."
