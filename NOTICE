@@ -242,6 +242,7 @@ The following software have components provided under the terms of this license:
 - Apache Log4j API (from )
 - Apache Log4j Core (from )
 - Apache Log4j JUL Adapter (from )
+- Apache Log4j SLF4J Binding (from )
 - Apache Log4j to SLF4J Adapter (from )
 - Apache Maven Invoker (from )
 - Apache Maven Reporting Implementation (from )
@@ -369,8 +370,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- Microsoft Application Insights Logback Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- Mockito (from http://www.mockito.org)
 - Mockito (from http://www.mockito.org)
 - Mockito (from http://mockito.org)
 - Mockito (from http://mockito.org)
@@ -496,8 +495,6 @@ The following software have components provided under the terms of this license:
 - org.xmlunit:xmlunit-core (from http://www.xmlunit.org/)
 - oro (from )
 - parent-join (from https://github.com/elastic/elasticsearch)
-- powermock-api-mockito (from )
-- powermock-api-mockito-common (from )
 - powermock-api-support (from )
 - powermock-core (from http://www.powermock.org)
 - powermock-module-junit4 (from http://www.powermock.org)
@@ -588,8 +585,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- Microsoft Application Insights Logback Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- Mockito (from http://www.mockito.org)
 - Mockito (from http://www.mockito.org)
 - NanoHttpd-Core (from )
 - Netty/Codec/HTTP (from )
@@ -634,7 +629,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- Microsoft Application Insights Logback Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
 
 ========================================================================
 CC0-1.0
@@ -709,7 +703,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- Microsoft Application Insights Logback Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
 - SnakeYAML (from http://www.snakeyaml.org)
 
 ========================================================================
@@ -821,7 +814,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- Microsoft Application Insights Logback Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
 - java-getopt (from )
 
 ========================================================================
@@ -868,7 +860,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- Microsoft Application Insights Logback Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Azure Java Core Library (from https://github.com/Azure/azure-sdk-for-java)
 - Microsoft Azure Netty HTTP Client Library (from https://github.com/Azure/azure-sdk-for-java)
 - Microsoft Azure SDK annotations (from https://github.com/Microsoft/java-api-annotations)
@@ -881,7 +872,6 @@ The following software have components provided under the terms of this license:
 - Mockito (from http://www.mockito.org)
 - Mockito (from http://mockito.org)
 - Mockito (from http://mockito.org)
-- Mockito (from http://www.mockito.org)
 - Netty/Codec/HTTP (from )
 - Netty/Common (from )
 - Plexus :: Default Container (from )
@@ -890,7 +880,6 @@ The following software have components provided under the terms of this license:
 - SLF4J API Module (from http://www.slf4j.org)
 - adal4j (from https://github.com/AzureAD/azure-activedirectory-library-for-java)
 - msal4j (from https://github.com/AzureAD/microsoft-authentication-library-for-java)
-- powermock-api-mockito (from )
 - spring-security-core (from http://spring.io/spring-security)
 
 ========================================================================
