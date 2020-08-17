@@ -14,11 +14,8 @@
 
 package org.opengroup.osdu.legal.azure.di;
 
-import com.azure.cosmos.CosmosClient;
-import com.azure.cosmos.CosmosContainer;
 import com.azure.security.keyvault.secrets.SecretClient;
 import org.opengroup.osdu.azure.KeyVaultFacade;
-import org.opengroup.osdu.common.Validators;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -95,16 +92,17 @@ public class AzureBootstrapConfig {
     }
 
     @Bean
-    @Named("LEGAL_TAGS_CONTAINER")
-    CosmosContainer legalTagsContainer(final CosmosClient cosmosClient) {
-        Validators.checkNotNull(cosmosClient, "Cosmos client cannot be null");
-        return cosmosClient.getDatabase(cosmosDBName).getContainer(legalCollectionName);
+    public String cosmosDBName() {
+        return cosmosDBName;
     }
 
     @Bean
-    @Named("TENANT_INFO_CONTAINER")
-    CosmosContainer tenantInfoContainer(final CosmosClient cosmosClient) {
-        Validators.checkNotNull(cosmosClient, "Cosmos client cannot be null");
-        return cosmosClient.getDatabase(cosmosDBName).getContainer(tenantCollectionName);
+    public String legalTagsContainer(){
+        return legalCollectionName;
+    }
+
+    @Bean
+    public String tenantInfoContainer(){
+        return tenantCollectionName;
     }
 }

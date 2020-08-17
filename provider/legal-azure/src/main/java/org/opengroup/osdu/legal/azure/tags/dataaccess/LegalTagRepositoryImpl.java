@@ -14,13 +14,18 @@
 
 package org.opengroup.osdu.legal.azure.tags.dataaccess;
 
-import com.azure.cosmos.*;
-import org.opengroup.osdu.azure.CosmosFacade;
+import com.azure.cosmos.FeedOptions;
+import com.azure.cosmos.SqlParameter;
+import com.azure.cosmos.SqlParameterList;
+import com.azure.cosmos.SqlQuerySpec;
+import org.opengroup.osdu.azure.CosmosStore;
 import org.opengroup.osdu.common.Validators;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -30,17 +35,22 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 @Repository
 public class LegalTagRepositoryImpl implements ILegalTagRepository {
 
     private ReentrantLock mutex = new ReentrantLock();
 
-    @Inject
-    @Named("LEGAL_TAGS_CONTAINER")
-    private CosmosContainer container;
+    @Autowired
+    private CosmosStore cosmosStore;
+
+    @Autowired
+    private String legalTagsContainer;
+
+    @Autowired
+    private String cosmosDBName;
+
+    @Autowired
+    private DpsHeaders headers;
 
     @Override
     public Long create(LegalTag legalTag) {
@@ -51,11 +61,11 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
         LegalTagDoc legalTagDoc = new LegalTagDoc(strId, legalTag);
         try {
             mutex.lock();
-            Optional<LegalTagDoc> existingDoc = CosmosFacade.findItem(container, strId, strId, LegalTagDoc.class);
+            Optional<LegalTagDoc> existingDoc = cosmosStore.findItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, strId, strId, LegalTagDoc.class);
             if (existingDoc.isPresent()) {
                 throw AppException.legalTagAlreadyExistsError(legalTag.getName());
             }
-            CosmosFacade.upsertItem(container, legalTagDoc);
+            cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, legalTagDoc);
         } finally {
             mutex.unlock();
         }
@@ -70,7 +80,7 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
             for(long id : ids)
             {
                 String strId = String.valueOf(id);
-                CosmosFacade.findItem(container, strId, strId, LegalTagDoc.class)
+                cosmosStore.findItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, strId, strId, LegalTagDoc.class)
                         .ifPresent(tagDoc -> output.add(tagDoc.getLegalTag()));
             }
         }
@@ -81,11 +91,11 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
     public Boolean delete(LegalTag legalTag) {
         Long id = legalTag.getId();
         String strId = String.valueOf(id);
-        boolean exists = CosmosFacade.findItem(container, strId, strId, LegalTagDoc.class).isPresent();
+        boolean exists = cosmosStore.findItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, strId, strId, LegalTagDoc.class).isPresent();
         if (!exists)
             return false;
 
-        CosmosFacade.deleteItem(container, strId, strId);
+        cosmosStore.deleteItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, strId, strId);
         return true;
     }
 
@@ -96,11 +106,11 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
 
         Long id = newLegalTag.getId();
         String strId = String.valueOf(id);
-        boolean exists = CosmosFacade.findItem(container, strId, strId, LegalTagDoc.class).isPresent();
+        boolean exists = cosmosStore.findItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, strId, strId, LegalTagDoc.class).isPresent();
         if (!exists)
             throw AppException.legalTagDoesNotExistError(newLegalTag.getName());
 
-        CosmosFacade.upsertItem(container, new LegalTagDoc(strId, newLegalTag));
+        cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, new LegalTagDoc(strId, newLegalTag));
 
         return newLegalTag;
     }
@@ -112,7 +122,7 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
                 .setParameters(new SqlParameterList(new SqlParameter("@isValid", args.getIsValid())));
 
         FeedOptions options = new FeedOptions().setEnableCrossPartitionQuery(true);
-        return CosmosFacade.queryItems(container, query, options, LegalTagDoc.class)
+        return cosmosStore.queryItems(headers.getPartitionId(), cosmosDBName, legalTagsContainer, query, options, LegalTagDoc.class)
                 .stream()
                 .map(LegalTagDoc::getLegalTag)
                 .collect(Collectors.toList());
