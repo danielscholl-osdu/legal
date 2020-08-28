@@ -68,7 +68,7 @@ public class StorageReaderImpl implements IStorageReader {
     }
 
     private String getTenantBucketName() {
-        return this.tenantInfo.getName() + "-" + BUCKET_NAME;
+        return this.tenantInfo.getProjectId() + "-" + this.tenantInfo.getName() + "-" + BUCKET_NAME;
     }
 
 }
