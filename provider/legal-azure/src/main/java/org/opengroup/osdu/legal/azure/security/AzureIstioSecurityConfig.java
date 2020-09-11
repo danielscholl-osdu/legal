@@ -14,43 +14,22 @@
 
 package org.opengroup.osdu.legal.azure.security;
 
-import com.microsoft.azure.spring.autoconfigure.aad.AADAppRoleStatelessAuthenticationFilter;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.inject.Inject;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@ConditionalOnProperty(value = "azure.istio.auth.enabled", havingValue = "false", matchIfMissing = false)
-public class AADSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Inject
-    private AADAppRoleStatelessAuthenticationFilter appRoleAuthFilter;
+@ConditionalOnProperty(value = "azure.istio.auth.enabled", havingValue = "true", matchIfMissing = true)
+public class AzureIstioSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-            .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
-            .and()
-            .authorizeRequests()
-            .antMatchers("/", "/index.html",
-                    "/v2/api-docs",
-                    "/configuration/ui",
-                    "/swagger-resources/**",
-                    "/configuration/security",
-                    "/swagger",
-                    "/swagger-ui.html",
-                    "/webjars/**").permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .addFilterBefore(appRoleAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.httpBasic().disable()
+                .csrf().disable();  //AuthN is disabled. AuthN is handled by sidecar proxy
     }
 }

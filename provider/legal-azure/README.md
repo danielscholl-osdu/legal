@@ -60,6 +60,7 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AZURE_TENANT_ID` | `********` | AD tenant to authenticate users from | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-tenant-id` |
 | `AZURE_CLIENT_SECRET` | `********` | Secret for `$AZURE_CLIENT_ID` | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-password` |
 | `appinsights_key` | `********` | API Key for App Insights | yes | output of infrastructure deployment |
+| `azure_istioauth_enabled` | `true` | Flag to Disable AAD auth | no | -- |
 
 **Required to run integration tests**
 
