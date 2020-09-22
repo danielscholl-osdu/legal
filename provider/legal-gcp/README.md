@@ -1,52 +1,31 @@
 # legal-gcp
 
-## Running Locally
+os-legal-gcp is a Spring Boot service that hosts CRUD APIs that enable management of legal tags within the OSDU R2 ecosystem.
 
-### Requirements
+## Getting Started
 
-In order to run this service locally, you will need the following:
-
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+ 
+### Prerequisites
+ 
 - [Maven 3.6.0+](https://maven.apache.org/download.cgi)
 - [AdoptOpenJDK8](https://adoptopenjdk.net/)
-- Infrastructure dependencies, deployable through the relevant [infrastructure template](https://community.opengroup.org/osdu/platform/deployment-and-operations/infra-gcp-provisioning)
+- [Lombok 1.16 or later](https://projectlombok.org/setup/maven)
+- [GCloud SDK with java (latest version)](https://cloud.google.com/sdk/docs/install)
+ 
+### Installation
 
-### Environment Variables
+- Setup Apache Maven
+- Setup AdoptOpenJDK
+- Setup GCloud SDK
+- Install Eclipse (or other IDE) to run applications
+- Set up environment variables for Apache Maven and AdoptOpenJDK. For example M2_HOME, JAVA_HOME, etc.
+- Add a configuration for build project in Eclipse(or other IDE)
 
-In order to run the service locally, you will need to have the following environment variables defined.
-
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `LOG_PREFIX` | `legal` | Logging prefix | no | - |
-| `SERVER_SERVLET_CONTEXPATH` | `/api/legal/v1/` | Servlet context path | no | - |
-| `AUTHORIZE_API` | ex `https://entitlements.com/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
-| `LEGALTAG_API` | ex `https://legal.com/api/legal/v1` | Legal API endpoint | no | output of infrastructure deployment |
-| `PUBSUB_SEARCH_TOPIC` | ex `records-changed` | PubSub topic name | no | https://console.cloud.google.com/cloudpubsub/topic |
-| `REDIS_GROUP_HOST` | ex `records-changed` | Redis host for groups | no | https://console.cloud.google.com/memorystore/redis/instances |
-| `REDIS_STORAGE_HOST` | ex `records-changed` | Redis host for storage | no | https://console.cloud.google.com/memorystore/redis/instances |
-| `STORAGE_HOSTNAME` | ex `os-storage-dot-opendes.appspot.com` | Hostname | no | - |
-| `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |
-| `GOOGLE_APPLICATION_CREDENTIALS` | ex `/path/to/directory/service-key.json` | Service account credentials, you only need this if running locally | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
-
-**Required to run integration tests**
-
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `GCLOUD_PROJECT` | `nice-etching-277309` | google cloud project ID | yes | - |
-| `MY_TENANT_PROJECT` | `osdu` | my tenant project name | yes | - |
-| `INTEGRATION_TEST_AUDIENCE` | `********` | client application ID | yes | https://console.cloud.google.com/apis/credentials |
-| `INTEGRATION_TESTER` | `********` | Service account for API calls. Note: this user must have entitlements configured already | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
-| `HOST_URL` | `http://localhsot:8080/api/legal/v1/` | - | yes | - |
-| `MY_TENANT` | `osdu` | OSDU tenant used for testing | yes | - |
-
-**Entitlements configuration for integration accounts**
-
-| INTEGRATION_TESTER |
-| ---  |
-| users<br/>service.entitlements.user<br/>service.legal.admin<br/>service.legal.editor<br/>service.legal.user<br/>data.test1<br/>data.integration.test |
-
-### Configure Maven
+### Run Locally
 
 Check that maven is installed:
+
 ```bash
 $ mvn --version
 Apache Maven 3.6.0
@@ -56,6 +35,7 @@ Java version: 1.8.0_212, vendor: AdoptOpenJDK, runtime: /usr/lib/jvm/jdk8u212-b0
 ```
 
 You may need to configure access to the remote maven repository that holds the OSDU dependencies. This file should live within `~/.mvn/community-maven.settings.xml`:
+
 ```bash
 $ cat ~/.m2/settings.xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -79,39 +59,115 @@ $ cat ~/.m2/settings.xml
     </servers>
 </settings>
 ```
-### Build and run the application
+
+* Update the Google cloud SDK to the latest version:
+
+```bash
+gcloud components update
+```
+* Set Google Project Id:
+
+```bash
+gcloud config set project <YOUR-PROJECT-ID>
+```
+
+* Perform a basic authentication in the selected project:
+
+```bash
+gcloud auth application-default login
+```
+
+* Navigate to search service's root folder and run:
+
+```bash
+mvn jetty:run
+## Testing
+* Navigate to legal service's root folder and run:
+ 
+```bash
+mvn clean install   
+```
+
+* If you wish to see the coverage report then go to testing/target/site/jacoco-aggregate and open index.html
+
+* If you wish to build the project without running tests
+
+```bash
+mvn clean install -DskipTests
+```
 
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
+
 ```bash
 cd provider/legal-gcp/ && mvn spring-boot:run
 ```
-### Test the application
 
-After the service has started it should be accessible via a web browser by visiting [http://localhost:8080/api/legal/v1/swagger-ui.html](http://localhost:8080/api/legal/v1/swagger-ui.html). If the request does not fail, you can then run the integration tests.
+## Testing
+
+Navigate to legal service's root folder and run all the tests:
 
 ```bash
 # build + install integration test core
 $ (cd testing/legal-test-core/ && mvn clean install)
+```
 
-# build + run GCP integration tests.
-#
+### Running E2E Tests 
+
+This section describes how to run cloud OSDU E2E tests (testing/legal-test-gcp).
+
+You will need to have the following environment variables defined.
+
+| name | value | description | sensitive? | source |
+| ---  | ---   | ---         | ---        | ---    |
+| `GCLOUD_PROJECT` | `nice-etching-277309` | google cloud project ID | yes | - |
+| `MY_TENANT_PROJECT` | `osdu` | my tenant project name | yes | - |
+| `INTEGRATION_TEST_AUDIENCE` | `********` | client application ID | yes | https://console.cloud.google.com/apis/credentials |
+| `INTEGRATION_TESTER` | `********` | Service account for API calls. Note: this user must have entitlements configured already | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
+| `HOST_URL` | `http://localhsot:8080/api/legal/v1/` | - | yes | - |
+| `MY_TENANT` | `osdu` | OSDU tenant used for testing | yes | - |
+
+**Entitlements configuration for integration accounts**
+
+| INTEGRATION_TESTER |
+| ---  |
+| users<br/>service.entitlements.user<br/>service.legal.admin<br/>service.legal.editor<br/>service.legal.user<br/>data.test1<br/>data.integration.test |
+
+Execute following command to build code and run all the integration tests:
+
+```bash
 # Note: this assumes that the environment variables for integration tests as outlined
 #       above are already exported in your environment.
 $ (cd testing/legal-test-gcp/ && mvn clean test)
 ```
 
-## License
-  Copyright 2020 Google LLC
-  Copyright 2020 EPAM Systems, Inc
+## Deployment
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+* Data-Lake Legal Google Cloud Endpoints on App Engine Flex environment 
+  * Deploy
+    ```sh
+    mvn appengine:deploy -pl org.opengroup.osdu.legal:legal -amd
+    ```
 
-       http://www.apache.org/licenses/LICENSE-2.0
+  * If you wish to deploy the search service without running tests
+    ```sh
+    mvn appengine:deploy -pl org.opengroup.osdu.legal:legal -amd -DskipTests
+    ```
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+or
+* Google Documentation: https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-appengine
+
+## Licence
+Copyright © Google LLC
+Copyright © EPAM Systems
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+ 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
