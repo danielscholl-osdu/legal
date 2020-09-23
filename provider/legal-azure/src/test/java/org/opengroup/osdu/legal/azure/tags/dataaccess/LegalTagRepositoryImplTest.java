@@ -61,8 +61,8 @@ public class LegalTagRepositoryImplTest {
 
     @Test
     public void testGetLegalTagCollections_whenIdsIsNotNull() {
-        long[] ids = {0, 1};
-        String[] strIds = {"0", "1"};
+        long[] ids = {1234, 9876};
+        String[] strIds = {"1234", "9876"};
         Optional[] legalTagDocs = new Optional[2];
         legalTagDocs[0] = Optional.of(new LegalTagDoc(strIds[0], getLegalTagWithId(ids[0])));
         legalTagDocs[1] = Optional.of(new LegalTagDoc(strIds[0], getLegalTagWithId(ids[1])));
@@ -78,7 +78,7 @@ public class LegalTagRepositoryImplTest {
 
     @Test
     public void testDeleteLegalTag_whenLegalTagDoesNotExist() {
-        long id = 0;
+        long id = 1234;
         LegalTag legalTag = getLegalTagWithId(id);
         boolean status = sut.delete(legalTag);
         assertEquals(status, false);
@@ -86,7 +86,7 @@ public class LegalTagRepositoryImplTest {
 
     @Test
     public void testDeleteLegalTag_whenLegalTagExists() {
-        long id = 0;
+        long id = 1234;
         String strId = String.valueOf(id);
         LegalTag legalTag = getLegalTagWithId(id);
         Optional<LegalTag> optionalLegalTag = Optional.of(legalTag);
@@ -110,14 +110,14 @@ public class LegalTagRepositoryImplTest {
 
     @Test(expected = AppException.class)
     public void testUpdateLegalTag_whenValidItemDoesNotExist_throwsException() {
-        long id = 0;
+        long id = 1234;
         LegalTag legalTag = getLegalTagWithId(id);
         sut.update(legalTag);
     }
 
     @Test
     public void testUpdateLegalTag_whenValidItemExists() {
-        long id = 0;
+        long id = 1234;
         String strId = String.valueOf(id);
         LegalTag legalTag = getLegalTagWithId(id);
         Optional<LegalTag> optionalLegalTag = Optional.of(legalTag);
