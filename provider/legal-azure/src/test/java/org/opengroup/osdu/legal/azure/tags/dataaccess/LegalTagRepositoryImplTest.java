@@ -54,7 +54,7 @@ public class LegalTagRepositoryImplTest {
     public void testGetLegalTagCollections_whenIdsIsNull() {
         long[] ids = null;
         List<LegalTag> output = (List<LegalTag>) sut.get(ids);
-        assertEquals(output.size(),0);
+        assertEquals(output.size(), 0);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class LegalTagRepositoryImplTest {
         doReturn(legalTagDocs[1]).when(cosmosStore).findItem(eq(dataPartitionId), any(), any(), eq(strIds[1]), eq(strIds[1]), any());
 
         List<LegalTag> output = (List<LegalTag>) sut.get(ids);
-        assertEquals(output.size(),2);
+        assertEquals(output.size(), 2);
         assertEquals(output.get(0).getId().longValue(), ids[0]);
         assertEquals(output.get(1).getId().longValue(), ids[1]);
     }
