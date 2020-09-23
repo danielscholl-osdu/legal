@@ -74,6 +74,32 @@ public class LegalTagRepositoryImplTest {
         assertEquals(output.get(1).getId().longValue(), ids[1]);
     }
 
+    @Test
+    public void testDeleteLegalTag_whenLegalTagDoesNotExist() {
+        long id = 0;
+        LegalTag legalTag = getLegalTagWithId(id);
+        boolean status = sut.delete(legalTag);
+        assertEquals(status, false);
+    }
+
+    @Test
+    public void testDeleteLegalTag_whenLegalTagExists() {
+        long id = 0;
+        String strId = String.valueOf(id);
+        LegalTag l = getLegalTagWithId(id);
+        Optional<LegalTag> legalTag = Optional.of(l);
+        doReturn(legalTag).when(cosmosStore).findItem(eq(dataPartitionId), any(), any(), eq(strId), eq(strId), any());
+        boolean status = sut.delete(l);
+
+        ArgumentCaptor<String> arg1 = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
+        verify(cosmosStore).deleteItem(anyString(), any(), any(), arg1.capture(), arg2.capture());
+
+        assertEquals(status, true);
+        assertEquals(arg1.getValue(), strId);
+        assertEquals(arg2.getValue(), strId);
+    }
+
     private LegalTag getLegalTagWithId(long id) {
         LegalTag legalTag = new LegalTag();
         legalTag.setId(id);
