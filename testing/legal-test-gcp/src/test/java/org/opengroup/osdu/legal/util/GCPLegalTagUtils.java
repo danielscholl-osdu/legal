@@ -12,6 +12,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
+import java.util.Objects;
 
 public class GCPLegalTagUtils extends LegalTagUtils {
     private static final String BUCKET_NAME = "legal-service-configuration";
@@ -38,10 +39,19 @@ public class GCPLegalTagUtils extends LegalTagUtils {
         }
     }
 
-    private static String getTenantBucketName() {
-        String tenantName = System.getProperty("MY_TENANT_PROJECT", System.getenv("MY_TENANT_PROJECT")).toLowerCase();
-        return tenantName + "-" +BUCKET_NAME;
+  private static String getTenantBucketName() {
+    String tenantName = System
+        .getProperty("MY_TENANT_PROJECT", System.getenv("MY_TENANT_PROJECT")).toLowerCase();
+    String projectName = System.getProperty("GCLOUD_PROJECT", System.getenv("GCLOUD_PROJECT"))
+        .toLowerCase();
+    String enableFullBucketName = System.getProperty("ENABLE_FULL_BUCKET_NAME",
+        System.getenv("ENABLE_FULL_BUCKET_NAME")).toLowerCase();
+
+    if (Objects.nonNull(enableFullBucketName) && Boolean.valueOf(enableFullBucketName)) {
+      return projectName + "-" + tenantName + "-" + BUCKET_NAME;
     }
+    return tenantName + "-" + BUCKET_NAME;
+  }
 
     @Override
     public synchronized String accessToken() throws Exception {
