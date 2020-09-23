@@ -59,6 +59,30 @@ public class LegalTagRepositoryImplTest {
         lenient().doReturn(dataPartitionId).when(headers).getPartitionId();
     }
 
+    @Test(expected = AppException.class)
+    public void testCreateLegalTagAlreadyExisting_throwsException() {
+        long id = 1234;
+        String strId = String.valueOf(id);
+        LegalTag legalTag = getLegalTagWithId(id);
+        Optional<LegalTag> optionalLegalTag = Optional.of(legalTag);
+        doReturn(optionalLegalTag).when(cosmosStore).findItem(eq(dataPartitionId), any(), any(), eq(strId), eq(strId), any());
+        sut.create(legalTag);
+    }
+
+    @Test
+    public void testCreateLegalTag_upsertItem_executesCorrectQuery() {
+        long id = 1234;
+        String strId = String.valueOf(id);
+        LegalTag legalTag = getLegalTagWithId(id);
+        long obtainedId = sut.create(legalTag);
+
+        ArgumentCaptor<LegalTagDoc> arg = ArgumentCaptor.forClass(LegalTagDoc.class);
+        verify(cosmosStore).upsertItem(anyString(), any(), any(), arg.capture());
+
+        assertEquals(arg.getValue().getId(), strId);
+        assertEquals(obtainedId, id);
+    }
+
     @Test
     public void testGetLegalTagCollections_whenIdsIsNull() {
         long[] ids = null;
