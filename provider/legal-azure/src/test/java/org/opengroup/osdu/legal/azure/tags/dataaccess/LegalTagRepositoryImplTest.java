@@ -86,10 +86,10 @@ public class LegalTagRepositoryImplTest {
     public void testDeleteLegalTag_whenLegalTagExists() {
         long id = 0;
         String strId = String.valueOf(id);
-        LegalTag l = getLegalTagWithId(id);
-        Optional<LegalTag> legalTag = Optional.of(l);
-        doReturn(legalTag).when(cosmosStore).findItem(eq(dataPartitionId), any(), any(), eq(strId), eq(strId), any());
-        boolean status = sut.delete(l);
+        LegalTag legalTag = getLegalTagWithId(id);
+        Optional<LegalTag> optionalLegalTag = Optional.of(legalTag);
+        doReturn(optionalLegalTag).when(cosmosStore).findItem(eq(dataPartitionId), any(), any(), eq(strId), eq(strId), any());
+        boolean status = sut.delete(legalTag);
 
         ArgumentCaptor<String> arg1 = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
