@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.azure.CosmosStore;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -98,6 +100,35 @@ public class LegalTagRepositoryImplTest {
         assertEquals(status, true);
         assertEquals(arg1.getValue(), strId);
         assertEquals(arg2.getValue(), strId);
+    }
+
+    @Test
+    public void testUpdateLegalTag_whenProvidedLegalTagIsNull() {
+        LegalTag legalTag = sut.update(null);
+        assertNull(legalTag);
+    }
+
+    @Test(expected = AppException.class)
+    public void testUpdateLegalTag_whenValidItemDoesNotExist_throwsException() {
+        long id = 0;
+        LegalTag legalTag = getLegalTagWithId(id);
+        sut.update(legalTag);
+    }
+
+    @Test
+    public void testUpdateLegalTag_whenValidItemExists() {
+        long id = 0;
+        String strId = String.valueOf(id);
+        LegalTag legalTag = getLegalTagWithId(id);
+        Optional<LegalTag> optionalLegalTag = Optional.of(legalTag);
+        doReturn(optionalLegalTag).when(cosmosStore).findItem(eq(dataPartitionId), any(), any(), eq(strId), eq(strId), any());
+        LegalTag obtainedLegalTag = sut.update(legalTag);
+
+        ArgumentCaptor<LegalTagDoc> arg = ArgumentCaptor.forClass(LegalTagDoc.class);
+        verify(cosmosStore).upsertItem(anyString(), any(), any(), arg.capture());
+
+        assertEquals(arg.getValue().getId(), strId);
+        assertEquals(obtainedLegalTag.getId().longValue(), id);
     }
 
     private LegalTag getLegalTagWithId(long id) {
