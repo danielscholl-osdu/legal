@@ -15,6 +15,7 @@
 package org.opengroup.osdu.legal.azure.security;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +23,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class WhoamiController {
+
+    private SecurityContext securityContext;
+
+    // Constructor made for unit testing
+    public WhoamiController(SecurityContext securityContext) {
+        this.securityContext = securityContext;
+    }
+
+    public WhoamiController() {
+    }
+
     @RequestMapping(value = "/whoami")
     @ResponseBody
     public String whoami() {
-        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        // Added for unit testing
+        if (securityContext == null)
+            securityContext = SecurityContextHolder.getContext();
+        final Authentication auth = securityContext.getAuthentication();
 
         String userName = auth.getName();
         String roles = String.valueOf(auth.getAuthorities());
