@@ -57,9 +57,9 @@ public class LegalTagPublisherImplTest {
     public void init() throws ServiceBusException, InterruptedException {
         topicClient = mock(TopicClient.class);
         logger = mock(JaxRsDpsLog.class);
-        doNothing().when(topicClient).send(any());
-        doNothing().when(logger).error(anyString(), (Exception) any());
-        doNothing().when(logger).info(anyString());
+        lenient().doNothing().when(topicClient).send(any());
+        lenient().doNothing().when(logger).error(anyString(), (Exception) any());
+        lenient().doNothing().when(logger).info(anyString());
         doReturn(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID).when(headers).getPartitionIdWithFallbackToAccountId();
         doReturn(CORRELATION_ID).when(headers).getCorrelationId();
         doReturn(USER_EMAIL).when(headers).getUserEmail();
