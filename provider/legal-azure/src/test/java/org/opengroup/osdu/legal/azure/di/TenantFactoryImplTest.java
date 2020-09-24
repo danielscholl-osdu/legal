@@ -78,5 +78,14 @@ public class TenantFactoryImplTest {
         assertFalse(sut.exists("id-that-does-not-exist"));
         assertFalse(sut.exists(""));
     }
+
+    @Test
+    public void testGetTenantInfo_whenExistingTenantNameGiven() {
+        for (int i = 0; i < ids.length; i++) {
+            TenantInfo tenantInfo = sut.getTenantInfo(ids[i]);
+            assertEquals(tenantInfo.getName(), ids[i]);
+            assertEquals(tenantInfo.getComplianceRuleSet(), complianceRuleSets[i]);
+        }
+    }
 }
 
