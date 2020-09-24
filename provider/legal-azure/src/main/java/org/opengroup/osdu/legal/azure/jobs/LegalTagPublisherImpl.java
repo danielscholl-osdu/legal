@@ -38,6 +38,16 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
     @Inject
     private JaxRsDpsLog logger;
 
+    // Constructor made for unit testing
+    public LegalTagPublisherImpl (TopicClient topicClient, JaxRsDpsLog logger) {
+        this.topicClient = topicClient;
+        this.logger = logger;
+    }
+
+    public LegalTagPublisherImpl() {
+
+    }
+
     @Override
     public void publish(String projectId, DpsHeaders headers, StatusChangedTags tags) throws Exception {
         Gson gson = new Gson();
