@@ -43,6 +43,7 @@ public class WhoamiControllerTest {
             return details;
         }
     }
+
     public class DummyAuthority extends ArrayList {
         @Override
         public String toString() {
@@ -64,6 +65,6 @@ public class WhoamiControllerTest {
     @Test
     public void testWhoamiResponse() {
         String response = sut.whoami();
-        assertEquals("user: username<BR>roles: roles<BR>details: details<BR>", response);
+        assertEquals("user: " + userName + "<BR>roles: " + roles + "<BR>details: " + details + "<BR>", response);
     }
 }
