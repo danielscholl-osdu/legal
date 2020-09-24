@@ -117,6 +117,12 @@
             <artifactId>guava</artifactId>
             <version>27.1-jre</version>
         </dependency>
+        <dependency>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+          <version>1.18.2</version>
+          <scope>provided</scope>
+        </dependency>
 
         <!-- Tests -->
         <dependency>
@@ -124,8 +130,21 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
-        </dependency>        
+        </dependency>
+
+      <!--Logging-->
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+          <version>2.11.2</version>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-jdk14</artifactId>
+          <version>1.8.0-beta4</version>
+      </dependency>
     </dependencies>
+
 
     <!-- can remove this? -->
     <repositories>

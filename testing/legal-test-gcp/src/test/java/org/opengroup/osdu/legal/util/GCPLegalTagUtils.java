@@ -13,7 +13,9 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
 import java.util.Objects;
+import lombok.extern.java.Log;
 
+@Log
 public class GCPLegalTagUtils extends LegalTagUtils {
     private static final String BUCKET_NAME = "legal-service-configuration";
     private static final String FILE_NAME = "Legal_COO.json";
@@ -46,7 +48,7 @@ public class GCPLegalTagUtils extends LegalTagUtils {
         .toLowerCase();
     String enableFullBucketName = System.getProperty("ENABLE_FULL_BUCKET_NAME",
         System.getenv("ENABLE_FULL_BUCKET_NAME")).toLowerCase();
-
+    log.info("ENABLE_FULL_BUCKET_NAME = " + enableFullBucketName);
     if (Objects.nonNull(enableFullBucketName) && Boolean.valueOf(enableFullBucketName)) {
       return projectName + "-" + tenantName + "-" + BUCKET_NAME;
     }
