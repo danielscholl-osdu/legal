@@ -87,5 +87,14 @@ public class TenantFactoryImplTest {
             assertEquals(tenantInfo.getComplianceRuleSet(), complianceRuleSets[i]);
         }
     }
+
+    @Test
+    public void testListTenantInfo() {
+        List<TenantInfo> tenantInfoList = new ArrayList<TenantInfo> (sut.listTenantInfo());
+        for (TenantInfo tenantInfo: tenantInfoList) {
+            assertTrue(ArrayUtils.contains(ids, tenantInfo.getName()));
+            assertTrue(ArrayUtils.contains(complianceRuleSets, tenantInfo.getComplianceRuleSet()));
+        }
+    }
 }
 
