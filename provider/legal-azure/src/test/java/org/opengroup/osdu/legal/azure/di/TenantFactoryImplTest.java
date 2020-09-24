@@ -42,8 +42,8 @@ public class TenantFactoryImplTest {
 
     private static final String dataPartitionId = "data-partition-id";
 
-    private String[] ids = {"id1", "id2"};
-    private String[] complianceRuleSets = {"compliance-rule-set-1", "compliance-rule-set-2"};
+    private final String[] ids = {"id1", "id2"};
+    private final String[] complianceRuleSets = {"compliance-rule-set-1", "compliance-rule-set-2"};
 
     @Mock
     private CosmosStore cosmosStore;
@@ -64,6 +64,19 @@ public class TenantFactoryImplTest {
             tenantInfoDocs.add(tenantInfoDoc);
         }
         doReturn(tenantInfoDocs).when(cosmosStore).findAllItems(eq(dataPartitionId), any(), any(), any());
+    }
+
+    @Test
+    public void testExists_whenExistingTenantNameGiven() {
+        for (String tenantName: ids) {
+            assertTrue(sut.exists(tenantName));
+        }
+    }
+
+    @Test
+    public void testExists_whenNonExistingTenantNameGiven() {
+        assertFalse(sut.exists("id-that-does-not-exist"));
+        assertFalse(sut.exists(""));
     }
 }
 
