@@ -39,7 +39,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class LegalTagPublisherImplTest {
 
-
     private static final String DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID = "data-partition-account-id";
     private static final String CORRELATION_ID = "correlation-id";
     private static final String USER_EMAIL = "user@email.com";
@@ -65,5 +64,37 @@ public class LegalTagPublisherImplTest {
         doReturn(CORRELATION_ID).when(headers).getCorrelationId();
         doReturn(USER_EMAIL).when(headers).getUserEmail();
         sut = new LegalTagPublisherImpl(topicClient, logger);
+    }
+
+    @Test
+    public void testPublishLegalTag() throws Exception {
+        StatusChangedTags tags = new StatusChangedTags();
+        sut.publish("project-id", headers, tags);
+        ArgumentCaptor<Message> msg = ArgumentCaptor.forClass(Message.class);
+        ArgumentCaptor<String> log = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Exception> exception = ArgumentCaptor.forClass(Exception.class);
+
+        verify(logger).info(log.capture());
+        assertEquals("Storage publishes message " + CORRELATION_ID, log.getValue());
+
+        verify(topicClient).send(msg.capture());
+        Map<String, Object> properties = msg.getValue().getProperties();
+
+        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, properties.get(DpsHeaders.ACCOUNT_ID));
+        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
+        assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
+        assertEquals(USER_EMAIL, properties.get(DpsHeaders.USER_EMAIL));
+
+        MessageBody messageBody = msg.getValue().getMessageBody();
+        Gson gson = new Gson();
+        String messageKey = "message";
+        String dataKey = "data";
+        JsonObject jsonObjectMessage = gson.fromJson(new String(messageBody.getBinaryData().get(0)), JsonObject.class);
+        JsonObject jsonObject = (JsonObject) jsonObjectMessage.get(messageKey);
+        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, jsonObject.get(DpsHeaders.ACCOUNT_ID).getAsString());
+        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, jsonObject.get(DpsHeaders.DATA_PARTITION_ID).getAsString());
+        assertEquals(CORRELATION_ID, jsonObject.get(DpsHeaders.CORRELATION_ID).getAsString());
+        assertEquals(USER_EMAIL, jsonObject.get(DpsHeaders.USER_EMAIL).getAsString());
+        assertEquals(gson.toJsonTree(tags), jsonObject.get(dataKey));
     }
 }
