@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.microsoft.azure.servicebus.Message;
 import com.microsoft.azure.servicebus.TopicClient;
+import lombok.NoArgsConstructor;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
@@ -29,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
 
-
+@NoArgsConstructor
 @Component
 public class LegalTagPublisherImpl implements ILegalTagPublisher {
     @Inject
@@ -42,10 +43,6 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
     public LegalTagPublisherImpl (TopicClient topicClient, JaxRsDpsLog logger) {
         this.topicClient = topicClient;
         this.logger = logger;
-    }
-
-    public LegalTagPublisherImpl() {
-
     }
 
     @Override
