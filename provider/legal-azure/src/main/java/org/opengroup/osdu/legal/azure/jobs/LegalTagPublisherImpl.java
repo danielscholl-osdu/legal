@@ -23,27 +23,21 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import javax.inject.Inject;
 
 @NoArgsConstructor
 @Component
 public class LegalTagPublisherImpl implements ILegalTagPublisher {
-    @Inject
+    @Autowired
     private TopicClient topicClient;
 
-    @Inject
+    @Autowired
     private JaxRsDpsLog logger;
-
-    // Constructor made for unit testing
-    public LegalTagPublisherImpl (TopicClient topicClient, JaxRsDpsLog logger) {
-        this.topicClient = topicClient;
-        this.logger = logger;
-    }
 
     @Override
     public void publish(String projectId, DpsHeaders headers, StatusChangedTags tags) throws Exception {

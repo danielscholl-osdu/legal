@@ -63,7 +63,6 @@ public class LegalTagPublisherImplTest {
         doReturn(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID).when(headers).getPartitionIdWithFallbackToAccountId();
         doReturn(CORRELATION_ID).when(headers).getCorrelationId();
         doReturn(USER_EMAIL).when(headers).getUserEmail();
-        sut = new LegalTagPublisherImpl(topicClient, logger);
     }
 
     @Test
