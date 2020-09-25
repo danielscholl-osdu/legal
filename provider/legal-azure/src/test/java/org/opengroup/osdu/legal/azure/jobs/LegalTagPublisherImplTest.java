@@ -43,8 +43,10 @@ public class LegalTagPublisherImplTest {
     private static final String CORRELATION_ID = "correlation-id";
     private static final String USER_EMAIL = "user@email.com";
 
+    @Mock
     private JaxRsDpsLog logger;
 
+    @Mock
     private TopicClient topicClient;
 
     @Mock
@@ -55,8 +57,6 @@ public class LegalTagPublisherImplTest {
 
     @Before
     public void init() throws ServiceBusException, InterruptedException {
-        topicClient = mock(TopicClient.class);
-        logger = mock(JaxRsDpsLog.class);
         lenient().doNothing().when(topicClient).send(any());
         lenient().doNothing().when(logger).error(anyString(), (Exception) any());
         lenient().doNothing().when(logger).info(anyString());
