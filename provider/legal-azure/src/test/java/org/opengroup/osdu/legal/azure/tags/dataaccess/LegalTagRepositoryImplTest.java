@@ -73,8 +73,7 @@ public class LegalTagRepositoryImplTest {
         } catch (AppException e) {
             int errorCode = 409;
             String errorMessage = "LegalTag already exists";
-            assertEquals(errorCode, e.getError().getCode());
-            assertThat(e.getError().getMessage(), containsString(errorMessage));
+            validateAppException(e, errorCode, errorMessage);
             throw (e);
         }
     }
@@ -158,8 +157,7 @@ public class LegalTagRepositoryImplTest {
         } catch (AppException e) {
             int errorCode = 404;
             String errorMessage = "Cannot update a LegalTag that does not exist";
-            assertEquals(errorCode, e.getError().getCode());
-            assertThat(e.getError().getMessage(), containsString(errorMessage));
+            validateAppException(e, errorCode, errorMessage);
             throw (e);
         }
     }
@@ -213,5 +211,10 @@ public class LegalTagRepositoryImplTest {
         LegalTag legalTag = new LegalTag();
         legalTag.setId(id);
         return legalTag;
+    }
+
+    private void validateAppException(AppException e, int errorCode, String errorMessage) {
+        assertEquals(errorCode, e.getError().getCode());
+        assertThat(e.getError().getMessage(), containsString(errorMessage));
     }
 }
