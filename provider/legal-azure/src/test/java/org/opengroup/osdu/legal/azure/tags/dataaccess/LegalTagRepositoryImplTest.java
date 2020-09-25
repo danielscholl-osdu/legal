@@ -46,10 +46,10 @@ public class LegalTagRepositoryImplTest {
     private static final String dataPartitionId = "data-partition-id";
 
     @Mock
-	private CosmosStore cosmosStore;
+    private CosmosStore cosmosStore;
 
     @Mock
-	private DpsHeaders headers;
+    private DpsHeaders headers;
 
     @InjectMocks
     private LegalTagRepositoryImpl sut;
@@ -93,7 +93,7 @@ public class LegalTagRepositoryImplTest {
     @Test
     public void testGetLegalTagCollections_whenIdsIsNotNull() {
         long[] ids = {1234, 9876};
-        String[] strIds = {"1234", "9876"};
+        String[] strIds = Arrays.stream(ids).mapToObj(String::valueOf).toArray(String[]::new);
         Optional[] legalTagDocs = new Optional[2];
         legalTagDocs[0] = Optional.of(new LegalTagDoc(strIds[0], getLegalTagWithId(ids[0])));
         legalTagDocs[1] = Optional.of(new LegalTagDoc(strIds[0], getLegalTagWithId(ids[1])));
@@ -165,7 +165,7 @@ public class LegalTagRepositoryImplTest {
     @Test
     public void testListLegalTags_queryItems_executesCorrectQuery() {
         long[] ids = {1234, 9876};
-        String[] strIds = {"1234", "9876"};
+        String[] strIds = Arrays.stream(ids).mapToObj(String::valueOf).toArray(String[]::new);
         List<LegalTagDoc> legalTagDocs = Arrays.asList(new LegalTagDoc(strIds[0], getLegalTagWithId(ids[0])), new LegalTagDoc(strIds[1], getLegalTagWithId(ids[1])));
 
         ArgumentCaptor<SqlQuerySpec> query = ArgumentCaptor.forClass(SqlQuerySpec.class);
