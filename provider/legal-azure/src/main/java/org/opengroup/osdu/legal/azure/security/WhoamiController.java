@@ -14,6 +14,7 @@
 
 package org.opengroup.osdu.legal.azure.security;
 
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+@NoArgsConstructor
 @Controller
 public class WhoamiController {
 
@@ -29,9 +31,6 @@ public class WhoamiController {
     // Constructor made for unit testing
     public WhoamiController(SecurityContext securityContext) {
         this.securityContext = securityContext;
-    }
-
-    public WhoamiController() {
     }
 
     @RequestMapping(value = "/whoami")
