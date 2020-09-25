@@ -35,9 +35,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,7 +68,15 @@ public class LegalTagRepositoryImplTest {
         LegalTag legalTag = getLegalTagWithId(id);
         Optional<LegalTag> optionalLegalTag = Optional.of(legalTag);
         doReturn(optionalLegalTag).when(cosmosStore).findItem(eq(dataPartitionId), any(), any(), eq(strId), eq(strId), any());
-        sut.create(legalTag);
+        try {
+            sut.create(legalTag);
+        } catch (AppException e) {
+            int errorCode = 409;
+            String errorMessage = "LegalTag already exists";
+            assertEquals(errorCode, e.getError().getCode());
+            assertThat(e.getError().getMessage(), containsString(errorMessage));
+            throw (e);
+        }
     }
 
     @Test
@@ -143,7 +153,15 @@ public class LegalTagRepositoryImplTest {
     public void testUpdateLegalTag_whenValidItemDoesNotExist_throwsException() {
         long id = 1234;
         LegalTag legalTag = getLegalTagWithId(id);
-        sut.update(legalTag);
+        try {
+            sut.update(legalTag);
+        } catch (AppException e) {
+            int errorCode = 404;
+            String errorMessage = "Cannot update a LegalTag that does not exist";
+            assertEquals(errorCode, e.getError().getCode());
+            assertThat(e.getError().getMessage(), containsString(errorMessage));
+            throw (e);
+        }
     }
 
     @Test
