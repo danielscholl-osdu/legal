@@ -77,7 +77,7 @@ public class LegalTagRepositoryImplTest {
         long obtainedId = sut.create(legalTag);
 
         ArgumentCaptor<LegalTagDoc> arg = ArgumentCaptor.forClass(LegalTagDoc.class);
-        verify(cosmosStore).upsertItem(anyString(), any(), any(), arg.capture());
+        verify(cosmosStore).upsertItem(eq(dataPartitionId), any(), any(), arg.capture());
 
         assertEquals(arg.getValue().getId(), strId);
         assertEquals(obtainedId, id);
@@ -126,7 +126,7 @@ public class LegalTagRepositoryImplTest {
 
         ArgumentCaptor<String> arg1 = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
-        verify(cosmosStore).deleteItem(anyString(), any(), any(), arg1.capture(), arg2.capture());
+        verify(cosmosStore).deleteItem(eq(dataPartitionId), any(), any(), arg1.capture(), arg2.capture());
 
         assertEquals(status, true);
         assertEquals(arg1.getValue(), strId);
@@ -156,7 +156,7 @@ public class LegalTagRepositoryImplTest {
         LegalTag obtainedLegalTag = sut.update(legalTag);
 
         ArgumentCaptor<LegalTagDoc> arg = ArgumentCaptor.forClass(LegalTagDoc.class);
-        verify(cosmosStore).upsertItem(anyString(), any(), any(), arg.capture());
+        verify(cosmosStore).upsertItem(eq(dataPartitionId), any(), any(), arg.capture());
 
         assertEquals(arg.getValue().getId(), strId);
         assertEquals(obtainedLegalTag.getId().longValue(), id);
@@ -180,7 +180,7 @@ public class LegalTagRepositoryImplTest {
         assertEquals(output.get(0).getId().longValue(), ids[0]);
         assertEquals(output.get(1).getId().longValue(), ids[1]);
 
-        verify(cosmosStore).queryItems(any(), any(), any(), query.capture(), feedOptions.capture(), any());
+        verify(cosmosStore).queryItems(eq(dataPartitionId), any(), any(), query.capture(), feedOptions.capture(), any());
         assertEquals(query.getValue().getQueryText(), "SELECT * FROM c WHERE c.legalTag.isValid = @isValid");
         assertTrue(feedOptions.getValue().getEnableCrossPartitionQuery());
 
