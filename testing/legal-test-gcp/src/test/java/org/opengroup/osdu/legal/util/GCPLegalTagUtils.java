@@ -1,10 +1,5 @@
 package org.opengroup.osdu.legal.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
-
 import com.google.api.client.util.Strings;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobId;
@@ -12,7 +7,10 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-import java.util.Objects;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 import lombok.extern.java.Log;
 
 @Log
@@ -47,12 +45,22 @@ public class GCPLegalTagUtils extends LegalTagUtils {
     String projectName = System.getProperty("GCLOUD_PROJECT", System.getenv("GCLOUD_PROJECT"))
         .toLowerCase();
     String enableFullBucketName = System.getProperty("ENABLE_FULL_BUCKET_NAME",
-        System.getenv("ENABLE_FULL_BUCKET_NAME")).toLowerCase();
+        System.getenv("ENABLE_FULL_BUCKET_NAME"));
+
+    enableFullBucketName = (Strings.isNullOrEmpty(enableFullBucketName) ? "false"
+        : enableFullBucketName).toLowerCase();
+
     log.info("ENABLE_FULL_BUCKET_NAME = " + enableFullBucketName);
-    if (Objects.nonNull(enableFullBucketName) && Boolean.valueOf(enableFullBucketName)) {
-      return projectName + "-" + tenantName + "-" + BUCKET_NAME;
+
+    String bucketName;
+    if (Boolean.parseBoolean(enableFullBucketName)) {
+      bucketName = projectName + "-" + tenantName + "-" + BUCKET_NAME;
+    } else {
+      bucketName = tenantName + "-" + BUCKET_NAME;
     }
-    return tenantName + "-" + BUCKET_NAME;
+
+    log.info("bucketName = " + bucketName);
+    return bucketName;
   }
 
     @Override

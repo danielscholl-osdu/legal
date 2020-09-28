@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StorageReaderFactoryImpl implements IStorageReaderFactory {
 
-  @Value("#{new Boolean('${enable.full.bucket.name}')}")
+  @Value("#{new Boolean('${enable.full.bucket.name:false}')}")
   private Boolean isFullBucketName;
 
 	@Override
