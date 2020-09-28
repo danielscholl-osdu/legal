@@ -29,7 +29,7 @@ public class WhoamiController {
     private SecurityContext securityContext;
 
     // Constructor made for unit testing
-    public WhoamiController(SecurityContext securityContext) {
+    WhoamiController(SecurityContext securityContext) {
         this.securityContext = securityContext;
     }
 
