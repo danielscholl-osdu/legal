@@ -8,9 +8,14 @@ The steps for running `os-legal-azure` can be found in the [Azure Implementation
 
 <!-- This should be replaced with a link to AWS specific docs -->
 
-## os-legal-gcp
+# os-legal-gcp
 
-<!-- This should be replaced with a link to GCP specific docs -->
+## Running integration tests
+Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
+
+### GCP
+
+Instructions for running the GCP integration tests can be found [here](./provider/legal-gcp/README.md).
 
 ## License
 Copyright 2017-2019, Schlumberger
