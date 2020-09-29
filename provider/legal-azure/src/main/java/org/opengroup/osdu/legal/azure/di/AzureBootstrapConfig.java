@@ -37,9 +37,6 @@ public class AzureBootstrapConfig {
     @Value("${azure.servicebus.namespace-name}")
     private String serviceBusNamespace;
 
-    @Value("${azure.cosmosdb.tenant.collection}")
-    private String tenantCollectionName;
-
     @Value("${azure.cosmosdb.legal.collection}")
     private String legalCollectionName;
 
@@ -99,10 +96,5 @@ public class AzureBootstrapConfig {
     @Bean
     public String legalTagsContainer(){
         return legalCollectionName;
-    }
-
-    @Bean
-    public String tenantInfoContainer(){
-        return tenantCollectionName;
     }
 }
