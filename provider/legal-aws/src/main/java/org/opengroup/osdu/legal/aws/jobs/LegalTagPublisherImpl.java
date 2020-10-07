@@ -72,6 +72,9 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         messageAttributes.put(DpsHeaders.CORRELATION_ID, new MessageAttributeValue()
                 .withDataType("String")
                 .withStringValue(headers.getCorrelationId()));
+        messageAttributes.put(DpsHeaders.AUTHORIZATION, new MessageAttributeValue()
+                .withDataType("String")
+                .withStringValue(headers.getAuthorization()));
 
         for (int i = 0; i < tags.getStatusChangedTags().size(); i += BATCH_SIZE){
             List<StatusChangedTag> batch = tags.getStatusChangedTags().subList(i, Math.min(tags.getStatusChangedTags().size(), i + BATCH_SIZE));

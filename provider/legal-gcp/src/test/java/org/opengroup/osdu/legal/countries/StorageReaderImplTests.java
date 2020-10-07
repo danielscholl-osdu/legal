@@ -13,6 +13,7 @@ import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.opengroup.osdu.legal.countries.StorageReaderImpl.BUCKET_NAME;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -74,4 +75,37 @@ public class StorageReaderImplTests {
         byte[] bytes = sut.readAllBytes();
         assertEquals(expectedBytes, bytes);
     }
+
+  @Test
+  public void should_returnFullBucketName_when_IsFullBucketName_is_true() {
+      when(tenantInfo.getName()).thenReturn("tenant1");
+      when(tenantInfo.getProjectId()).thenReturn("projectId1");
+      String bucketName = tenantInfo.getProjectId() + "-" + tenantInfo.getName() + "-" + BUCKET_NAME;
+      StorageReaderImpl storageReader = new StorageReaderImpl(tenantInfo, null,
+          true);
+      String resultBucketName = storageReader.getTenantBucketName();
+      assertEquals(bucketName, resultBucketName);
+  }
+
+  @Test
+  public void should_returnBucketName_when_IsFullBucketName_is_false() {
+    when(tenantInfo.getName()).thenReturn("tenant1");
+    when(tenantInfo.getProjectId()).thenReturn("projectId1");
+    String bucketName = tenantInfo.getName() + "-" + BUCKET_NAME;
+    StorageReaderImpl storageReader = new StorageReaderImpl(tenantInfo, null,
+        false);
+    String resultBucketName = storageReader.getTenantBucketName();
+    assertEquals(bucketName, resultBucketName);
+  }
+
+  @Test
+  public void should_returnBucketName_when_IsFullBucketName_is_null() {
+    when(tenantInfo.getName()).thenReturn("tenant1");
+    when(tenantInfo.getProjectId()).thenReturn("projectId1");
+    String bucketName = tenantInfo.getName() + "-" + BUCKET_NAME;
+    StorageReaderImpl storageReader = new StorageReaderImpl(tenantInfo, null,
+        null);
+    String resultBucketName = storageReader.getTenantBucketName();
+    assertEquals(bucketName, resultBucketName);
+  }
 }
