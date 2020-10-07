@@ -15,8 +15,10 @@
 package org.opengroup.osdu.legal.azure.countries;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import com.azure.storage.blob.BlobContainerClient;
+import org.opengroup.osdu.azure.blobstorage.IBlobContainerClientFactory;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
@@ -27,13 +29,20 @@ import org.springframework.stereotype.Component;
 public class StorageReaderFactoryImpl implements IStorageReaderFactory {
 
     @Inject
-    private BlobContainerClient blobContainerClient;
+    private IBlobContainerClientFactory blobContainerClientFactory;
+
+    @Inject
+    private DpsHeaders headers;
+
+    @Inject
+    @Named("STORAGE_CONTAINER_NAME")
+    private String containerName;
 
     @Inject
     private JaxRsDpsLog logger;
 
     @Override
     public IStorageReader getReader(TenantInfo tenant, String projectRegion) {
-        return new StorageReaderImpl(tenant, projectRegion, blobContainerClient, logger);
+        return new StorageReaderImpl(tenant, projectRegion, blobContainerClientFactory.getClient(headers.getPartitionId(), containerName), logger);
     }
 }
