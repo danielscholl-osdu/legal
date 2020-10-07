@@ -17,7 +17,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: osdu-gitlab-legal
+  name: legal
   namespace: osdu
 spec:
   type: ClusterIP
@@ -26,7 +26,7 @@ spec:
     port: 80
     targetPort: 80
   selector:
-    app: osdu-gitlab-legal
+    app: legal
 ---
 # Source: legal/templates/deployment.yaml
 #  Copyright © Microsoft Corporation
@@ -49,14 +49,14 @@ metadata:
   name: osdu-gitlab-legal
   namespace: osdu
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: osdu-gitlab-legal
+      app: legal
   template:
     metadata:
       labels:
-        app: osdu-gitlab-legal
+        app: legal
         aadpodidbinding: osdu-identity
     spec:
       volumes:
@@ -67,14 +67,14 @@ spec:
           volumeAttributes:
             secretProviderClass: azure-keyvault
       containers:
-      - name: osdu-gitlab-legal
-        image: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-master:latest
+      - name: legal
+        image: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal/legal-trusted-partition-svc
         imagePullPolicy: Always
         ports:
         - containerPort: 80
         readinessProbe:
           httpGet:
-            path: /entitlements/v1/swagger-ui.html
+            path: /api/legal/v1/swagger-ui.html
             port: 80
         volumeMounts:
         - name: azure-keyvault
@@ -97,42 +97,28 @@ spec:
           - name: AZURE_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                name: clientid
-                key: clientid
+                name: active-directory
+                key: principal-clientid
           - name: AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: clientpassword
-                key: clientpassword
+                name: active-directory
+                key: principal-clientpassword
           - name: AZURE_TENANT_ID
             valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_TENANT_ID
+              secretKeyRef:
+                name: active-directory
+                key: tenantid
           - name: aad_client_id
             valueFrom:
               secretKeyRef:
-                name: appid
-                key: appid
+                name: active-directory
+                key: application-appid
           - name: appinsights_key
             valueFrom:
               secretKeyRef:
-                name: appinsights
+                name: central-logging
                 key: appinsights
-          - name: servicebus_namespace_name
-            valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_SERVICEBUS_NAMESPACE
-          - name: storage_account
-            valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_STORAGE_ACCOUNT
-          - name: azure_activedirectory_session_stateless
-            value: "true"
-          - name: azure_activedirectory_AppIdUri
-            value: "api://$(aad_client_id)"
           - name: cosmosdb_database
             value: osdu-db
           - name: LOG_PREFIX
@@ -149,3 +135,12 @@ spec:
             value: http://entitlements-azure/entitlements/v1
           - name: entitlements_service_api_key
             value: "OBSOLETE"
+          - name: partition_service_endpoint
+            value: http://partition/api/partition/v1
+          # If Istio is enabled L#126 is true and L# 127-130 removed
+          - name: azure_istioauth_enabled
+            value: "false"
+          - name: azure_activedirectory_session_stateless
+            value: "true"
+          - name: azure_activedirectory_AppIdUri
+            value: "api://$(aad_client_id)"
