@@ -14,8 +14,6 @@
 
 package org.opengroup.osdu.legal.azure.di;
 
-import com.azure.security.keyvault.secrets.SecretClient;
-import org.opengroup.osdu.azure.KeyVaultFacade;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -25,17 +23,11 @@ import javax.inject.Named;
 @Component
 public class AzureBootstrapConfig {
 
-    @Value("${azure.storage.account-name}")
-    private String storageAccount;
-
     @Value("${azure.storage.container-name}")
     private String storageContainer;
 
     @Value("${azure.servicebus.topic-name}")
     private String serviceBusTopic;
-
-    @Value("${azure.servicebus.namespace-name}")
-    private String serviceBusNamespace;
 
     @Value("${azure.cosmosdb.legal.collection}")
     private String legalCollectionName;
@@ -47,21 +39,9 @@ public class AzureBootstrapConfig {
     private String cosmosDBName;
 
     @Bean
-    @Named("STORAGE_ACCOUNT_NAME")
-    public String storageAccount() {
-        return storageAccount;
-    }
-
-    @Bean
     @Named("STORAGE_CONTAINER_NAME")
     public String containerName() {
         return storageContainer;
-    }
-
-    @Bean
-    @Named("SERVICE_BUS_NAMESPACE")
-    public String serviceBusNamespace() {
-        return serviceBusNamespace;
     }
 
     @Bean
@@ -77,24 +57,12 @@ public class AzureBootstrapConfig {
     }
 
     @Bean
-    @Named("COSMOS_ENDPOINT")
-    public String cosmosEndpoint(SecretClient kv) {
-        return KeyVaultFacade.getSecretWithValidation(kv, "cosmos-endpoint");
-    }
-
-    @Bean
-    @Named("COSMOS_KEY")
-    public String cosmosKey(SecretClient kv) {
-        return KeyVaultFacade.getSecretWithValidation(kv, "cosmos-primary-key");
-    }
-
-    @Bean
     public String cosmosDBName() {
         return cosmosDBName;
     }
 
     @Bean
-    public String legalTagsContainer(){
+    public String legalTagsContainer() {
         return legalCollectionName;
     }
 }
