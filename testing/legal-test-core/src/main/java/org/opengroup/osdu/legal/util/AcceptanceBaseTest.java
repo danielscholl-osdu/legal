@@ -5,11 +5,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opengroup.osdu.legal.util.Constants.DATA_PARTITION_ID;
 
+import com.sun.jersey.core.header.MediaTypes;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.jersey.api.client.ClientResponse;
 
+import java.util.Objects;
+import javax.ws.rs.core.MediaType;
 import org.junit.Test;
 
 public abstract class AcceptanceBaseTest {
@@ -84,17 +87,23 @@ public abstract class AcceptanceBaseTest {
 		return response;
 	}
 
-	protected ClientResponse validateAccess(int expectedResponse) throws Exception {
-		Map<String, String> headers = new HashMap<>();
-		headers.put(DATA_PARTITION_ID, LegalTagUtils.getMyDataPartition());
+  protected ClientResponse validateAccess(int expectedResponse) throws Exception {
+    Map<String, String> headers = new HashMap<>();
+    headers.put(DATA_PARTITION_ID, LegalTagUtils.getMyDataPartition());
 
-		ClientResponse response = legalTagUtils.send(this.getApi(), this.getHttpMethod(), legalTagUtils.accessToken(), getBody(), getQuery(), headers);
-		assertEquals(expectedResponse, response.getStatus());
-		if(expectedResponse == 204)
-			assertNull(response.getType());
-		else if(response.getType() != null) {
-			assertTrue(response.getType().toString().toLowerCase().indexOf("application/json") >= 0);
-		}
-		return response;
-	}
+    ClientResponse response = legalTagUtils
+        .send(this.getApi(), this.getHttpMethod(), legalTagUtils.accessToken(), getBody(),
+            getQuery(), headers);
+    assertEquals(expectedResponse, response.getStatus());
+    if (expectedResponse == 204) {
+      if (Objects.nonNull(response.getType())) {
+        assertTrue(response.getType().toString().toLowerCase().indexOf("text/html") >= 0); //Google Cloud Run specific
+      } else {
+        assertNull(response.getType());
+      }
+    } else if (response.getType() != null) {
+      assertTrue(response.getType().toString().toLowerCase().indexOf("application/json") >= 0);
+    }
+    return response;
+  }
 }

@@ -15,6 +15,7 @@
 package org.opengroup.osdu.legal.middleware;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.ConstraintViolation;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 import com.google.gson.Gson;
 import javassist.NotFoundException;
+import javax.ws.rs.core.MediaType;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -36,9 +38,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -49,8 +53,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice
-@RestController
+@RestControllerAdvice
 public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 
 	private static final Gson gson = new Gson();
@@ -74,7 +77,7 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 		return this.getErrorResponse(
 				new AppException(HttpStatus.BAD_REQUEST.value(), "Bad JSON format", e.getMessage()));
 	}
-	
+
 	@ExceptionHandler(UnrecognizedPropertyException.class)
 	protected ResponseEntity<Object> handleValidationException(UnrecognizedPropertyException e) {
 		return this.getErrorResponse(
@@ -119,18 +122,31 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 						"An unknown error has occurred."));
 	}
 
+
 	@Override
 	@NonNull
 	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(@NonNull HttpRequestMethodNotSupportedException e,
 																		 @NonNull HttpHeaders headers,
 																		 @NonNull HttpStatus status,
-																		 @NonNull WebRequest request) {
-		return this.getErrorResponse(
+        															 @NonNull WebRequest request) {
+	  return this.getErrorResponse(
 				new AppException(HttpStatus.METHOD_NOT_ALLOWED.value(), "Method not found.",
 						"Method not found.", e));
 	}
 
-	private ResponseEntity<Object> getErrorResponse(AppException e) {
+  @Override
+  @NonNull
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException e,
+                                                                @NonNull HttpHeaders headers,
+                                                                @NonNull HttpStatus status,
+                                                                @NonNull WebRequest request) {
+    return this.getErrorResponse(
+        new AppException(HttpStatus.BAD_REQUEST.value(), "Validation failed.",
+            "Validation failed.", e));
+  }
+
+
+	public ResponseEntity<Object> getErrorResponse(AppException e) {
 
 		String exceptionMsg = e.getError().getMessage();
 
@@ -140,6 +156,6 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 			this.logger.warning(exceptionMsg, e);
 		}
 
-		return new ResponseEntity<Object>(gson.toJson(exceptionMsg), HttpStatus.resolve(e.getError().getCode()));
+      return new ResponseEntity<Object>(gson.toJson(exceptionMsg),HttpStatus.resolve(e.getError().getCode()));
 	}
 }
