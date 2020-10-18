@@ -13,8 +13,10 @@ import com.sun.jersey.api.client.ClientResponse;
 
 import java.util.Objects;
 import javax.ws.rs.core.MediaType;
+import lombok.extern.java.Log;
 import org.junit.Test;
 
+@Log
 public abstract class AcceptanceBaseTest {
 
 	protected LegalTagUtils legalTagUtils;
@@ -94,9 +96,11 @@ public abstract class AcceptanceBaseTest {
     ClientResponse response = legalTagUtils
         .send(this.getApi(), this.getHttpMethod(), legalTagUtils.accessToken(), getBody(),
             getQuery(), headers);
+    log.info("Response status = " + response.getStatus());
     assertEquals(expectedResponse, response.getStatus());
     if (expectedResponse == 204) {
       if (Objects.nonNull(response.getType())) {
+        log.info("Content-Type = " + response.getType().toString());
         assertTrue(response.getType().toString().toLowerCase().indexOf("text/html") >= 0); //Google Cloud Run specific
       } else {
         assertNull(response.getType());
