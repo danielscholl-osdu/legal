@@ -1,6 +1,7 @@
 package org.opengroup.osdu.legal.api;
 
 import com.google.gson.Gson;
+import java.util.Collections;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.legal.tags.LegalTagService;
@@ -137,7 +138,7 @@ public class LegalTagApi {
         output.setPersonalDataTypes(allowedLegaltagPropertyValues.getPersonalDataType());
         output.setSecurityClassifications(allowedLegaltagPropertyValues.getSecurityClassifications());
         output.setDataTypes(allowedLegaltagPropertyValues.getDataTypes());
-        auditLogger.readLegalPropertiesSuccess();
+        auditLogger.readLegalPropertiesSuccess(Collections.singletonList(output.toString()));
 
         return new ResponseEntity<ReadablePropertyValues>(output, HttpStatus.OK);
     }

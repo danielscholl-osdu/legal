@@ -63,12 +63,12 @@ public class AuditLogger {
 		this.writeLog(this.getEvents().getLegalTagStatusJobEventFail(resources));
 	}
 
-	public void readLegalPropertiesSuccess() {
-		this.writeLog(this.getEvents().getReadLegalPropertiesEventSuccess());
+	public void readLegalPropertiesSuccess(List<String> resources) {
+		this.writeLog(this.getEvents().getReadLegalPropertiesEventSuccess(resources));
 	}
 
-	public void readLegalPropertiesFail() {
-		this.writeLog(this.getEvents().getReadLegalPropertiesEventFail());
+	public void readLegalPropertiesFail(List<String> resources) {
+		this.writeLog(this.getEvents().getReadLegalPropertiesEventFail(resources));
 	}
 
 	public void validateLegalTagSuccess() {

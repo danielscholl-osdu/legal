@@ -268,6 +268,6 @@ public class LegalTagApiTests {
     public void shouldCreateAuditLogs_when_getLegalTagProperties() {
         sut.getLegalTagProperties();
 
-        verify(auditLogger).readLegalPropertiesSuccess();
+        verify(auditLogger).readLegalPropertiesSuccess(any());
     }
 }
