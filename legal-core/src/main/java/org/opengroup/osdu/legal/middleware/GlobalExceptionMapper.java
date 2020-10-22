@@ -14,22 +14,21 @@
 
 package org.opengroup.osdu.legal.middleware;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.gson.Gson;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
+import javassist.NotFoundException;
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
-import javax.inject.Inject;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-
-import com.google.gson.Gson;
-import javassist.NotFoundException;
-import javax.ws.rs.core.MediaType;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -39,18 +38,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import org.opengroup.osdu.core.common.model.http.AppException;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
@@ -122,7 +113,6 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 						"An unknown error has occurred."));
 	}
 
-
 	@Override
 	@NonNull
 	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(@NonNull HttpRequestMethodNotSupportedException e,
@@ -144,7 +134,6 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
         new AppException(HttpStatus.BAD_REQUEST.value(), "Validation failed.",
             "Validation failed.", e));
   }
-
 
 	public ResponseEntity<Object> getErrorResponse(AppException e) {
 
