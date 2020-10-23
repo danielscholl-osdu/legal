@@ -82,8 +82,6 @@ public class TestUtils {
       String query, Map<String, String> headers) throws Exception {
 
     Client client = getClient();
-    // client.setConnectTimeout(5000);
-    // client.setReadTimeout(30000);
     WebResource webResource = client.resource(getApiPath(path + query));
 
     final WebResource.Builder builder = webResource.getRequestBuilder();

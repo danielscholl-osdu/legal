@@ -5,14 +5,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opengroup.osdu.legal.util.Constants.DATA_PARTITION_ID;
 
-import com.sun.jersey.core.header.MediaTypes;
+import com.sun.jersey.api.client.ClientResponse;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.sun.jersey.api.client.ClientResponse;
-
 import java.util.Objects;
-import javax.ws.rs.core.MediaType;
 import lombok.extern.java.Log;
 import org.junit.Test;
 

@@ -17,24 +17,23 @@ package org.opengroup.osdu.legal.middleware;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalOtherExceptionMapper {
 
-    private GlobalExceptionMapper mapper;
+  private GlobalExceptionMapper mapper;
 
-    public GlobalOtherExceptionMapper(GlobalExceptionMapper mapper) {
-        this.mapper = mapper;
-    }
+  public GlobalOtherExceptionMapper(GlobalExceptionMapper mapper) {
+    this.mapper = mapper;
+  }
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<Object> handleGeneralException(Exception e) {
-        return mapper.getErrorResponse(
-                new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server error.",
-                        "An unknown error has occurred.", e));
-    }
+  @ExceptionHandler(Exception.class)
+  protected ResponseEntity<Object> handleGeneralException(Exception e) {
+    return mapper.getErrorResponse(
+        new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server error.",
+            "An unknown error has occurred.", e));
+  }
 
 }
