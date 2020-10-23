@@ -1,5 +1,10 @@
 package org.opengroup.osdu.legal.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
+
 import com.google.api.client.util.Strings;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobId;
