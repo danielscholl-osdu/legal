@@ -82,25 +82,25 @@ public class AuditEvents {
 				.build();
 	}
 
-	public AuditPayload getReadLegalPropertiesEventSuccess() {
+	public AuditPayload getReadLegalPropertiesEventSuccess(List<String> resources) {
 		return AuditPayload.builder()
 				.action(AuditAction.READ)
 				.status(AuditStatus.SUCCESS)
 				.user(this.user)
 				.actionId(READ_ACTION_ID)
 				.message(READ_MESSAGE_SUCCESS)
-				.resources(singletonList(PROPERTY_VALUE))
+				.resources(resources)
 				.build();
 	}
 
-	public AuditPayload getReadLegalPropertiesEventFail() {
+	public AuditPayload getReadLegalPropertiesEventFail(List<String> resources) {
 		return AuditPayload.builder()
 				.action(AuditAction.READ)
 				.status(AuditStatus.FAILURE)
 				.user(this.user)
 				.actionId(READ_ACTION_ID)
 				.message(READ_MESSAGE_FAILURE)
-				.resources(singletonList(PROPERTY_VALUE))
+				.resources(resources)
 				.build();
 	}
 
