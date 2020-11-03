@@ -66,42 +66,28 @@ spec:
           - name: AZURE_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                name: clientid
-                key: clientid
+                name: active-directory
+                key: principal-clientid
           - name: AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: clientpassword
-                key: clientpassword
+                name: active-directory
+                key: principal-clientpassword
           - name: AZURE_TENANT_ID
             valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_TENANT_ID
+              secretKeyRef:
+                name: active-directory
+                key: tenantid
           - name: aad_client_id
             valueFrom:
               secretKeyRef:
-                name: appid
-                key: appid
+                name: active-directory
+                key: application-appid
           - name: appinsights_key
             valueFrom:
               secretKeyRef:
-                name: appinsights
+                name: central-logging
                 key: appinsights
-          - name: servicebus_namespace_name
-            valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_SERVICEBUS_NAMESPACE
-          - name: storage_account
-            valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_STORAGE_ACCOUNT
-          - name: azure_activedirectory_session_stateless
-            value: "true"
-          - name: azure_activedirectory_AppIdUri
-            value: "api://$(aad_client_id)"
           - name: cosmosdb_database
             value: osdu-db
           - name: LOG_PREFIX
@@ -118,3 +104,9 @@ spec:
             value: http://entitlements-azure/entitlements/v1
           - name: entitlements_service_api_key
             value: "OBSOLETE"
+          - name: partition_service_endpoint
+            value: http://partition/api/partition/v1
+          - name: azure_istioauth_enabled
+            value: "true"
+          - name: azure_activedirectory_AppIdUri
+            value: "api://$(aad_client_id)"

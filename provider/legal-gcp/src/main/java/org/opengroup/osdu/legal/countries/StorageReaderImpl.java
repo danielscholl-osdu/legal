@@ -2,6 +2,7 @@ package org.opengroup.osdu.legal.countries;
 
 import com.google.cloud.storage.*;
 
+import java.util.Objects;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 import org.springframework.http.MediaType;
@@ -14,16 +15,22 @@ public class StorageReaderImpl implements IStorageReader {
     private String        projectRegion;
     private Storage       storage;
 
-    private static final String BUCKET_NAME = "legal-service-configuration";
+    protected static final String BUCKET_NAME = "legal-service-configuration";
     private static final String FILE_NAME = "Legal_COO.json";
+    private Boolean isFullBucketName = false;
 
     public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion) {
+      new StorageReaderImpl(tenantInfo, projectRegion, false);
+    }
+
+  public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion, Boolean isFullBucketName) {
         this.tenantInfo = tenantInfo;
         this.projectRegion = projectRegion;
         this.storage = getStorage();
-    }
+        this.isFullBucketName = isFullBucketName;
+  }
 
-    @Override
+  @Override
     public byte[] readAllBytes() {
         BlobId blobId = getBlobId();
         byte[] content = null;
@@ -67,8 +74,11 @@ public class StorageReaderImpl implements IStorageReader {
         this.storage.create(blobInfo, "".getBytes(UTF_8));
     }
 
-    private String getTenantBucketName() {
-        return this.tenantInfo.getName() + "-" + BUCKET_NAME;
+  protected String getTenantBucketName() {
+      if (Objects.nonNull(isFullBucketName) && isFullBucketName) {
+        return this.tenantInfo.getProjectId() + "-" + this.tenantInfo.getName() + "-" + BUCKET_NAME;
+      }
+      return this.tenantInfo.getName() + "-" + BUCKET_NAME;
     }
 
 }

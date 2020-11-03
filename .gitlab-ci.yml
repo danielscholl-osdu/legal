@@ -6,38 +6,52 @@ variables:
 
   GCP_BUILD_SUBDIR: provider/legal-gcp
   GCP_INT_TEST_SUBDIR: testing/legal-test-gcp
-
   GCP_APPLICATION_NAME: os-legal
   GCP_ENVIRONMENT: testing
   GCP_PROJECT: opendes-evt
   GCP_TENANT_NAME: opendes-evt
 
-  AZURE_SERVICE: legal
-  AZURE_BUILD_SUBDIR: provider/legal-azure
-  AZURE_TEST_SUBDIR: testing/legal-test-azure
+  OSDU_GCP_BUILD_SUBDIR: provider/legal-gcp
+  OSDU_GCP_INT_TEST_SUBDIR: testing/legal-test-gcp
+  OSDU_GCP_APPLICATION_NAME: os-legal
 
   IBM_BUILD_SUBDIR: provider/legal-ibm
   IBM_INT_TEST_SUBDIR: testing/legal-test-ibm
 
+  AZURE_SERVICE: legal
+  AZURE_BUILD_SUBDIR: provider/legal-azure
+  AZURE_TEST_SUBDIR: testing/legal-test-azure
+
+
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
+
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/maven.yml"
-  - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "master"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "scanners/fossa.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "scanners/gitlab-ultimate.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/aws.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/ibm.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
+
+  - project: 'osdu/platform/ci-cd-pipelines'
+    ref:  "master"
+    file: 'cloud-providers/osdu-gcp.yml'
+
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: "master"
     file: 'cloud-providers/gcp.yml'
-  - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/aws.yml'
-  - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/ibm.yml'
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "scanners/fossa.yml"
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "scanners/gitlab-ultimate.yml"
 
 compile-and-unit-test:
   variables:

@@ -12,7 +12,13 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
+import lombok.extern.java.Log;
 
+@Log
 public class GCPLegalTagUtils extends LegalTagUtils {
     private static final String BUCKET_NAME = "legal-service-configuration";
     private static final String FILE_NAME = "Legal_COO.json";
@@ -38,10 +44,29 @@ public class GCPLegalTagUtils extends LegalTagUtils {
         }
     }
 
-    private static String getTenantBucketName() {
-        String tenantName = System.getProperty("MY_TENANT_PROJECT", System.getenv("MY_TENANT_PROJECT")).toLowerCase();
-        return tenantName + "-" +BUCKET_NAME;
+  private static String getTenantBucketName() {
+    String tenantName = System
+        .getProperty("MY_TENANT_PROJECT", System.getenv("MY_TENANT_PROJECT")).toLowerCase();
+    String projectName = System.getProperty("GCLOUD_PROJECT", System.getenv("GCLOUD_PROJECT"))
+        .toLowerCase();
+    String enableFullBucketName = System.getProperty("ENABLE_FULL_BUCKET_NAME",
+        System.getenv("ENABLE_FULL_BUCKET_NAME"));
+
+    enableFullBucketName = (Strings.isNullOrEmpty(enableFullBucketName) ? "false"
+        : enableFullBucketName).toLowerCase();
+
+    log.info("ENABLE_FULL_BUCKET_NAME = " + enableFullBucketName);
+
+    String bucketName;
+    if (Boolean.parseBoolean(enableFullBucketName)) {
+      bucketName = projectName + "-" + tenantName + "-" + BUCKET_NAME;
+    } else {
+      bucketName = tenantName + "-" + BUCKET_NAME;
     }
+
+    log.info("bucketName = " + bucketName);
+    return bucketName;
+  }
 
     @Override
     public synchronized String accessToken() throws Exception {

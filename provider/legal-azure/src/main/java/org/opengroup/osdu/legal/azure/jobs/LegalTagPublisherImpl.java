@@ -17,26 +17,31 @@ package org.opengroup.osdu.legal.azure.jobs;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.microsoft.azure.servicebus.Message;
-import com.microsoft.azure.servicebus.TopicClient;
+import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
-import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import javax.inject.Inject;
 
 
 @Component
 public class LegalTagPublisherImpl implements ILegalTagPublisher {
     @Inject
-    private TopicClient topicClient;
+    private ITopicClientFactory topicClientFactory;
 
     @Inject
     private JaxRsDpsLog logger;
+
+    @Inject
+    @Named("SERVICE_BUS_TOPIC")
+    private String serviceBusTopic;
 
     @Override
     public void publish(String projectId, DpsHeaders headers, StatusChangedTags tags) throws Exception {
@@ -68,10 +73,8 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
 
         try {
             logger.info("Storage publishes message " + headers.getCorrelationId());
-            topicClient.send(message);
-        }
-        catch (Exception e)
-        {
+            topicClientFactory.getClient(headers.getPartitionId(), serviceBusTopic).send(message);
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }

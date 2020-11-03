@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.core.MediaType;
 
 public class TestUtils {
 
@@ -77,19 +78,22 @@ public class TestUtils {
         return headers;
     }
 
-    public ClientResponse send(String path, String httpMethod, String token, String requestBody, String query, Map<String,String> headers) throws Exception {
+  public ClientResponse send(String path, String httpMethod, String token, String requestBody,
+      String query, Map<String, String> headers) throws Exception {
 
-        Client client = getClient();
-       // client.setConnectTimeout(5000);
-       // client.setReadTimeout(30000);
-        WebResource webResource = client.resource(getApiPath(path + query));
-        final WebResource.Builder builder = webResource.accept("application/json").type("application/json")
-                .header("Authorization", token);
-        headers.forEach((k, v) -> builder.header(k, v));
-        ClientResponse response = builder.method(httpMethod, ClientResponse.class, requestBody);
+    Client client = getClient();
+    WebResource webResource = client.resource(getApiPath(path + query));
 
-        return response;
-    }
+    final WebResource.Builder builder = webResource.getRequestBuilder();
+    builder.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).
+        header("Authorization", token);
+
+    headers.forEach(builder::header);
+
+    ClientResponse response = builder.method(httpMethod, ClientResponse.class, requestBody);
+
+    return response;
+  }
 
 	@SuppressWarnings("unchecked")
 	public <T> T getResult(ClientResponse response, int exepectedStatus, Class<T> classOfT) {
