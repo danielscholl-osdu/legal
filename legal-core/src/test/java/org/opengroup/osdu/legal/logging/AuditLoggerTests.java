@@ -67,13 +67,13 @@ public class AuditLoggerTests {
 
     @Test
     public void should_writeLegalTagReadPropertiesSuccessEvent(){
-        sut.readLegalPropertiesSuccess();
+        sut.readLegalPropertiesSuccess(any());
         verify(log).audit(any());
     }
 
     @Test
     public void should_writeLegalTagReadPropertiesFailEvent(){
-        sut.readLegalPropertiesFail();
+        sut.readLegalPropertiesFail(any());
         verify(log).audit(any());
     }
 

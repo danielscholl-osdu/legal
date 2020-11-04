@@ -16,50 +16,90 @@ package org.opengroup.osdu.legal.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
-import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
-import com.azure.storage.blob.BlockBlobClient;
-import com.azure.storage.blob.ContainerClient;
-import com.azure.storage.common.credentials.SharedKeyCredential;
+import com.azure.identity.ClientSecretCredential;
+import com.azure.identity.ClientSecretCredentialBuilder;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobContainerClientBuilder;
+import com.azure.storage.blob.BlobUrlParts;
+import com.azure.storage.blob.specialized.BlockBlobClient;
 import com.google.common.base.Strings;
+import org.opengroup.osdu.azure.util.AzureServicePrincipal;
 
 public class AzureLegalTagUtils extends LegalTagUtils {
     private static final String FILE_NAME = "Legal_COO.json";
     private static final String CONTAINER_NAME_AZURE = "legal-service-azure-configuration";
+    private static String clientSecret = System.getProperty("AZURE_TESTER_SERVICEPRINCIPAL_SECRET", System.getenv("AZURE_TESTER_SERVICEPRINCIPAL_SECRET"));
+    private static String clientId = System.getProperty("INTEGRATION_TESTER", System.getenv("INTEGRATION_TESTER"));
+    private static String tenantId = System.getProperty("AZURE_AD_TENANT_ID", System.getenv("AZURE_AD_TENANT_ID"));
+    private static String storageAccount = System.getProperty("AZURE_LEGAL_STORAGE_ACCOUNT", System.getenv("AZURE_LEGAL_STORAGE_ACCOUNT")).toLowerCase();
+    private static String app_resource_id = System.getProperty("AZURE_AD_APP_RESOURCE_ID", System.getenv("AZURE_AD_APP_RESOURCE_ID"));
 
     @Override
     public synchronized void uploadTenantTestingConfigFile() {
         try {
-            String storageAccount = System.getProperty("AZURE_LEGAL_STORAGE_ACCOUNT", System.getenv("AZURE_LEGAL_STORAGE_ACCOUNT")).toLowerCase();
-            String storageAccountKey = System.getProperty("AZURE_LEGAL_STORAGE_KEY", System.getenv("AZURE_LEGAL_STORAGE_KEY"));
-            SharedKeyCredential credential = new SharedKeyCredential(storageAccount, storageAccountKey);
-            BlobServiceClient storageClient = new BlobServiceClientBuilder()
-                    .endpoint(String.format("https://%s.blob.core.windows.net", storageAccount))
-                    .credential(credential)
-                    .buildClient();
-            ContainerClient containerClient = storageClient
-                    .getContainerClient(CONTAINER_NAME_AZURE);
-            BlockBlobClient blobClient = containerClient.getBlockBlobClient(FILE_NAME);
-            String content = readTestFile("TenantConfigTestingPurpose.json");
-            InputStream dataStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            blobClient.upload(dataStream, content.length());
-            dataStream.close();
+            String blobPath = generateBlobPath(storageAccount, CONTAINER_NAME_AZURE, FILE_NAME);
+            BlobUrlParts parts = BlobUrlParts.parse(blobPath);
+            BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
+            if (!blobContainerClient.exists()) {
+                createContainer(parts.getBlobContainerName());
+            }
+            BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(parts.getBlobName()).getBlockBlobClient();
+            if (!blockBlobClient.exists()) {
+                String content = readTestFile("TenantConfigTestingPurpose.json");
+                try (ByteArrayInputStream dataStream = new ByteArrayInputStream(content.getBytes())) {
+                    blockBlobClient.upload(dataStream, content.length());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new AssertionError(String.format("Error: Could not create test %s file blob", parts.getBlobName()), e);
+                }
+            }
         }catch (IOException ex){
             ex.printStackTrace();
         }
     }
-    
+
+    private static String generateContainerPath(String accountName, String containerName) {
+        return String.format("https://%s.blob.core.windows.net/%s", accountName, containerName);
+    }
+
+    public void createContainer(String containerName)
+    {
+        String containerPath = generateContainerPath(storageAccount, containerName);
+        BlobUrlParts parts = BlobUrlParts.parse(containerPath);
+        BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
+        if(!blobContainerClient.exists()){
+            blobContainerClient.create();
+
+        }
+    }
+
+    private static String generateBlobPath(String accountName, String containerName, String blobName) {
+        return String.format("https://%s.blob.core.windows.net/%s/%s", accountName, containerName, blobName);
+    }
+
+    private BlobContainerClient getBlobContainerClient(String accountName, String containerName) {
+        ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
+                .clientSecret(clientSecret)
+                .clientId(clientId)
+                .tenantId(tenantId)
+                .build();
+        BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
+                .endpoint(getBlobAccountUrl(accountName))
+                .credential(clientSecretCredential)
+                .containerName(containerName)
+                .buildClient();
+        return blobContainerClient;
+    }
+
+    private static String getBlobAccountUrl(String accountName) {
+        return String.format("https://%s.blob.core.windows.net", accountName);
+    }
+
     @Override
     public synchronized String accessToken() throws Exception {
         if (Strings.isNullOrEmpty(token)) {
-            String sp_id = System.getProperty("INTEGRATION_TESTER", System.getenv("INTEGRATION_TESTER"));
-            String sp_secret = System.getProperty("AZURE_TESTER_SERVICEPRINCIPAL_SECRET", System.getenv("AZURE_TESTER_SERVICEPRINCIPAL_SECRET"));
-            String tenant_id = System.getProperty("AZURE_AD_TENANT_ID", System.getenv("AZURE_AD_TENANT_ID"));
-            String app_resource_id = System.getProperty("AZURE_AD_APP_RESOURCE_ID", System.getenv("AZURE_AD_APP_RESOURCE_ID"));
-            token = AzureServicePrincipal.getIdToken(sp_id, sp_secret, tenant_id, app_resource_id);
+            token = new AzureServicePrincipal().getIdToken(clientId, clientSecret, tenantId, app_resource_id);
         }
         return "Bearer " + token;
     }
