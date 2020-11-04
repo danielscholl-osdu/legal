@@ -116,6 +116,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!--
          Override the spring-boot version of these dependencies to the ones
          required by the azure-core library. This needs to be done for each
