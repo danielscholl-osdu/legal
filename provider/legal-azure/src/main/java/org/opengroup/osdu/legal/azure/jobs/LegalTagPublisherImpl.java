@@ -30,9 +30,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Component
 public class LegalTagPublisherImpl implements ILegalTagPublisher {
+
     @Inject
     private ITopicClientFactory topicClientFactory;
 
