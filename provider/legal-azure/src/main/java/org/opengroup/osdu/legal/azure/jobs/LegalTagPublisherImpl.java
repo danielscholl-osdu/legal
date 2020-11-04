@@ -17,7 +17,6 @@ package org.opengroup.osdu.legal.azure.jobs;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.microsoft.azure.servicebus.Message;
-import lombok.NoArgsConstructor;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -31,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-@NoArgsConstructor
 @Component
 public class LegalTagPublisherImpl implements ILegalTagPublisher {
 
