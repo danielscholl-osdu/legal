@@ -27,6 +27,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
@@ -42,9 +43,13 @@ public class LegalTagPublisherImplTest {
     private static final String DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID = "data-partition-account-id";
     private static final String CORRELATION_ID = "correlation-id";
     private static final String USER_EMAIL = "user@email.com";
+    private static final String PARTITION_ID = "partition-id";
 
     @Mock
     private JaxRsDpsLog logger;
+
+    @Mock
+    private ITopicClientFactory topicClientFactory;
 
     @Mock
     private TopicClient topicClient;
@@ -57,12 +62,11 @@ public class LegalTagPublisherImplTest {
 
     @Before
     public void init() throws ServiceBusException, InterruptedException {
-        lenient().doNothing().when(topicClient).send(any());
-        lenient().doNothing().when(logger).error(anyString(), (Exception) any());
-        lenient().doNothing().when(logger).info(anyString());
         doReturn(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID).when(headers).getPartitionIdWithFallbackToAccountId();
         doReturn(CORRELATION_ID).when(headers).getCorrelationId();
         doReturn(USER_EMAIL).when(headers).getUserEmail();
+        doReturn(PARTITION_ID).when(headers).getPartitionId();
+        doReturn(topicClient).when(topicClientFactory).getClient(eq(PARTITION_ID), any());
     }
 
     @Test
