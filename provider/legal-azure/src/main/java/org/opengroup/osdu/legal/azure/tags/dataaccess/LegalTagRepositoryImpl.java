@@ -65,7 +65,7 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
             if (existingDoc.isPresent()) {
                 throw AppException.legalTagAlreadyExistsError(legalTag.getName());
             }
-            cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, legalTagDoc);
+            cosmosStore.createItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, legalTagDoc);
         } finally {
             mutex.unlock();
         }
