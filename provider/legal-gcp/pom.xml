@@ -3,11 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-		<groupId>org.opengroup.osdu.legal</groupId>
-		<artifactId>legal-service</artifactId>
-        <version>0.0.5-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <artifactId>legal-service</artifactId>
+    <groupId>org.opengroup.osdu.legal</groupId>
+    <version>0.0.5-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
     
 	<groupId>org.opengroup.osdu.legal</groupId>
 	<artifactId>legal-gcp</artifactId>
@@ -15,24 +16,6 @@
 	<packaging>jar</packaging>
 	<name>legal-gcp</name>
 	<description>Legal service Google App Engine flex</description>
-
-    <repositories>
-        <repository>
-            <id>${gitlab-server}</id>
-            <url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>${gitlab-server}</id>
-            <url>https://community.opengroup.org/api/v4/projects/74/packages/maven</url>
-        </repository>
-        <snapshotRepository>
-            <id>${gitlab-server}</id>
-            <url>https://community.opengroup.org/api/v4/projects/74/packages/maven</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 	<dependencies>
 		<dependency>
