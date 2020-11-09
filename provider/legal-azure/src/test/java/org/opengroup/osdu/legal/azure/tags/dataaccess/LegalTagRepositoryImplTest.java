@@ -86,7 +86,7 @@ public class LegalTagRepositoryImplTest {
         long obtainedId = sut.create(legalTag);
 
         ArgumentCaptor<LegalTagDoc> arg = ArgumentCaptor.forClass(LegalTagDoc.class);
-        verify(cosmosStore).upsertItem(eq(dataPartitionId), any(), any(), arg.capture());
+        verify(cosmosStore).createItem(eq(dataPartitionId), any(), any(), arg.capture());
 
         assertEquals(arg.getValue().getId(), strId);
         assertEquals(obtainedId, id);
