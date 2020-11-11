@@ -11,9 +11,10 @@ variables:
   GCP_PROJECT: opendes-evt
   GCP_TENANT_NAME: opendes-evt
 
-  OSDU_GCP_BUILD_SUBDIR: provider/legal-gcp
-  OSDU_GCP_INT_TEST_SUBDIR: testing/legal-test-gcp
+  OSDU_GCP_SERVICE: legal
+  OSDU_GCP_VENDOR: gcp
   OSDU_GCP_APPLICATION_NAME: os-legal
+  OSDU_GCP_ENV_VARS: ENABLE_FULL_BUCKET_NAME=$ENABLE_FULL_BUCKET_NAME,PROJECT_ID=$OSDU_GCP_PROJECT,AUTHORIZE_API=$OSDU_GCP_AUTHORIZE_API,AUDIENCES=$GOOGLE_AUDIENCE,REDIS_GROUP_HOST=$REDIS_GROUP_HOST,REDIS_STORAGE_HOST=$REDIS_STORAGE_HOST,LEGAL_HOSTNAME=$OSDU_GCP_LEGAL_HOSTNAME --vpc-connector=$OSDU_GCP_VPC_CONNECTOR
 
   IBM_BUILD_SUBDIR: provider/legal-ibm
   IBM_INT_TEST_SUBDIR: testing/legal-test-ibm
@@ -21,7 +22,6 @@ variables:
   AZURE_SERVICE: legal
   AZURE_BUILD_SUBDIR: provider/legal-azure
   AZURE_TEST_SUBDIR: testing/legal-test-azure
-
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
@@ -47,7 +47,7 @@ include:
 
   - project: 'osdu/platform/ci-cd-pipelines'
     ref:  "master"
-    file: 'cloud-providers/osdu-gcp.yml'
+    file: 'cloud-providers/osdu-gcp-cloudrun.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: "master"
