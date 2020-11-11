@@ -32,13 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Repository
 public class LegalTagRepositoryImpl implements ILegalTagRepository {
-
-    private ReentrantLock mutex = new ReentrantLock();
 
     @Autowired
     private CosmosStore cosmosStore;
@@ -59,16 +56,11 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
         String strId = String.valueOf(id);
 
         LegalTagDoc legalTagDoc = new LegalTagDoc(strId, legalTag);
-        try {
-            mutex.lock();
-            Optional<LegalTagDoc> existingDoc = cosmosStore.findItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, strId, strId, LegalTagDoc.class);
-            if (existingDoc.isPresent()) {
-                throw AppException.legalTagAlreadyExistsError(legalTag.getName());
-            }
-            cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, legalTagDoc);
-        } finally {
-            mutex.unlock();
+        Optional<LegalTagDoc> existingDoc = cosmosStore.findItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, strId, strId, LegalTagDoc.class);
+        if (existingDoc.isPresent()) {
+            throw AppException.legalTagAlreadyExistsError(legalTag.getName());
         }
+        cosmosStore.createItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, legalTagDoc);
         return id;
     }
 
