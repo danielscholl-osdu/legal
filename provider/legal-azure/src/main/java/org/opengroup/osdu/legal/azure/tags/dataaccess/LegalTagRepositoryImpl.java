@@ -14,10 +14,9 @@
 
 package org.opengroup.osdu.legal.azure.tags.dataaccess;
 
-import com.azure.cosmos.FeedOptions;
-import com.azure.cosmos.SqlParameter;
-import com.azure.cosmos.SqlParameterList;
-import com.azure.cosmos.SqlQuerySpec;
+import com.azure.cosmos.models.CosmosQueryRequestOptions;
+import com.azure.cosmos.models.SqlParameter;
+import com.azure.cosmos.models.SqlQuerySpec;
 import org.opengroup.osdu.azure.cosmosdb.CosmosStore;
 import org.opengroup.osdu.common.Validators;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -60,7 +59,7 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
         if (existingDoc.isPresent()) {
             throw AppException.legalTagAlreadyExistsError(legalTag.getName());
         }
-        cosmosStore.createItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, legalTagDoc);
+        cosmosStore.createItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, legalTagDoc.getId(), legalTagDoc);
         return id;
     }
 
@@ -102,18 +101,20 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
         if (!exists)
             throw AppException.legalTagDoesNotExistError(newLegalTag.getName());
 
-        cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, new LegalTagDoc(strId, newLegalTag));
+        cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, legalTagsContainer, strId, new LegalTagDoc(strId, newLegalTag));
 
         return newLegalTag;
     }
 
     @Override
     public Collection<LegalTag> list(ListLegalTagArgs args) {
+        List<SqlParameter> parameterList = new ArrayList<SqlParameter>();
+        parameterList.add(new SqlParameter("@isValid", args.getIsValid()));
         SqlQuerySpec query = new SqlQuerySpec()
                 .setQueryText("SELECT * FROM c WHERE c.legalTag.isValid = @isValid")
-                .setParameters(new SqlParameterList(new SqlParameter("@isValid", args.getIsValid())));
+                .setParameters(parameterList);
 
-        FeedOptions options = new FeedOptions().setEnableCrossPartitionQuery(true);
+        CosmosQueryRequestOptions options = new CosmosQueryRequestOptions();
         return cosmosStore.queryItems(headers.getPartitionId(), cosmosDBName, legalTagsContainer, query, options, LegalTagDoc.class)
                 .stream()
                 .map(LegalTagDoc::getLegalTag)
