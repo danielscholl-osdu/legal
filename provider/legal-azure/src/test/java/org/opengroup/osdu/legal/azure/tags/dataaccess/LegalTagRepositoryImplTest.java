@@ -14,10 +14,9 @@
 
 package org.opengroup.osdu.legal.azure.tags.dataaccess;
 
-import com.azure.cosmos.FeedOptions;
-import com.azure.cosmos.SqlParameter;
-import com.azure.cosmos.SqlParameterList;
-import com.azure.cosmos.SqlQuerySpec;
+import com.azure.cosmos.models.CosmosQueryRequestOptions;
+import com.azure.cosmos.models.SqlParameter;
+import com.azure.cosmos.models.SqlQuerySpec;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +85,7 @@ public class LegalTagRepositoryImplTest {
         long obtainedId = sut.create(legalTag);
 
         ArgumentCaptor<LegalTagDoc> arg = ArgumentCaptor.forClass(LegalTagDoc.class);
-        verify(cosmosStore).createItem(eq(dataPartitionId), any(), any(), arg.capture());
+        verify(cosmosStore).createItem(eq(dataPartitionId), any(), any(), any(), arg.capture());
 
         assertEquals(arg.getValue().getId(), strId);
         assertEquals(obtainedId, id);
@@ -172,7 +171,7 @@ public class LegalTagRepositoryImplTest {
         LegalTag obtainedLegalTag = sut.update(legalTag);
 
         ArgumentCaptor<LegalTagDoc> arg = ArgumentCaptor.forClass(LegalTagDoc.class);
-        verify(cosmosStore).upsertItem(eq(dataPartitionId), any(), any(), arg.capture());
+        verify(cosmosStore).upsertItem(eq(dataPartitionId), any(), any(), any(), arg.capture());
 
         assertEquals(arg.getValue().getId(), strId);
         assertEquals(obtainedLegalTag.getId().longValue(), id);
@@ -185,7 +184,7 @@ public class LegalTagRepositoryImplTest {
         List<LegalTagDoc> legalTagDocs = Arrays.asList(new LegalTagDoc(strIds[0], getLegalTagWithId(ids[0])), new LegalTagDoc(strIds[1], getLegalTagWithId(ids[1])));
 
         ArgumentCaptor<SqlQuerySpec> query = ArgumentCaptor.forClass(SqlQuerySpec.class);
-        ArgumentCaptor<FeedOptions> feedOptions = ArgumentCaptor.forClass(FeedOptions.class);
+        ArgumentCaptor<CosmosQueryRequestOptions> feedOptions = ArgumentCaptor.forClass(CosmosQueryRequestOptions.class);
 
         doReturn(legalTagDocs).when(cosmosStore).queryItems(eq(dataPartitionId), any(), any(), any(), any(), any());
         ListLegalTagArgs legalTagArgs = new ListLegalTagArgs();
@@ -198,10 +197,8 @@ public class LegalTagRepositoryImplTest {
 
         verify(cosmosStore).queryItems(eq(dataPartitionId), any(), any(), query.capture(), feedOptions.capture(), any());
         assertEquals(query.getValue().getQueryText(), "SELECT * FROM c WHERE c.legalTag.isValid = @isValid");
-        assertTrue(feedOptions.getValue().getEnableCrossPartitionQuery());
 
-        SqlParameterList parameters = query.getValue().getParameters();
-        SqlParameter isValid = parameters.get(0);
+        SqlParameter isValid = query.getValue().getParameters().get(0);
 
         assertEquals(isValid.getName(), "@isValid");
         assertEquals(isValid.getValue(Boolean.class), true);
