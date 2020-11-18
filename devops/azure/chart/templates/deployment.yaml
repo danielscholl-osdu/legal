@@ -48,7 +48,7 @@ spec:
             cpu: "300m"
         readinessProbe:
           httpGet:
-            path: /api/legal/v1/actuator/health
+            path: /api/legal/v1/swagger-ui.html
             port: 80
         volumeMounts:
         - name: azure-keyvault
