@@ -1,3 +1,20 @@
+/*
+ * Copyright 2020 Google LLC
+ * Copyright 2020 EPAM Systems, Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.opengroup.osdu.legal.tags.dataaccess;
 
 import com.google.cloud.Timestamp;
@@ -15,60 +32,58 @@ import java.util.List;
 public class DatastoreLegalTagRepository implements ILegalTagRepository {
     private final Datastore googleDatastore;
 
-    public DatastoreLegalTagRepository(Datastore ds){
+    public DatastoreLegalTagRepository(Datastore ds) {
         googleDatastore = ds;
     }
 
     @Override
-    public Long create(LegalTag legalTag) throws PersistenceException {
+    public Long create(LegalTag legalTag) {
         Long id = -1L;
 
         try {
-            if(legalTag != null) {
+            if (legalTag != null) {
                 FullEntity<Key> entity = convertLegalTagToEntity(legalTag);
                 Key keys = saveNewEntry(entity, legalTag.getName());
                 id = keys.getId();
             }
-        }
-        catch(DatastoreException ex){
+        } catch (DatastoreException ex) {
             throw new PersistenceException(ex.getCode(), ex.getMessage(), ex.getReason());
         }
         return id;
     }
 
     @Override
-    public Collection<LegalTag> get(long[] ids) throws PersistenceException {
+    public Collection<LegalTag> get(long[] ids) {
         List<LegalTag> output = new ArrayList<>();
 
         try {
-            if(ids != null && ids.length > 0) {
+            if (ids != null && ids.length > 0) {
                 List<Key> keys = new ArrayList<>();
-                for(long id : ids){
+                for (long id : ids) {
                     keys.add(createkey(id));
                 }
                 Iterator<Entity> entities = this.googleDatastore.get(keys);
-                while(entities != null && entities.hasNext()){
+                while (entities != null && entities.hasNext()) {
                     output.add(convertEntityToLegalTag(entities.next()));
                 }
             }
-        }
-        catch(DatastoreException ex){
+        } catch (DatastoreException ex) {
             throw new PersistenceException(ex.getCode(), ex.getMessage(), ex.getReason());
         }
         return output;
     }
 
     @Override
-    public Boolean delete(LegalTag legalTag) throws PersistenceException {
+    public Boolean delete(LegalTag legalTag) {
         boolean output = false;
         Transaction txn = null;
-        try{
+        try {
             Key key = createkey(legalTag.getId());
             txn = this.googleDatastore.newTransaction();
 
             //backup legaltag before deleting
             Entity existingEntity = txn.get(key);
-            if(existingEntity != null) {
+            if (existingEntity != null) {
                 LegalTag currentLegalTag = convertEntityToLegalTag(existingEntity);
                 FullEntity<IncompleteKey> currentEntity = convertLegalTagToHistoricEntity(currentLegalTag);
                 txn.putWithDeferredIdAllocation(currentEntity);
@@ -76,11 +91,9 @@ public class DatastoreLegalTagRepository implements ILegalTagRepository {
                 txn.commit();
             }
             output = true;
-        }
-        catch(DatastoreException ex){
+        } catch (DatastoreException ex) {
             throw new PersistenceException(ex.getCode(), ex.getMessage(), ex.getReason());
-        }
-        finally {
+        } finally {
             if (txn != null && txn.isActive()) {
                 txn.rollback();
             }
@@ -89,8 +102,8 @@ public class DatastoreLegalTagRepository implements ILegalTagRepository {
     }
 
     @Override
-    public LegalTag update(LegalTag newLegalTag) throws PersistenceException {
-        if(newLegalTag == null)
+    public LegalTag update(LegalTag newLegalTag) {
+        if (newLegalTag == null)
             return null;
 
         Transaction txn = null;
@@ -99,7 +112,7 @@ public class DatastoreLegalTagRepository implements ILegalTagRepository {
             txn = this.googleDatastore.newTransaction();
 
             Entity existingEntity = txn.get(newEntity.getKey());
-            if(existingEntity == null)
+            if (existingEntity == null)
                 throw AppException.legalTagDoesNotExistError(newLegalTag.getName());
 
             LegalTag currentLegalTag = convertEntityToLegalTag(existingEntity);
@@ -107,11 +120,9 @@ public class DatastoreLegalTagRepository implements ILegalTagRepository {
             txn.putWithDeferredIdAllocation(currentEntity);//this will make a backup of the current entity so we always have a record of it using a datastore assigned id
             txn.put(newEntity);//this will overwrite the current entity
             txn.commit();
-        }
-        catch(DatastoreException ex){
+        } catch (DatastoreException ex) {
             throw new PersistenceException(ex.getCode(), ex.getMessage(), ex.getReason());
-        }
-        finally {
+        } finally {
             if (txn != null && txn.isActive()) {
                 txn.rollback();
             }
@@ -120,7 +131,7 @@ public class DatastoreLegalTagRepository implements ILegalTagRepository {
     }
 
     @Override
-    public Collection<LegalTag> list(ListLegalTagArgs args) throws PersistenceException {
+    public Collection<LegalTag> list(ListLegalTagArgs args) {
         List<LegalTag> output = new ArrayList<>();
         try {
             Query<Entity> query = Query.newEntityQueryBuilder()
@@ -128,27 +139,25 @@ public class DatastoreLegalTagRepository implements ILegalTagRepository {
                     .setFilter(StructuredQuery.PropertyFilter.eq(IS_VALID, args.getIsValid()))
                     .build();
             QueryResults<Entity> results = this.googleDatastore.run(query);
-            while(results != null && results.hasNext()){
+            while (results != null && results.hasNext()) {
                 output.add(convertEntityToLegalTag(results.next()));
             }
-        }
-        catch(DatastoreException ex){
+        } catch (DatastoreException ex) {
             throw new PersistenceException(ex.getCode(), ex.getMessage(), ex.getReason());
         }
         return output;
     }
 
-    private Key saveNewEntry(FullEntity<Key> entity, String kind){
+    private Key saveNewEntry(FullEntity<Key> entity, String kind) {
         Transaction txn = this.googleDatastore.newTransaction();
         try {
             Entity existingEntity = txn.get(entity.getKey());
-            if(existingEntity != null)
-                throw  AppException.legalTagAlreadyExistsError(kind);
+            if (existingEntity != null)
+                throw AppException.legalTagAlreadyExistsError(kind);
 
             txn.put(entity);
             txn.commit();
-        }
-        finally {
+        } finally {
             if (txn.isActive()) {
                 txn.rollback();
             }
@@ -177,7 +186,7 @@ public class DatastoreLegalTagRepository implements ILegalTagRepository {
         legalTag.setIsValid(entity.getBoolean(IS_VALID));
         legalTag.setId(entity.getKey().getId());
 
-        if(entity.contains(DESCRIPTION))
+        if (entity.contains(DESCRIPTION))
             legalTag.setDescription(entity.getString(DESCRIPTION));
 
         return legalTag;
@@ -188,6 +197,7 @@ public class DatastoreLegalTagRepository implements ILegalTagRepository {
         Key key = createkey(legalTag.getId());
         return getFullEntity(legalTag, key);
     }
+
     @SuppressWarnings("unchecked")
     private FullEntity<IncompleteKey> convertLegalTagToHistoricEntity(LegalTag legalTag) {
         IncompleteKey key = this.googleDatastore.newKeyFactory()
