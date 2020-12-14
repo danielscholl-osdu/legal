@@ -16,6 +16,9 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.net.HttpHeaders;
 import com.google.gson.JsonObject;
 
+import com.google.gson.JsonParser;
+import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.http.HttpClient;
 import org.opengroup.osdu.core.common.http.HttpRequest;
 import org.opengroup.osdu.core.common.http.HttpResponse;
@@ -41,6 +44,7 @@ public class CloudStorageCredential extends GoogleCredentials {
 
     private final transient TenantInfo tenant;
     private final transient HttpClient httpClient;
+    static final transient JsonParser parser = new JsonParser();
 
     public CloudStorageCredential(TenantInfo tenant) {
         this.tenant = tenant;
@@ -79,9 +83,9 @@ public class CloudStorageCredential extends GoogleCredentials {
                         "assertion", signedJwt))
                 .build();
         HttpResponse response = this.httpClient.send(request);
-        JsonObject jsonResult = response.getAsJsonObject();
+        JsonObject jsonResult = StringUtils.isBlank(response.getBody()) ? null : parser.parse(response.getBody()).getAsJsonObject();
 
-        if (!response.isSuccessCode() || !jsonResult.has("access_token")) {
+        if (!response.isSuccessCode() || Objects.isNull(jsonResult) ||!jsonResult.has("access_token")) {
             throw new CompletionException("Error retrieving refresh token from Google. " + response.getBody(),
                     response.getException());
         }
