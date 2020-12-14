@@ -232,7 +232,6 @@ The following software have components provided under the terms of this license:
 - Apache Commons Lang (from http://commons.apache.org/proper/commons-lang/)
 - Apache Commons Logging (from http://commons.apache.org/proper/commons-logging/)
 - Apache Commons Logging (from http://commons.apache.org/proper/commons-logging/)
-- Apache Commons Logging (from http://commons.apache.org/proper/commons-logging/)
 - Apache Commons Validator (from http://commons.apache.org/proper/commons-validator/)
 - Apache Geronimo JMS Spec 2.0 (from http://geronimo.apache.org/maven/${siteId}/${version})
 - Apache Groovy (from http://groovy-lang.org)
@@ -602,7 +601,6 @@ The following software have components provided under the terms of this license:
 - Stax2 API (from http://github.com/FasterXML/stax2-api)
 - jersey-ext-bean-validation (from )
 - jersey-spring4 (from )
-- oro (from )
 
 ========================================================================
 BSD-3-Clause
@@ -666,12 +664,6 @@ CC-BY-2.5
 The following software have components provided under the terms of this license:
 
 - Checker Qual (from https://checkerframework.org)
-
-========================================================================
-CC-BY-3.0
-========================================================================
-The following software have components provided under the terms of this license:
-
 - FindBugs-jsr305 (from http://findbugs.sourceforge.net/)
 
 ========================================================================
@@ -705,9 +697,7 @@ The following software have components provided under the terms of this license:
 - HK2 configuration module (from )
 - HK2 core module (from )
 - HK2 module of HK2 itself (from )
-- Java Servlet API (from http://servlet-spec.java.net)
 - JavaBeans Activation Framework API jar (from )
-- JavaBeans(TM) Activation Framework (from http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp)
 - Run Level Service (from )
 - ServiceLocator Default Implementation (from git://java.net/hk2~git/hk2-locator)
 - Servlet Specification 2.5 API (from )
@@ -730,7 +720,9 @@ CDDL-1.1
 The following software have components provided under the terms of this license:
 
 - Java Architecture For XML Binding (from )
+- Java Servlet API (from http://servlet-spec.java.net)
 - JavaBeans Activation Framework (from )
+- JavaBeans(TM) Activation Framework (from http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp)
 - JavaMail API (from )
 - OSGi resource locator (from )
 - jersey-ext-bean-validation (from )
@@ -743,6 +735,7 @@ CPL-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- JUnit (from http://junit.org)
 - System Rules (from http://stefanbirkner.github.io/system-rules/)
 
 ========================================================================
@@ -750,7 +743,6 @@ EPL-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- JUnit (from http://junit.org)
 - Logback Classic Module (from )
 - Logback Core Module (from )
 - Microsoft Application Insights Java SDK Core (from https://github.com/Microsoft/ApplicationInsights-Java)
@@ -876,7 +868,6 @@ LGPL-2.1-or-later
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Java Native Access (from https://github.com/java-native-access/jna)
 - Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Javassist (from http://www.javassist.org/)
 - SnakeYAML (from http://www.snakeyaml.org)
@@ -981,7 +972,6 @@ The following software have components provided under the terms of this license:
 - jersey-core-common (from )
 - jersey-core-server (from git://java.net/jersey~code/jersey-server)
 - reactive-streams (from http://www.reactive-streams.org/)
-- xml-apis (from )
 
 ========================================================================
 SISSL-1.2
@@ -1034,7 +1024,9 @@ The following software have components provided under the terms of this license:
 - Microsoft Azure client library for Blob Storage (from https://github.com/Azure/azure-sdk-for-java)
 - Project Lombok (from https://projectlombok.org)
 - Spring Web (from https://github.com/spring-projects/spring-framework)
+- StAX API (from http://stax.codehaus.org/)
 - msal4j (from https://github.com/AzureAD/microsoft-authentication-library-for-java)
+- xml-apis (from )
 
 ========================================================================
 unknown
@@ -1042,6 +1034,7 @@ unknown
 The following software have components provided under the terms of this license:
 
 - Byte Buddy (without dependencies) (from )
+- JUnit (from http://junit.org)
 - JavaBeans Activation Framework API jar (from )
 - Servlet Specification 2.5 API (from )
 - Spongy Castle (from http://rtyley.github.io/spongycastle/)
