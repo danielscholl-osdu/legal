@@ -53,6 +53,7 @@ include:
     ref: "master"
     file: 'cloud-providers/gcp.yml'
 
-compile-and-unit-test:
-  variables:
-    GOOGLE_CLOUD_PROJECT: opendes-evt
+#compile-and-unit-test:
+#  variables:
+#    GOOGLE_CLOUD_PROJECT: opendes-evt
+
