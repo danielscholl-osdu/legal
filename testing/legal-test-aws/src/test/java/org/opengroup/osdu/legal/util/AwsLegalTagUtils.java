@@ -48,6 +48,7 @@ public class AwsLegalTagUtils extends LegalTagUtils {
 
         S3Config s3Config = new S3Config(amazonS3Endpoint, amazonS3Region);
         AmazonS3 s3Client = s3Config.amazonS3();
+
         try {
             s3Client.putObject(BUCKET_NAME_AWS, FILE_NAME, readTestFile("TenantConfigTestingPurpose.json"));
         } catch(IOException e){

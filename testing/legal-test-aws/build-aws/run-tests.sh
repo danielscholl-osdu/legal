@@ -29,10 +29,22 @@ export AWS_COGNITO_AUTH_FLOW=USER_PASSWORD_AUTH
 export AWS_COGNITO_AUTH_PARAMS_PASSWORD=$ADMIN_PASSWORD
 export AWS_COGNITO_AUTH_PARAMS_USER=$ADMIN_USER
 export AWS_COGNITO_CLIENT_ID=$AWS_COGNITO_CLIENT_ID
-export AWS_S3_ENDPOINT=s3.us-east-1.amazonaws.com
-export AWS_S3_REGION=us-east-1
-export DYNAMO_DB_ENDPOINT=dynamodb.us-east-1.amazonaws.com
-export DYNAMO_DB_REGION=us-east-1
+if [ -z "$LEGAL_S3_ENDPOINT" ]
+then
+    export AWS_S3_ENDPOINT=s3.us-east-1.amazonaws.com
+else
+    export AWS_S3_ENDPOINT=$LEGAL_S3_ENDPOINT
+fi
+
+export AWS_S3_REGION=$AWS_REGION
+if [ -z "$LEGAL_DYNAMODB_ENDPOINT" ]
+then
+    export DYNAMO_DB_ENDPOINT=dynamodb.us-east-1.amazonaws.com
+else
+    export DYNAMO_DB_ENDPOINT=$LEGAL_DYNAMODB_ENDPOINT
+
+fi
+export DYNAMO_DB_REGION=$AWS_REGION
 export HOST_URL=$LEGAL_URL
 export MY_TENANT=int-test-legal
 export S3_LEGAL_CONFIG_BUCKET=$LEGAL_S3_BUCKET
@@ -42,7 +54,7 @@ export TABLE_PREFIX=$RESOURCE_PREFIX
 
 #### RUN INTEGRATION TEST #########################################################################
 
-mvn test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
+mvn  -ntp test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
 TEST_EXIT_CODE=$?
 
 #### COPY TEST REPORTS #########################################################################
