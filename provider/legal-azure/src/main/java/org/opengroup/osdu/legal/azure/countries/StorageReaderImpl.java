@@ -16,6 +16,7 @@ package org.opengroup.osdu.legal.azure.countries;
 
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.specialized.BlockBlobClient;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
@@ -43,20 +44,27 @@ public class StorageReaderImpl implements IStorageReader {
         return  readFromBlobStorage().getBytes(StandardCharsets.UTF_8); //should return a json format of an array of Country class
     }
 
+    /**
+     * This function should be fail close. It reads the pre-configuration file for the partition. As a security requirement, we should
+     * fail the corresponding request instead of assuming the content is empty, but it should only fail close on the request level not
+     * service level meaning the service could still start and running probably for the APIs which do not need the pre-configuration file
+     */
     public String readFromBlobStorage() {
-        String content = "";
 
         BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(fileName).getBlockBlobClient();
         if (blockBlobClient.exists())
         {
             try (ByteArrayOutputStream downloadStream = new ByteArrayOutputStream()) {
                 blockBlobClient.download(downloadStream);
-                content = downloadStream.toString(StandardCharsets.UTF_8.name());
+                String content = downloadStream.toString(StandardCharsets.UTF_8.name());
+                return content;
             } catch (Exception e) {
-                logger.error(String.format("read %s failed", fileName));
+                String message = String.format("read %s failed", fileName);
+                throw new AppException(500, "Server error", message);
             }
+        } else {
+            String message = String.format("%s does not exist on partition %s", fileName, tenantInfo.getDataPartitionId());
+            throw new AppException(500, "Server error", message);
         }
-
-        return content;
     }
 }
