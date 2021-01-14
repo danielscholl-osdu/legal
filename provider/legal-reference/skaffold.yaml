@@ -1,0 +1,11 @@
+apiVersion: skaffold/v2beta5
+kind: Config
+metadata:
+  name: legal-reference
+build:
+  artifacts:
+  - image: us.gcr.io/osdu-anthos-02/os-legal/anthos-legal
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/deployments/deployment-legal-service.yml
