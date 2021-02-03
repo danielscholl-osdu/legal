@@ -27,6 +27,9 @@ phases:
     runtime-versions:
       java: corretto8
     commands:
+      # fix error noted here: https://github.com/yarnpkg/yarn/issues/7866
+      - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+      
       - if [ $(echo $CODEBUILD_SOURCE_VERSION | grep -c  ^refs/heads.*) -eq 1 ]; then echo "Branch name found"; else echo "This build only supports branch builds" && exit 1; fi
       - apt-get update -y -qq > /dev/null
       - apt-get install -y maven -qq > /dev/null
@@ -42,8 +45,6 @@ phases:
     commands:
       - echo "Logging in to Amazon ECR..."
       - $(aws ecr get-login --no-include-email --region $AWS_REGION) # authenticate with ECR via the AWS CLI
-      # fix error noted here: https://github.com/yarnpkg/yarn/issues/7866
-      - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
   build:
     commands:
       - export REPO_NAME=${PWD##*/}
