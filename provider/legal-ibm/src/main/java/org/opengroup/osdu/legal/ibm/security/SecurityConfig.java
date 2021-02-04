@@ -1,3 +1,7 @@
+/* Licensed Materials - Property of IBM              */
+/* (c) Copyright IBM Corp. 2020. All Rights Reserved.*/
+
+ 
 package org.opengroup.osdu.legal.ibm.security;
 
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -13,7 +17,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/v2/api-docs",
+                .antMatchers("/_ah/liveness_check","/_ah/readiness_check",
+                	"/v2/api-docs",
                     "/configuration/ui",
                     "/swagger-resources/**",
                     "/configuration/security",
