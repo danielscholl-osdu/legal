@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.provider.interfaces.IAuthorizationService;
-import org.opengroup.osdu.core.common.http.ResponseHeaders;
+import org.opengroup.osdu.core.common.http.ResponseHeadersFactory;
 import org.opengroup.osdu.core.common.model.http.Request;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.springframework.context.annotation.Lazy;
@@ -40,6 +40,12 @@ public class LegalFilter implements Filter {
 
     @Inject
     private JaxRsDpsLog logger;
+
+    private ResponseHeadersFactory responseHeadersFactory = new ResponseHeadersFactory();
+
+    // defaults to * for any front-end, string must be comma-delimited if more than one domain
+    @Value("${ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS:*}")
+    String ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS;
 
     @Value("${ACCEPT_HTTP:false}")
     private boolean acceptHttp;
@@ -119,8 +125,8 @@ public class LegalFilter implements Filter {
     }
 
     private void setResponseHeaders(HttpServletResponse httpServletResponse) {
-        Map<String, List<Object>> standardHeaders = ResponseHeaders.STANDARD_RESPONSE_HEADERS;
-        for (Map.Entry<String, List<Object>> header : standardHeaders.entrySet()) {
+        Map<String, String> responseHeaders = responseHeadersFactory.getResponseHeaders(ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS);
+        for(Map.Entry<String, String> header : responseHeaders.entrySet()){
             httpServletResponse.addHeader(header.getKey(), header.getValue().toString());
         }
         httpServletResponse.addHeader(DpsHeaders.CORRELATION_ID, this.headers.getCorrelationId());
