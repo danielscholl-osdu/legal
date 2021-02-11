@@ -36,3 +36,7 @@ analyze:
     type: mvn
     target: provider/legal-ibm/pom.xml
     path: .
+  - name: legal-reference
+    type: mvn
+    target: provider/legal-reference/pom.xml
+    path: .
