@@ -24,6 +24,7 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+
 @Component
 @Lazy
 public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlementsFactory> {
