@@ -58,9 +58,9 @@ public class LegalFilter implements Filter {
         long startTime = System.currentTimeMillis();
         setResponseHeaders(httpServletResponse);
         try {
-            if (!validateIsHttps(httpServletResponse)) {
+            if (!validateIsHttps(httpServletResponse,httpServletRequest)) {
                 //do nothing
-            } else if (httpServletRequest.getMethod().equalsIgnoreCase("OPTIONS")) {
+            } else if (isOptionsMethod(httpServletRequest)) {
                 httpServletResponse.setStatus(200);
             } else {
                 chain.doFilter(request, response);
@@ -75,9 +75,9 @@ public class LegalFilter implements Filter {
 	public void destroy() {
     }
     
-    private boolean validateIsHttps( HttpServletResponse httpServletResponse) {
+    private boolean validateIsHttps( HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) {
         String uri = requestInfo.getUri();
-        if(!isLocalHost(uri) && !isCronJob(uri) && !isSwagger(uri) && !isHealthCheck(uri)) {
+        if(!isLocalHost(uri) && !isCronJob(uri) && !isSwagger(uri) && !isHealthCheck(uri) && !isOptionsMethod(httpServletRequest)) {
             if(!hasJwt()) {
                 httpServletResponse.setStatus(401);
                 return false;
@@ -111,6 +111,11 @@ public class LegalFilter implements Filter {
     private boolean isSwagger(String uri) {
         return uri.contains("/swagger") || uri.contains("/v2/api-docs") || uri.contains("/configuration/ui") || uri.contains("/webjars/");
     }
+
+    private boolean isOptionsMethod(HttpServletRequest httpServletRequest){
+        return httpServletRequest.getMethod().equalsIgnoreCase("OPTIONS");
+    }
+
     private void logRequest(HttpServletRequest servletRequest, HttpServletResponse servletResponse, long startTime) {
         String uri = requestInfo.getUri();
         if(!isHealthCheck(uri)) {
