@@ -18,7 +18,7 @@
     <parent>
         <artifactId>legal-service</artifactId>
         <groupId>org.opengroup.osdu.legal</groupId>
-        <version>0.8.0-SNAPSHOT</version>
+        <version>0.9.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -29,7 +29,7 @@
     <properties>
         <aws.version>1.11.651</aws.version>
         <deployment.environment>dev</deployment.environment>
-        <version.number>0.8.0-SNAPSHOT</version.number>
+        <version.number>0.9.0-SNAPSHOT</version.number>
     </properties>
 
     <dependencies>
