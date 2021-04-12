@@ -60,7 +60,7 @@ phases:
       - printenv
 
       - echo "Building primary service assemblies..."
-      - mvn -ntp -B test install -pl legal-core,provider/legal-aws,'!provider/legal-azure' -Ddeployment.environment=prod
+      - mvn -ntp -B test install -pl legal-core,provider/legal-aws -Ddeployment.environment=prod
 
 #      Suspended until further notice
 #      - echo "Copying assemblies to dist..."
