@@ -24,6 +24,9 @@ public class LegalDoc {
     @DynamoDBHashKey(attributeName = "Id")
     private String id;
 
+    @DynamoDBRangeKey(attributeName = "dataPartitionId")
+    private String dataPartitionId;
+
     @DynamoDBAttribute(attributeName = "Name")
     private String name;
 
@@ -44,6 +47,14 @@ public class LegalDoc {
 
     public void setId(String id){
         this.id = id;
+    }
+
+    public String getDataPartitionId(){
+        return dataPartitionId;
+    }
+
+    public void setDataPartitionId(String tenant){
+        this.dataPartitionId = tenant;
     }
 
     public void setName(String name) {

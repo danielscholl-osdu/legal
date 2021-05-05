@@ -14,9 +14,14 @@
 
 package org.opengroup.osdu.legal.aws.tags.dataaccess;
 
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperFactory;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
 import org.opengroup.osdu.core.aws.dynamodb.QueryPageResult;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 
@@ -26,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -41,15 +47,24 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
     @Value("${aws.dynamodb.endpoint}")
     String dynamoDbEndpoint;
 
-    private DynamoDBQueryHelper queryHelper;
+    @Inject
+    private DpsHeaders headers;
 
-    @PostConstruct
-    public void init(){
-        queryHelper = new DynamoDBQueryHelper(dynamoDbEndpoint, dynamoDbRegion, tablePrefix);
+    @Inject
+    private DynamoDBQueryHelperFactory dynamoDBQueryHelperFactory;
+
+    @Value("${aws.dynamodb.legalTable.ssm.relativePath}")
+    String legalRepositoryTableParameterRelativePath;
+
+    private DynamoDBQueryHelperV2 getLegalRepositoryQueryHelper() {
+        return dynamoDBQueryHelperFactory.getQueryHelperForPartition(headers, legalRepositoryTableParameterRelativePath);
     }
+
 
     @Override
     public Long create(LegalTag legalTag) {
+        DynamoDBQueryHelperV2 queryHelper = getLegalRepositoryQueryHelper();
+
         LegalDoc legalDoc = CreateLegalDocFromTag(legalTag);
         if (queryHelper.keyExistsInTable(LegalDoc.class, legalDoc)){
             throw new AppException(409, "Legal tag conflict", String.format(
@@ -61,10 +76,12 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
 
     @Override
     public Collection<LegalTag> get(long[] ids) {
+        DynamoDBQueryHelperV2 queryHelper = getLegalRepositoryQueryHelper();
+
         List<LegalTag> tags = new ArrayList<>();
 
         for(long id: ids) {
-            LegalDoc ld = queryHelper.loadByPrimaryKey(LegalDoc.class, String.valueOf(id)); //dynamoDBLegal.findById(String.valueOf(id));
+            LegalDoc ld = queryHelper.loadByPrimaryKey(LegalDoc.class, String.valueOf(id), headers.getPartitionId()); //dynamoDBLegal.findById(String.valueOf(id));
             if(ld != null) {
                 tags.add(CreateLegalTagFromDoc(ld));
             }
@@ -75,9 +92,11 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
 
     @Override
     public Boolean delete(LegalTag legalTag) {
+        DynamoDBQueryHelperV2 queryHelper = getLegalRepositoryQueryHelper();
+
         Boolean result = true;
         try {
-            queryHelper.deleteByPrimaryKey(LegalDoc.class, String.valueOf(legalTag.getId()));
+            queryHelper.deleteByPrimaryKey(LegalDoc.class, String.valueOf(legalTag.getId()), headers.getPartitionId());
         } catch (Exception e){ // should be dynamodb specific exception
             result = false;
             // might need to throw app exception
@@ -94,15 +113,24 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
 
     @Override
     public Collection<LegalTag> list(ListLegalTagArgs args) {
+        DynamoDBQueryHelperV2 queryHelper = getLegalRepositoryQueryHelper();
+
+        String filterExpression = "dataPartitionId = :partitionId";
+
+        AttributeValue dataPartitionAttributeValue = new AttributeValue(headers.getPartitionId());
+
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":partitionId", dataPartitionAttributeValue);
+
         int limit = args.getLimit();
 
         List<LegalDoc> docs = null;
         List<LegalTag> tags = new ArrayList<>();
         try {
             if(limit <= 0){
-                docs = queryHelper.scanTable(LegalDoc.class);
+                docs = queryHelper.scanTable(LegalDoc.class, filterExpression, eav);
             } else {
-                QueryPageResult<LegalDoc> scanPageResults = queryHelper.scanPage(LegalDoc.class, limit, args.getCursor());
+                QueryPageResult<LegalDoc> scanPageResults = queryHelper.scanPage(LegalDoc.class, limit, args.getCursor(),filterExpression, eav);
                 if (scanPageResults != null) docs = scanPageResults.results;
             }
         } catch (UnsupportedEncodingException e) {
@@ -120,6 +148,8 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
     }
 
     private Long save(LegalDoc legalDoc){
+        DynamoDBQueryHelperV2 queryHelper = getLegalRepositoryQueryHelper();
+
         Long id = -1L;
         if(legalDoc != null){
             queryHelper.save(legalDoc);
@@ -141,6 +171,7 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
     private LegalDoc CreateLegalDocFromTag(LegalTag legalTag){
         LegalDoc legalDoc = new LegalDoc();
         legalDoc.setId(String.valueOf(legalTag.getId()));
+        legalDoc.setDataPartitionId(headers.getPartitionId());
         legalDoc.setDescription(legalTag.getDescription());
         legalDoc.setName(legalTag.getName());
         legalDoc.setProperties(legalTag.getProperties());

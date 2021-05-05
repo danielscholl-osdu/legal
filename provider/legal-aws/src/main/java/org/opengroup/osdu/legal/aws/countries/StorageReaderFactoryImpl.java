@@ -16,36 +16,23 @@ package org.opengroup.osdu.legal.aws.countries;
 
 import org.opengroup.osdu.core.aws.ssm.ParameterStorePropertySource;
 import org.opengroup.osdu.core.aws.ssm.SSMConfig;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReaderFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
+
 @Component
 public class StorageReaderFactoryImpl implements IStorageReaderFactory {
 
-    private String legalConfigBucketName;
-
-    @Value("${aws.s3.legal.config.file-name}")
-    private String legalConfigFileName;
-
-    @Value("${aws.s3.endpoint}")
-    private String awsS3Endpoint;
-
-    @Value("${aws.s3.region}")
-    private String awsS3Region;
-
-    @Value("${aws.legal.s3.bucket.name}")
-    String parameter;
-
-    private ParameterStorePropertySource ssm;
+    @Inject
+    StorageReaderImpl storageReaderImpl;
 
     @Override
     public IStorageReader getReader(TenantInfo tenant, String projectRegion) {
-        SSMConfig ssmConfig = new SSMConfig();
-        ssm = ssmConfig.amazonSSM();
-        legalConfigBucketName = ssm.getProperty(parameter).toString();
-        return new StorageReaderImpl(tenant, legalConfigBucketName, legalConfigFileName, awsS3Endpoint, awsS3Region);
+        return storageReaderImpl;
     }
 }
