@@ -38,15 +38,6 @@ import java.util.*;
 @Repository // why use repository over component over service
 public class LegalTagRepositoryImpl implements ILegalTagRepository {
 
-    @Value("${aws.dynamodb.table.prefix}")
-    String tablePrefix;
-
-    @Value("${aws.dynamodb.region}")
-    String dynamoDbRegion;
-
-    @Value("${aws.dynamodb.endpoint}")
-    String dynamoDbEndpoint;
-
     @Inject
     private DpsHeaders headers;
 
