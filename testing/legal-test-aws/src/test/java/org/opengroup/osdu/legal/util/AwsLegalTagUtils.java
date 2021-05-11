@@ -21,10 +21,11 @@ import java.util.List;
 
 import com.amazonaws.services.s3.AmazonS3;
 import org.opengroup.osdu.core.aws.cognito.AWSCognitoClient;
-import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperFactory;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
 import org.opengroup.osdu.core.aws.s3.S3Config;
-
+import org.opengroup.osdu.core.common.model.legal.Properties;
+import org.springframework.beans.factory.annotation.Value;
 
 public class AwsLegalTagUtils extends LegalTagUtils {
     private static final String FILE_NAME = "Legal_COO.json";
@@ -77,7 +78,6 @@ public class AwsLegalTagUtils extends LegalTagUtils {
         doc.setDescription("Expired integration test tag");
         doc.setName(integrationTagTestName);
         doc.setId(Integer.toString(integrationTagTestName.hashCode()));
-        doc.setDataPartitionId(getMyDataPartition());
 
         org.opengroup.osdu.core.common.model.legal.Properties properties = new org.opengroup.osdu.core.common.model.legal.Properties();
         List countryOfOrigin = new ArrayList();
@@ -93,16 +93,19 @@ public class AwsLegalTagUtils extends LegalTagUtils {
         properties.setExportClassification("EAR99");
         doc.setProperties(properties);
 
-        DynamoDBQueryHelperFactory dynamoDBQueryHelperFactory = new DynamoDBQueryHelperFactory();
-        DynamoDBQueryHelperV2 queryHelper = dynamoDBQueryHelperFactory.getQueryHelperForPartition(getMyDataPartition(), "legal/legalTable");
+        doc.setDataPartitionId(getMyDataPartition());
+
+        String dynamoDbRegion = System.getenv(DYNAMO_DB_REGION);
+        String dynamoDbEndpoint = System.getenv(DYNAMO_DB_ENDPOINT);
+
+        String table = String.format("%s-shared-LegalRepository", System.getenv(TABLE_PREFIX));
+        DynamoDBQueryHelperV2 queryHelper = new DynamoDBQueryHelperV2(dynamoDbEndpoint, dynamoDbRegion, table);
 
         // delete legal tag if it exists
         if(queryHelper.keyExistsInTable(LegalDoc.class, doc)){
-            queryHelper.deleteByPrimaryKey(LegalDoc.class, doc.getId());
+            queryHelper.deleteByPrimaryKey(LegalDoc.class, doc.getId(), doc.getDataPartitionId());
         }
 
         queryHelper.save(doc);
     }
-
-
 }
