@@ -46,12 +46,13 @@ public class AwsLegalTagUtils extends LegalTagUtils {
     public synchronized void uploadTenantTestingConfigFile() {
         String amazonS3Endpoint = System.getProperty("AWS_S3_ENDPOINT", System.getenv("AWS_S3_ENDPOINT"));
         String amazonS3Region = System.getProperty("AWS_S3_REGION", System.getenv("AWS_S3_REGION"));
+        String dataPartitionId = System.getProperty("MY_TENANT", System.getenv("MY_TENANT"));
 
         S3Config s3Config = new S3Config(amazonS3Endpoint, amazonS3Region);
         AmazonS3 s3Client = s3Config.amazonS3();
 
         try {
-            s3Client.putObject(BUCKET_NAME_AWS, FILE_NAME, readTestFile("TenantConfigTestingPurpose.json"));
+            s3Client.putObject(BUCKET_NAME_AWS, String.format("%s/%s", dataPartitionId, FILE_NAME), readTestFile("TenantConfigTestingPurpose.json"));
         } catch(IOException e){
             throw new RuntimeException(e.getMessage(), e);
         }
