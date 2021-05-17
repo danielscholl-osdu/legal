@@ -8,9 +8,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <docker.image.prefix>opendes</docker.image.prefix>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <os-core-common.version>0.9.0-rc3</os-core-common.version>
+        <os-core-common.version>0.9.0-rc7</os-core-common.version>
         <snakeyaml.version>1.26</snakeyaml.version>
-        <spring-web.version>5.1.19.RELEASE</spring-web.version>
     </properties>
 
     <licenses>
@@ -20,13 +19,6 @@
     		<distribution>repo</distribution>
     	</license>
     </licenses>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.8.RELEASE</version>
-        <relativePath /> <!-- lookup parent from repository -->
-    </parent>
 
     <groupId>org.opengroup.osdu.legal</groupId>
     <artifactId>legal-service</artifactId>
@@ -69,6 +61,13 @@
                 <groupId>org.opengroup.osdu</groupId>
                 <artifactId>os-core-common</artifactId>
                 <version>${os-core-common.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.opengroup.osdu</groupId>
+                <artifactId>os-core-common</artifactId>
+                <version>${os-core-common.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.elasticsearch</groupId>
@@ -89,11 +88,6 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring-web.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -105,7 +105,7 @@ public class TestUtils {
 			return null;
 		}
 
-		assertEquals("application/json; charset=UTF-8", response.getType().toString());
+		assertEquals("application/json", response.getType().toString());
 		if (classOfT == String.class) {
 			return (T) json;
 		}
