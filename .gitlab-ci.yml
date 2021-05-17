@@ -30,6 +30,7 @@ include:
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/maven.yml"
+    ref: "temp-fix-artifact-issue"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa.yml"
