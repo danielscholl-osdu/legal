@@ -21,13 +21,17 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperFactory;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
 import org.opengroup.osdu.core.aws.dynamodb.QueryPageResult;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.legal.aws.tags.dataaccess.LegalDoc;
 import org.opengroup.osdu.legal.aws.tags.dataaccess.LegalTagRepositoryImpl;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -41,11 +45,19 @@ public class LegalTagRepositoryImplTest {
     private LegalTagRepositoryImpl repo = new LegalTagRepositoryImpl();
 
     @Mock
-    DynamoDBQueryHelper queryHelper;
+    private DynamoDBQueryHelperV2 queryHelper;
+
+    @Mock
+    private DpsHeaders headers;
+
+    @Mock
+    private DynamoDBQueryHelperFactory dynamoDBQueryHelperFactory;
 
     @Before
     public void setUp() {
         initMocks(this);
+        Mockito.when(dynamoDBQueryHelperFactory.getQueryHelperForPartition(Mockito.any(DpsHeaders.class), Mockito.any()))
+                .thenReturn(queryHelper);
     }
 
     @Test
@@ -72,15 +84,13 @@ public class LegalTagRepositoryImplTest {
             1L, 2L, 3L
         };
 
-        Mockito.when(queryHelper.loadByPrimaryKey(Mockito.any(), Mockito.anyString())).thenReturn(null);
-
         // act
         repo.get(ids);
 
         // assert
-        Mockito.verify(queryHelper, Mockito.times(1)).loadByPrimaryKey(Mockito.any(), Mockito.eq("1"));
-        Mockito.verify(queryHelper, Mockito.times(1)).loadByPrimaryKey(Mockito.any(), Mockito.eq("2"));
-        Mockito.verify(queryHelper, Mockito.times(1)).loadByPrimaryKey(Mockito.any(), Mockito.eq("3"));
+        Mockito.verify(queryHelper, Mockito.times(1)).loadByPrimaryKey(Mockito.any(), Mockito.eq("1"), Mockito.any());
+        Mockito.verify(queryHelper, Mockito.times(1)).loadByPrimaryKey(Mockito.any(), Mockito.eq("2"), Mockito.any());
+        Mockito.verify(queryHelper, Mockito.times(1)).loadByPrimaryKey(Mockito.any(), Mockito.eq("3"), Mockito.any());
     }
 
     @Test
@@ -96,7 +106,7 @@ public class LegalTagRepositoryImplTest {
         repo.delete(tag);
 
         // assert
-        Mockito.verify(queryHelper, Mockito.times(1)).deleteByPrimaryKey(Mockito.any(), Mockito.eq("-100"));
+        Mockito.verify(queryHelper, Mockito.times(1)).deleteByPrimaryKey(Mockito.any(), Mockito.eq("-100"), Mockito.any());
     }
 
     @Test
@@ -133,7 +143,7 @@ public class LegalTagRepositoryImplTest {
         QueryPageResult<LegalDoc> page = new QueryPageResult<LegalDoc>(null, listLd);
 
         try {
-            Mockito.when(queryHelper.scanPage(Mockito.eq(LegalDoc.class), Mockito.eq(100),Mockito.any()))
+            Mockito.when(queryHelper.scanPage(Mockito.eq(LegalDoc.class), Mockito.eq(100),Mockito.any(), Mockito.any(), Mockito.any()))
                     .thenReturn(page);
         } catch (UnsupportedEncodingException e) {
             Assert.fail("Unexpected exception");
@@ -163,13 +173,6 @@ public class LegalTagRepositoryImplTest {
         listLd.add(ld);
         QueryPageResult<LegalDoc> page = new QueryPageResult<LegalDoc>(null, listLd);
 
-        try {
-            Mockito.when(queryHelper.scanPage(Mockito.eq(LegalDoc.class), Mockito.eq(100),Mockito.any()))
-                    .thenReturn(page);
-        } catch (UnsupportedEncodingException e) {
-            Assert.fail("Unexpected exception");
-        }
-
         // act
         ArrayList<LegalTag> tags = (ArrayList)repo.list(args);
 
@@ -184,13 +187,6 @@ public class LegalTagRepositoryImplTest {
         args.setIsValid(true);
         args.setCursor("{{\"title\"={\"S\":\"Monster on the Campus\",}},{\"title\":{\"S\":\"+1\",}},}}}");
         args.setLimit(100);
-
-        try {
-            Mockito.when(queryHelper.scanPage(Mockito.eq(LegalDoc.class), Mockito.eq(100),Mockito.any()))
-                    .thenReturn(null);
-        } catch (UnsupportedEncodingException e) {
-            Assert.fail("Unexpected exception");
-        }
 
         // act
         ArrayList<LegalTag> tags = (ArrayList)repo.list(args);

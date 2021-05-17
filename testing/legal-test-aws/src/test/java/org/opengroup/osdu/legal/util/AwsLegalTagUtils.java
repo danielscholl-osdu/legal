@@ -22,6 +22,7 @@ import java.util.List;
 import com.amazonaws.services.s3.AmazonS3;
 import org.opengroup.osdu.core.aws.cognito.AWSCognitoClient;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
 import org.opengroup.osdu.core.aws.s3.S3Config;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,12 +46,13 @@ public class AwsLegalTagUtils extends LegalTagUtils {
     public synchronized void uploadTenantTestingConfigFile() {
         String amazonS3Endpoint = System.getProperty("AWS_S3_ENDPOINT", System.getenv("AWS_S3_ENDPOINT"));
         String amazonS3Region = System.getProperty("AWS_S3_REGION", System.getenv("AWS_S3_REGION"));
+        String dataPartitionId = System.getProperty("MY_TENANT", System.getenv("MY_TENANT"));
 
         S3Config s3Config = new S3Config(amazonS3Endpoint, amazonS3Region);
         AmazonS3 s3Client = s3Config.amazonS3();
 
         try {
-            s3Client.putObject(BUCKET_NAME_AWS, FILE_NAME, readTestFile("TenantConfigTestingPurpose.json"));
+            s3Client.putObject(BUCKET_NAME_AWS, String.format("%s/%s", dataPartitionId, FILE_NAME), readTestFile("TenantConfigTestingPurpose.json"));
         } catch(IOException e){
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -92,15 +94,17 @@ public class AwsLegalTagUtils extends LegalTagUtils {
         properties.setExportClassification("EAR99");
         doc.setProperties(properties);
 
-        String tablePrefix = String.format("%s%s", System.getenv(TABLE_PREFIX), "-");
+        doc.setDataPartitionId(getMyDataPartition());
+
         String dynamoDbRegion = System.getenv(DYNAMO_DB_REGION);
         String dynamoDbEndpoint = System.getenv(DYNAMO_DB_ENDPOINT);
 
-        DynamoDBQueryHelper queryHelper = new DynamoDBQueryHelper(dynamoDbEndpoint, dynamoDbRegion, tablePrefix);
+        String table = String.format("%s-shared-LegalRepository", System.getenv(TABLE_PREFIX));
+        DynamoDBQueryHelperV2 queryHelper = new DynamoDBQueryHelperV2(dynamoDbEndpoint, dynamoDbRegion, table);
 
         // delete legal tag if it exists
         if(queryHelper.keyExistsInTable(LegalDoc.class, doc)){
-            queryHelper.deleteByPrimaryKey(LegalDoc.class, doc.getId());
+            queryHelper.deleteByPrimaryKey(LegalDoc.class, doc.getId(), doc.getDataPartitionId());
         }
 
         queryHelper.save(doc);

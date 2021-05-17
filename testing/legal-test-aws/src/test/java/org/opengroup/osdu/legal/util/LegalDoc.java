@@ -14,10 +14,7 @@
 
 package org.opengroup.osdu.legal.util;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 
 
@@ -26,6 +23,9 @@ public class LegalDoc {
 
     @DynamoDBHashKey(attributeName = "Id")
     private String id;
+
+    @DynamoDBRangeKey(attributeName = "dataPartitionId")
+    private String dataPartitionId;
 
     @DynamoDBAttribute(attributeName = "Name")
     private String name;
@@ -47,6 +47,14 @@ public class LegalDoc {
 
     public void setId(String id){
         this.id = id;
+    }
+
+    public String getDataPartitionId(){
+        return dataPartitionId;
+    }
+
+    public void setDataPartitionId(String tenant){
+        this.dataPartitionId = tenant;
     }
 
     public void setName(String name) {
