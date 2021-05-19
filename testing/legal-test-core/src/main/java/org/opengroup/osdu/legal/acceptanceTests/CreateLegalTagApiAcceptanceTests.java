@@ -42,14 +42,15 @@ public abstract class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTes
         COO = "SD";
         ClientResponse response = validateAccess(400);
         String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [SD].\\\"]}\"" , messageResponse);    }
+        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [SD].\\\"]}\"}" , messageResponse);
+    }
 
     @Test
     public void should_notAllowCreationOfLegalTag_when_countryOfOriginIsSetToARestrictedCountry() throws Exception {
         COO = "BV";
         ClientResponse response = validateAccess(400);
         String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [BV].\\\"]}\"", messageResponse);
+        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [BV].\\\"]}\"}", messageResponse);
     }
 
     @Test
@@ -89,14 +90,14 @@ public abstract class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTes
 
         response = legalTagUtils.create("US", name);
         String error = legalTagUtils.getResult(response, 409, String.class);
-        assertTrue(error.startsWith("\"A LegalTag already exists for the given name"));
+        assertTrue(error.contains("\"message\":\"A LegalTag already exists for the given name"));
     }
 
     @Test
     public void should_return400_CreationOfALegalTag_when_countryOfOriginIsSetToDefaultResidencyRiskCountry_andThen_None_ofThe_Datatype_is_exluded_from_Dataresidency() throws Exception {
         ClientResponse response = legalTagUtils.create("MX", name);
         String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [MX].\\\"]}\"", messageResponse);
+        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [MX].\\\"]}\"}", messageResponse);
     }
 
     @Test
@@ -158,7 +159,7 @@ public abstract class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTes
     public void should_return400_CreationOfALegalTag_when_countryOfOriginIsSetToEmbargoCountry_andThen_input_Datatype_is_exluded_from_Dataresidency() throws Exception {
         ClientResponse response = legalTagUtils.create("IR", name, "Transferred Data");
         String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [IR].\\\"]}\"", messageResponse);
+        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [IR].\\\"]}\"}", messageResponse);
     }
     @Test
     public void should_onlyLetAMaximumOf1LegaltagBeCreated_when_tryingToCreateMultipleVersionsOfTheSameContractAtTheSameTime() throws Exception {

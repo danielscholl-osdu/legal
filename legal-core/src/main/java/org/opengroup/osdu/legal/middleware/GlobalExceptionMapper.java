@@ -145,6 +145,6 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 			this.logger.warning(exceptionMsg, e);
 		}
 
-      return new ResponseEntity<Object>(gson.toJson(exceptionMsg),HttpStatus.resolve(e.getError().getCode()));
+      return new ResponseEntity<Object>(e.getError(),HttpStatus.resolve(e.getError().getCode()));
 	}
 }

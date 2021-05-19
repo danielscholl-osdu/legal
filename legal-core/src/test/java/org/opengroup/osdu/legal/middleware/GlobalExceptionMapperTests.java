@@ -5,6 +5,7 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 
 import javassist.NotFoundException;
 
+import org.opengroup.osdu.core.common.model.http.AppError;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +35,8 @@ public class GlobalExceptionMapperTests {
 		ResponseEntity<Object> response = sut.handleAppException(exception);
 		assertEquals(409, response.getStatusCodeValue());
 		//assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType().toString());
-		assertEquals("\"any message\"", response.getBody());
+		AppError expectedError = new AppError(409, "any reason", "any message");
+		assertEquals(expectedError, response.getBody());
 	}
 	@Test
 	public void should_addLocationHeader_when_fromAppException() {
@@ -55,6 +57,7 @@ public class GlobalExceptionMapperTests {
 		//assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType().toString());
 		//assertEquals("any message", response.getBody());
 	}
+
 	@Test
 	public void should_use404ValueInResponse_When_NotFoundExceptionIsHandledByGlobalExceptionMapper() {
 
@@ -64,6 +67,7 @@ public class GlobalExceptionMapperTests {
 		//assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType().toString());
 		//assertEquals(null, response.getBody().getMessage());
 	}
+
 	@Test
 	public void should_use405ValueInResponse_When_HttpRequestMethodNotSupportedExceptionIsHandledByGlobalExceptionMapper() {
 		HttpHeaders httpHeaders = mock(HttpHeaders.class);
@@ -72,6 +76,7 @@ public class GlobalExceptionMapperTests {
 		ResponseEntity<Object> response = sut.handleHttpRequestMethodNotSupported(exception, httpHeaders, HttpStatus.METHOD_NOT_ALLOWED, webRequest);
 		assertEquals(405, response.getStatusCodeValue());
 	}
+
 	@Test
 	public void should_useGenericValuesInResponse_When_ExceptionIsHandledByGlobalExceptionMapper() {
 
