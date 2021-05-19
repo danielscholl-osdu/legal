@@ -48,7 +48,7 @@ public abstract class UpdateLegalTagApiAcceptanceTests extends AcceptanceBaseTes
         expDate = "2010-12-31"; //set expired date
         ClientResponse response = legalTagUtils.send(this.getApi(), this.getHttpMethod(), legalTagUtils.accessToken(), getBody(), getQuery());
         String error = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("\"{\\\"errors\\\":[\\\"Expiration date must be a value in the future. Given 2010-12-31\\\"]}\"", error);
+        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Expiration date must be a value in the future. Given 2010-12-31\\\"]}\"}", error);
     }
 
     @Test
