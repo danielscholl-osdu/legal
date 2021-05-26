@@ -126,6 +126,8 @@ You will need to have the following environment variables defined.
 | `HOST_URL` | `http://localhsot:8080/api/legal/v1/` | - | yes | - |
 | `MY_TENANT` | `osdu` | OSDU tenant used for testing | yes | - |
 | `SKIP_HTTP_TESTS` | ex `true` | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes | - |
+| `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |
+| `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
 
 **Entitlements configuration for integration accounts**
 
