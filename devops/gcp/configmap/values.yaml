@@ -1,0 +1,18 @@
+# Default values for legal-configmap.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+data:
+  authorize_api: ".default.svc.cluster.local/entitlements/v1/"
+  log_level: "INFO"
+  enable_full_bucket_name: "true"
+  project_id: ""
+  audiences: "519000754840-r12fqsd3e12aqep8c5f3j3t3emv8jeg1.apps.googleusercontent.com"
+  redis_group_host: ""
+  redis_storage_host: ""
+  accept_http: "true"
+
+conf:
+  ent_name: ""
+  configmap: "legal-config"
+  app_name: "legal"
