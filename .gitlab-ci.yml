@@ -16,6 +16,7 @@ variables:
   OSDU_GCP_APPLICATION_NAME: os-legal
   OSDU_GCP_ENV_VARS: ENABLE_FULL_BUCKET_NAME=$ENABLE_FULL_BUCKET_NAME,PROJECT_ID=$OSDU_GCP_PROJECT,AUTHORIZE_API=$OSDU_GCP_AUTHORIZE_API,AUDIENCES=$GOOGLE_AUDIENCE,GOOGLE_AUDIENCES=$GOOGLE_AUDIENCE,PARTITION_API=$OSDU_GCP_PARTITION_API,REDIS_GROUP_HOST=$REDIS_GROUP_HOST,REDIS_STORAGE_HOST=$REDIS_STORAGE_HOST,LEGAL_HOSTNAME=$OSDU_GCP_LEGAL_HOSTNAME --vpc-connector=$OSDU_GCP_VPC_CONNECTOR
   OSDU_GCP_TEST_SUBDIR: testing/$OSDU_GCP_SERVICE-test-$OSDU_GCP_VENDOR
+  OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
   
   IBM_BUILD_SUBDIR: provider/legal-ibm
   IBM_INT_TEST_SUBDIR: testing/legal-test-ibm
@@ -54,6 +55,11 @@ include:
     ref: "master"
     file: 'cloud-providers/gcp.yml'
 
+  - project: 'osdu/platform/ci-cd-pipelines'
+    ref: "master"
+    file: 'publishing/pages.yml'
+    
 compile-and-unit-test:
   variables:
     GOOGLE_CLOUD_PROJECT: opendes-evt
+
