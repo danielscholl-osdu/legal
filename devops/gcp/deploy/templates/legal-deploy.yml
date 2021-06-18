@@ -4,7 +4,7 @@ metadata:
   labels:
     app: "{{ .Values.conf.app_name }}"
   name: "{{ .Values.conf.app_name }}"
-  namespace: {{ .Release.Namespace }}
+  namespace: "{{ .Release.Namespace }}"
 spec:
   selector:
     matchLabels:
@@ -17,48 +17,10 @@ spec:
     spec:
       containers:
       - name: "{{ .Values.conf.app_name }}"
-        image: "{{ .Values.legal.image }}"
-        env:
-        - name: "AUTHORIZE_API"
-          valueFrom:
-            configMapKeyRef:
-              key: AUTHORIZE_API
-              name: "{{ .Values.conf.configmap }}"
-        - name: "LOG_LEVEL"
-          valueFrom:
-            configMapKeyRef:
-              key: LOG_LEVEL
-              name: "{{ .Values.conf.configmap }}"
-        - name: "ENABLE_FULL_BUCKET_NAME"
-          valueFrom:
-            configMapKeyRef:
-              key: ENABLE_FULL_BUCKET_NAME
-              name: "{{ .Values.conf.configmap }}"
-        - name: "PROJECT_ID"
-          valueFrom:
-            configMapKeyRef:
-              key: PROJECT_ID
-              name: "{{ .Values.conf.configmap }}"
-        - name: "AUDIENCES"
-          valueFrom:
-            configMapKeyRef:
-              key: AUDIENCES
-              name: "{{ .Values.conf.configmap }}"
-        - name: "REDIS_GROUP_HOST"
-          valueFrom:
-            configMapKeyRef:
-              key: REDIS_GROUP_HOST
-              name: "{{ .Values.conf.configmap }}"
-        - name: "REDIS_STORAGE_HOST"
-          valueFrom:
-            configMapKeyRef:
-              key: REDIS_STORAGE_HOST
-              name: "{{ .Values.conf.configmap }}"
-        - name: "ACCEPT_HTTP"
-          valueFrom:
-            configMapKeyRef:
-              key: ACCEPT_HTTP
-              name: "{{ .Values.conf.configmap }}"
+        image: "{{ .Values.data.image }}"
+        envFrom:
+        - configMapRef:
+            name: "{{ .Values.conf.configmap }}"
         securityContext:
           allowPrivilegeEscalation: false
           runAsUser: 0
@@ -66,9 +28,9 @@ spec:
         - containerPort: 8080
         resources:
           requests:
-            cpu: "{{ .Values.legal.requests_cpu }}"
-            memory: "{{ .Values.legal.requests_memory }}"
+            cpu: "{{ .Values.data.requests_cpu }}"
+            memory: "{{ .Values.data.requests_memory }}"
           limits:
-            cpu: "{{ .Values.legal.limits_cpu }}"
-            memory: "{{ .Values.legal.limits_memory }}"
-      serviceAccountName: "{{ .Values.legal.serviceAccountName }}"
+            cpu: "{{ .Values.data.limits_cpu }}"
+            memory: "{{ .Values.data.limits_memory }}"
+      serviceAccountName: "{{ .Values.data.serviceAccountName }}"
