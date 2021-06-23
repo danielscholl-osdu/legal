@@ -3,11 +3,12 @@
 # Declare variables to be passed into your templates.
 
 data:
-  authorize_api: ".default.svc.cluster.local/entitlements/v1/"
+  authorize_api: "http://entitlements.default.svc.cluster.local/api/entitlements/v2"
+  partition_api: "http://partition.default.svc.cluster.local/api/partition/v1"
   log_level: "INFO"
   enable_full_bucket_name: "true"
   project_id: ""
-  audiences: ""
+  google_audiences: ""
   redis_group_host: ""
   redis_storage_host: ""
   accept_http: "true"
