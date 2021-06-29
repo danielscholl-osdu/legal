@@ -21,6 +21,7 @@ import com.google.cloud.storage.*;
 
 import java.util.Objects;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.gcp.multitenancy.credentials.GcsCredential;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 import org.springframework.http.MediaType;
 
@@ -68,7 +69,7 @@ public class StorageReaderImpl implements IStorageReader {
 
     private Storage getStorage() {
         return StorageOptions.newBuilder()
-                             .setCredentials(new CloudStorageCredential(this.tenantInfo))
+                             .setCredentials(new GcsCredential(this.tenantInfo.getServiceAccount(),this.tenantInfo.getServiceAccount()))
                              .setProjectId(this.tenantInfo.getProjectId())
                              .build()
                              .getService();
