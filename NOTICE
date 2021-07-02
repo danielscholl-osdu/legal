@@ -765,6 +765,7 @@ CDDL-1.1
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- JavaBeans Activation Framework (from )
 - tomcat-embed-core (from http://tomcat.apache.org/)
 
 ========================================================================
@@ -829,6 +830,7 @@ The following software have components provided under the terms of this license:
 - Cobertura code coverage (from http://cobertura.sourceforge.net)
 - Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - Java Servlet API (from http://servlet-spec.java.net)
+- JavaBeans Activation Framework (from )
 - Mojo's Maven plugin for Cobertura (from http://mojo.codehaus.org/cobertura-maven-plugin/)
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
@@ -843,6 +845,7 @@ The following software have components provided under the terms of this license:
 - Checker Qual (from https://checkerframework.org)
 - Cobertura code coverage (from http://cobertura.sourceforge.net)
 - Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
+- JavaBeans Activation Framework (from )
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
 - tomcat-embed-core (from http://tomcat.apache.org/)
