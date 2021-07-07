@@ -16,6 +16,7 @@ package org.opengroup.osdu.legal.azure.jobs;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.microsoft.azure.eventgrid.models.EventGridEvent;
 import com.microsoft.azure.servicebus.Message;
 import com.microsoft.azure.servicebus.MessageBody;
 import com.microsoft.azure.servicebus.TopicClient;
@@ -27,11 +28,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
+import org.opengroup.osdu.legal.azure.di.EventGridConfig;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -52,6 +56,12 @@ public class LegalTagPublisherImplTest {
     private ITopicClientFactory topicClientFactory;
 
     @Mock
+    private EventGridTopicStore eventGridTopicStore;
+
+    @Mock
+    private EventGridConfig eventGridConfig;
+
+    @Mock
     private TopicClient topicClient;
 
     @Mock
@@ -67,6 +77,28 @@ public class LegalTagPublisherImplTest {
         doReturn(USER_EMAIL).when(headers).getUserEmail();
         doReturn(PARTITION_ID).when(headers).getPartitionId();
         doReturn(topicClient).when(topicClientFactory).getClient(eq(PARTITION_ID), any());
+    }
+
+    @Test
+    public void should_publishToEventGrid_WhenFlagIsSet() throws Exception {
+        StatusChangedTags tags = new StatusChangedTags();
+
+        ArgumentCaptor<String> partitionNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> topicNameArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<List<EventGridEvent>> listEventGridEventArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        doNothing().when(this.eventGridTopicStore).publishToEventGridTopic(
+                partitionNameCaptor.capture(), topicNameArgumentCaptor.capture(), listEventGridEventArgumentCaptor.capture()
+        );
+        when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
+        when(this.eventGridConfig.getTopicName()).thenReturn("legaltagschangedtopic");
+
+        sut.publish("project-id", headers, tags);
+
+        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(any(), any(), anyList());
+
+        assertEquals(1, listEventGridEventArgumentCaptor.getValue().size());
+        assertEquals(topicNameArgumentCaptor.getValue(), "legaltagschangedtopic");
+        assertEquals(partitionNameCaptor.getValue(), PARTITION_ID);
     }
 
     @Test
