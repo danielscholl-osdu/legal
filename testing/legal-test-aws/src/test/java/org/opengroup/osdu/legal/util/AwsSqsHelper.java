@@ -35,7 +35,7 @@ public class AwsSqsHelper {
     public static void purgeQueue(){
         String amazonSqsEndpoint = System.getenv("LEGAL_QUEUE");;
         AmazonSQS sqs = AmazonSQSClientBuilder.standard().withRegion("us-east-1").build();
-        List<Message> messages = sqs.receiveMessage(amazonSqsEndpoint).getMessages();
+        // List<Message> messages = sqs.receiveMessage(amazonSqsEndpoint).getMessages();
         PurgeQueueRequest request = new PurgeQueueRequest();
         request.setQueueUrl(amazonSqsEndpoint);
         sqs.purgeQueue(request);
