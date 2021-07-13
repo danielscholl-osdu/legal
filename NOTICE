@@ -309,6 +309,7 @@ The following software have components provided under the terms of this license:
 - Apache Ant Core (from http://ant.apache.org/)
 - Apache Ant Launcher (from http://ant.apache.org/)
 - Apache Commons BeanUtils (from http://commons.apache.org/proper/commons-beanutils/)
+- Apache Commons CLI (from http://commons.apache.org/proper/commons-cli/)
 - Apache Commons Codec (from http://commons.apache.org/proper/commons-codec/)
 - Apache Commons Codec (from http://commons.apache.org/proper/commons-codec/)
 - Apache Commons Collections (from http://commons.apache.org/proper/commons-collections/)
@@ -577,7 +578,6 @@ The following software have components provided under the terms of this license:
 - com.google.api.grpc:proto-google-cloud-pubsub-v1 (from https://github.com/googleapis/googleapis)
 - com.google.api.grpc:proto-google-common-protos (from https://github.com/googleapis/googleapis)
 - com.google.api.grpc:proto-google-iam-v1 (from https://github.com/googleapis/googleapis)
-- commons-collections (from )
 - datastore-v1-proto-client (from )
 - error-prone annotations (from )
 - error-prone annotations (from )
@@ -606,7 +606,6 @@ The following software have components provided under the terms of this license:
 - ion-java (from https://github.com/amznlabs/ion-java/)
 - jackson-databind (from http://github.com/FasterXML/jackson)
 - jackson-databind (from http://github.com/FasterXML/jackson)
-- jakarta.xml.bind-api (from )
 - java-cloudant (from https://cloudant.com)
 - java-cloudant (from https://cloudant.com)
 - javatuples (from http://www.javatuples.org)
@@ -662,6 +661,7 @@ The following software have components provided under the terms of this license:
 
 - API Common (from https://github.com/googleapis)
 - API Common (from https://github.com/googleapis)
+- Apache Commons CLI (from http://commons.apache.org/proper/commons-cli/)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
@@ -691,8 +691,9 @@ The following software have components provided under the terms of this license:
 - ASM Core (from )
 - ASM Tree (from )
 - ASM Util (from )
+- Apache Commons Codec (from http://commons.apache.org/proper/commons-codec/)
+- Apache Commons Codec (from http://commons.apache.org/proper/commons-codec/)
 - Apache Groovy (from http://groovy-lang.org)
-- Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
@@ -703,6 +704,9 @@ The following software have components provided under the terms of this license:
 - Google Auth Library for Java - Credentials (from )
 - Google Auth Library for Java - OAuth2 HTTP (from )
 - Google Auth Library for Java - OAuth2 HTTP (from )
+- Hamcrest (from http://hamcrest.org/JavaHamcrest/)
+- Hamcrest Core (from http://hamcrest.org/)
+- HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
 - JSch (from http://www.jcraft.com/jsch/)
 - JavaBeans Activation Framework API jar (from )
 - Microsoft Application Insights Java SDK Core (from https://github.com/Microsoft/ApplicationInsights-Java)
@@ -714,10 +718,12 @@ The following software have components provided under the terms of this license:
 - Protocol Buffer Java API (from https://developers.google.com/protocol-buffers/)
 - Protocol Buffers [Util] (from )
 - Protocol Buffers [Util] (from )
+- Reflections (from http://github.com/ronmamo/reflections)
+- SnakeYAML (from http://www.snakeyaml.org)
 - Spring Core (from https://github.com/spring-projects/spring-framework)
 - ThreeTen backport (from https://www.threeten.org/threetenbp)
 - ThreeTen backport (from https://www.threeten.org/threetenbp)
-- jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
+- classworlds (from http://classworlds.codehaus.org/)
 - jakarta.xml.bind-api (from )
 - jaxen (from http://jaxen.codehaus.org/)
 
@@ -745,11 +751,6 @@ CC0-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
-- Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
-- HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
-- LatencyUtils (from http://latencyutils.github.io/LatencyUtils/)
-- Netty/Common (from )
 - reactive-streams (from http://www.reactive-streams.org/)
 
 ========================================================================
@@ -757,7 +758,6 @@ CDDL-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Apache Log4j Core (from )
 - Servlet Specification 2.5 API (from )
 
 ========================================================================
@@ -765,7 +765,10 @@ CDDL-1.1
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Java Servlet API (from http://servlet-spec.java.net)
 - JavaBeans Activation Framework (from )
+- Servlet Specification 2.5 API (from )
+- javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 
 ========================================================================
@@ -783,8 +786,6 @@ The following software have components provided under the terms of this license:
 
 - JDOM (from http://www.jdom.org)
 - Woodstox (from https://github.com/FasterXML/woodstox)
-- Xerces2-j (from https://xerces.apache.org/xerces2-j/)
-- aalto-xml (from )
 
 ========================================================================
 EPL-1.0
@@ -793,13 +794,16 @@ The following software have components provided under the terms of this license:
 
 - Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - JUnit Jupiter (Aggregator) (from https://junit.org/junit5/)
+- Logback Classic Module (from )
 - Logback Contrib :: JSON :: Classic (from )
 - Logback Contrib :: JSON :: Core (from )
 - Logback Contrib :: Jackson (from )
+- Logback Core Module (from )
 - Microsoft Application Insights Java SDK Core (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
+- SnakeYAML (from http://www.snakeyaml.org)
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
 - org.junit.jupiter:junit-jupiter-api (from http://junit.org/junit5/)
 - org.junit.jupiter:junit-jupiter-engine (from http://junit.org/junit5/)
@@ -828,14 +832,21 @@ The following software have components provided under the terms of this license:
 
 - Cobertura Limited Runtime (from http://cobertura.sourceforge.net)
 - Cobertura code coverage (from http://cobertura.sourceforge.net)
-- Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
+- Commons Lang (from http://commons.apache.org/lang/)
+- Commons Lang (from http://commons.apache.org/lang/)
 - Java Servlet API (from http://servlet-spec.java.net)
 - JavaBeans Activation Framework (from )
 - Mojo's Maven plugin for Cobertura (from http://mojo.codehaus.org/cobertura-maven-plugin/)
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
-- jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
 - javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
 - tomcat-embed-core (from http://tomcat.apache.org/)
+
+========================================================================
+GPL-2.0-or-later
+========================================================================
+The following software have components provided under the terms of this license:
+
+- SnakeYAML (from http://www.snakeyaml.org)
 
 ========================================================================
 GPL-2.0-with-classpath-exception
@@ -845,9 +856,11 @@ The following software have components provided under the terms of this license:
 - Checker Qual (from https://checkerframework.org)
 - Cobertura code coverage (from http://cobertura.sourceforge.net)
 - Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
+- Java Servlet API (from http://servlet-spec.java.net)
 - JavaBeans Activation Framework (from )
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
+- javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 
 ========================================================================
@@ -856,6 +869,8 @@ GPL-3.0-only
 The following software have components provided under the terms of this license:
 
 - Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
+- Project Lombok (from https://projectlombok.org)
+- Project Lombok (from https://projectlombok.org)
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
 
 ========================================================================
@@ -863,10 +878,8 @@ ImageMagick
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Jackson (from http://jackson.codehaus.org)
 - Stax2 API (from http://github.com/FasterXML/stax2-api)
 - Woodstox (from https://github.com/FasterXML/woodstox)
-- aalto-xml (from )
 
 ========================================================================
 Info-ZIP
@@ -888,23 +901,38 @@ LGPL-2.1-only
 The following software have components provided under the terms of this license:
 
 - Cobertura code coverage (from http://cobertura.sourceforge.net)
+- Commons Lang (from http://commons.apache.org/lang/)
+- Commons Lang (from http://commons.apache.org/lang/)
 - Java Native Access (from https://github.com/java-native-access/jna)
 - Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Javassist (from http://www.javassist.org/)
 - Javassist (from http://www.javassist.org/)
+- Logback Classic Module (from )
 - Logback Contrib :: JSON :: Classic (from )
 - Logback Contrib :: JSON :: Core (from )
 - Logback Contrib :: Jackson (from )
+- Logback Core Module (from )
 - Microsoft Application Insights Java SDK Core (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
 
 ========================================================================
+LGPL-2.1-or-later
+========================================================================
+The following software have components provided under the terms of this license:
+
+- Javassist (from http://www.javassist.org/)
+- Javassist (from http://www.javassist.org/)
+- SnakeYAML (from http://www.snakeyaml.org)
+
+========================================================================
 LGPL-3.0-only
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Apache Log4j API (from )
+- Apache Log4j Core (from )
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
 
 ========================================================================
@@ -917,8 +945,6 @@ The following software have components provided under the terms of this license:
 - AWS SDK for Java - Models (from https://aws.amazon.com/sdkforjava)
 - Animal Sniffer Annotations (from )
 - Animal Sniffer Annotations (from )
-- Apache Log4j SLF4J Binding (from )
-- Apache Log4j to SLF4J Adapter (from )
 - Azure Java Client Authentication Library for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
 - Azure Java Client Runtime for ARM (from https://github.com/Azure/autorest-clientruntime-for-java)
 - Azure Java Client Runtime for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
@@ -927,7 +953,6 @@ The following software have components provided under the terms of this license:
 - Checker Qual (from https://checkerframework.org)
 - Checker Qual (from https://checkerframework.org)
 - Extensions on Apache Proton-J library (from https://github.com/Azure/qpid-proton-j-extensions)
-- JTidy (from http://jtidy.sourceforge.net)
 - JUL to SLF4J bridge (from http://www.slf4j.org)
 - Java Client Runtime for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
 - Java JWT (from http://www.jwt.io)
@@ -963,7 +988,6 @@ The following software have components provided under the terms of this license:
 - adal4j (from https://github.com/AzureAD/azure-activedirectory-library-for-java)
 - azure-documentdb (from https://azure.microsoft.com/en-us/services/cosmos-db/)
 - documentdb-bulkexecutor (from http://azure.microsoft.com/en-us/services/documentdb/)
-- jakarta.xml.bind-api (from )
 - micrometer-core (from https://github.com/micrometer-metrics/micrometer)
 - mockito-junit-jupiter (from https://github.com/mockito/mockito)
 - msal4j (from https://github.com/AzureAD/microsoft-authentication-library-for-java)
@@ -976,6 +1000,8 @@ MPL-1.1
 The following software have components provided under the terms of this license:
 
 - Cobertura code coverage (from http://cobertura.sourceforge.net)
+- Javassist (from http://www.javassist.org/)
+- Javassist (from http://www.javassist.org/)
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
 
 ========================================================================
@@ -985,21 +1011,16 @@ The following software have components provided under the terms of this license:
 
 - Javassist (from http://www.javassist.org/)
 - Javassist (from http://www.javassist.org/)
+- OkHttp (from )
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
 
 ========================================================================
-NCSA
+PHP-3.01
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Jetty Server (from )
-
-========================================================================
-Plexus
-========================================================================
-The following software have components provided under the terms of this license:
-
-- classworlds (from http://classworlds.codehaus.org/)
+- JavaBeans Activation Framework API jar (from )
+- jakarta.xml.bind-api (from )
 
 ========================================================================
 Public-Domain
@@ -1014,26 +1035,23 @@ SAX-PD
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Apache Ant + JUnit (from http://ant.apache.org/)
 - Apache Ant Core (from http://ant.apache.org/)
-- Apache Ant Launcher (from http://ant.apache.org/)
-- xml-apis (from )
+
+========================================================================
+SPL-1.0
+========================================================================
+The following software have components provided under the terms of this license:
+
+- Checker Qual (from https://checkerframework.org)
+- Checker Qual (from https://checkerframework.org)
+- Servlet Specification 2.5 API (from )
 
 ========================================================================
 W3C
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Apache Ant + JUnit (from http://ant.apache.org/)
 - Apache Ant Core (from http://ant.apache.org/)
-- Apache Ant Launcher (from http://ant.apache.org/)
-- xml-apis (from )
-
-========================================================================
-W3C-19980720
-========================================================================
-The following software have components provided under the terms of this license:
-
 - JTidy (from http://jtidy.sourceforge.net)
 - Xerces2-j (from https://xerces.apache.org/xerces2-j/)
 - xml-apis (from )
@@ -1046,14 +1064,6 @@ The following software have components provided under the terms of this license:
 - Reflections (from http://github.com/ronmamo/reflections)
 
 ========================================================================
-X11
-========================================================================
-The following software have components provided under the terms of this license:
-
-- Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
-- Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
-
-========================================================================
 public-domain
 ========================================================================
 The following software have components provided under the terms of this license:
@@ -1063,16 +1073,26 @@ The following software have components provided under the terms of this license:
 - Apache Groovy (from http://groovy-lang.org)
 - Apache Groovy (from http://groovy-lang.org)
 - Asynchronous Http Client (from )
+- Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
+- Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
 - HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
+- JTidy (from http://jtidy.sourceforge.net)
+- Joda-Time (from http://www.joda.org/joda-time/)
+- Joda-Time (from http://www.joda.org/joda-time/)
+- Joda-Time (from http://www.joda.org/joda-time/)
 - LatencyUtils (from http://latencyutils.github.io/LatencyUtils/)
 - Microsoft Application Insights Java SDK Core (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Azure SDK for EventGrid Management (from https://github.com/Azure/azure-sdk-for-java)
 - Microsoft Azure SDK for SQL API of Azure Cosmos DB Service (from https://github.com/Azure/azure-sdk-for-java)
 - Microsoft Azure client library for Blob Storage (from https://github.com/Azure/azure-sdk-for-java)
+- Project Lombok (from https://projectlombok.org)
+- Project Lombok (from https://projectlombok.org)
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
 - Spring Web (from https://github.com/spring-projects/spring-framework)
 - azure-documentdb (from https://azure.microsoft.com/en-us/services/cosmos-db/)
 - msal4j (from https://github.com/AzureAD/microsoft-authentication-library-for-java)
+- reactive-streams (from http://www.reactive-streams.org/)
+- xml-apis (from )
 
 ========================================================================
 unknown
@@ -1080,12 +1100,21 @@ unknown
 The following software have components provided under the terms of this license:
 
 - Byte Buddy (without dependencies) (from )
+- Checker Qual (from https://checkerframework.org)
 - JSON in Java (from https://github.com/douglascrockford/JSON-java)
 - JTidy (from http://jtidy.sourceforge.net)
 - JUnit (from http://junit.org)
+- JUnit Jupiter (Aggregator) (from https://junit.org/junit5/)
+- JavaBeans Activation Framework API jar (from )
 - RabbitMQ Java Client (from http://www.rabbitmq.com)
 - Spongy Castle (from http://rtyley.github.io/spongycastle/)
 - System Rules (from http://stefanbirkner.github.io/system-rules/)
+- jakarta.xml.bind-api (from )
+- org.junit.jupiter:junit-jupiter-api (from http://junit.org/junit5/)
+- org.junit.jupiter:junit-jupiter-engine (from http://junit.org/junit5/)
+- org.junit.jupiter:junit-jupiter-params (from http://junit.org/junit5/)
+- org.junit.platform:junit-platform-commons (from http://junit.org/junit5/)
+- org.junit.platform:junit-platform-engine (from http://junit.org/junit5/)
 - xml-apis (from )
 
 
