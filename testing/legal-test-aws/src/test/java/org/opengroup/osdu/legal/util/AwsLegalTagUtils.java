@@ -65,6 +65,8 @@ public class AwsLegalTagUtils extends LegalTagUtils {
             String authFlow = System.getProperty(COGNITO_AUTH_FLOW_PROPERTY, System.getenv(COGNITO_AUTH_FLOW_PROPERTY));
             String user = System.getProperty(COGNITO_AUTH_PARAMS_USER_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_USER_PROPERTY));
             String password = System.getProperty(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY));
+            System.out.println(">>>>>>>><<<<<<<<")
+            System.out.println(password)
 
             AWSCognitoClient client = new AWSCognitoClient(clientId, authFlow, user, password);
             BearerToken = client.getToken();
