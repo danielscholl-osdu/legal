@@ -2,9 +2,8 @@ package org.opengroup.osdu.legal.middleware;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
-
+import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -12,18 +11,15 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.inject.Inject;
-
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.provider.interfaces.IAuthorizationService;
 import org.opengroup.osdu.core.common.http.ResponseHeadersFactory;
-import org.opengroup.osdu.core.common.model.http.Request;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.http.Request;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
+import org.opengroup.osdu.core.common.provider.interfaces.IAuthorizationService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 @Component
 @Lazy
@@ -68,16 +64,21 @@ public class LegalFilter implements Filter {
         }finally {
             logRequest(httpServletRequest, httpServletResponse, startTime);
         }
-        
+
 	}
 
 	@Override
 	public void destroy() {
     }
-    
+
     private boolean validateIsHttps( HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) {
         String uri = requestInfo.getUri();
-        if(!isLocalHost(uri) && !isCronJob(uri) && !isSwagger(uri) && !isHealthCheck(uri) && !isOptionsMethod(httpServletRequest)) {
+        if (!isLocalHost(uri)
+            && !isCronJob(uri)
+            && !isSwagger(uri)
+            && !isVersionInfo(uri)
+            && !isHealthCheck(uri)
+            && !isOptionsMethod(httpServletRequest)) {
             if(!hasJwt()) {
                 httpServletResponse.setStatus(401);
                 return false;
@@ -108,6 +109,11 @@ public class LegalFilter implements Filter {
     private boolean isCronJob(String uri) {
         return uri.contains("/jobs/updateLegalTagStatus");
     }
+
+    private boolean isVersionInfo(String uri) {
+        return uri.contains("/info");
+    }
+
     private boolean isSwagger(String uri) {
         return uri.contains("/swagger") || uri.contains("/v2/api-docs") || uri.contains("/configuration/ui") || uri.contains("/webjars/");
     }
