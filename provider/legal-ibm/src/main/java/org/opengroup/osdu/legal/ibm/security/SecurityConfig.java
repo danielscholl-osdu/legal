@@ -24,6 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/actuator/**",
                     "/configuration/security",
                     "/swagger-ui.html",
+                    "/info",
                     "/webjars/**").permitAll()
                 .anyRequest().authenticated().and().oauth2ResourceServer().jwt();
     }
