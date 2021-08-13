@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -33,7 +35,7 @@
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-lib-gcp</artifactId>
-      <version>0.1.17</version>
+      <version>0.10.0</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -64,11 +66,11 @@
       <artifactId>commons-codec</artifactId>
       <version>1.12</version>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.9.9.3</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt</artifactId>
@@ -166,6 +168,12 @@
       <groupId>com.rabbitmq</groupId>
       <artifactId>amqp-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>core-lib-gcp</artifactId>
+      <version>0.10.0</version>
+      <scope>compile</scope>
+    </dependency>
 
   </dependencies>
 
@@ -182,8 +190,8 @@
             <configuration>
               <classifier>spring-boot</classifier>
               <mainClass>
-                                org.opengroup.osdu.legal.LegalApplication
-                            </mainClass>
+                org.opengroup.osdu.legal.LegalApplication
+              </mainClass>
             </configuration>
           </execution>
         </executions>
