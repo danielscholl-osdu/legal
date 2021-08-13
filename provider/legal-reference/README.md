@@ -1,6 +1,6 @@
-# legal-gcp
+# legal-reference
 
-os-legal-gcp is a Spring Boot service that hosts CRUD APIs that enable management of legal tags within the OSDU R2 ecosystem.
+os-legal-reference is a Spring Boot service that hosts CRUD APIs that enable management of legal tags within the OSDU Hybrid ecosystem.
 
 ## Getting Started
 
@@ -33,14 +33,13 @@ In order to run the service locally, you will need to have the following environ
 | `LOG_PREFIX` | `legal` | Logging prefix | no | - |
 | `AUTHORIZE_API` | `https://entitlements.com/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
 | `LEGAL_HOSTNAME-NAME` | ex `os-legal-dot-opendes.appspot.com` | Legal hostname| no | - |
-| `GCLOUD_PROJECT` | ex `osdu-cicd-epam` | Google cloud project id | no | -- |
+| `MONGO_DB_URL` | ex `mongodb://localhost:27017` | Mongo DB Url| yes | output of infrastructure deployment |
+| `MONGO_DB_USER` | ex `mongouser` | Mongo DB userName| yes | output of infrastructure deployment |
+| `MONGO_DB_PASSWORD` | ex `mongopassword` | Mongo DB userPassword| yes | output of infrastructure deployment |
+| `MONGO_DB_NAME` | ex `mongoDBName` | Mongo DB DbName| yes | output of infrastructure deployment |
 | `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |
-| `GOOGLE_APPLICATION_CREDENTIALS` | ex `/path/to/directory/service-key.json` | Service account credentials, you only need this if running locally | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
+| `MB_RABBITMQ_URI` | ex `amqp://guest:guest@127.0.0.1:5672` | MessageBroker RabbitMQ URI | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
 | `RECORDS_ROOT_URL` | ex `https://os-storage-dot-nice-etching-277309.uc.r.appspot.com/api/storage/v2` / Storage API endpoint | no | output of infrastructure deployment |
-| `REDIS_GROUP_HOST` | ex `127.0.0.1` | Redis host for groups | no | https://console.cloud.google.com/memorystore/redis/instances |
-| `REDIS_STORAGE_HOST` | ex `127.0.0.1` | Redis host for storage | no | https://console.cloud.google.com/memorystore/redis/instances |
-| `REDIS_GROUP_PORT` | ex `6379` | Redis port for groups | no | https://console.cloud.google.com/memorystore/redis/instances |
-| `REDIS_STORAGE_PORT` | ex `6379` | Redis port for storage | no | https://console.cloud.google.com/memorystore/redis/instances |
 | `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
 | `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name | no | - |
 
@@ -119,7 +118,7 @@ mvn clean install -DskipTests
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
 
 ```bash
-cd provider/legal-gcp/ && mvn spring-boot:run
+cd provider/legal-reference/ && mvn spring-boot:run
 ```
 
 ## Testing
@@ -164,20 +163,9 @@ $ (cd testing/legal-test-gcp/ && mvn clean test)
 ```
 
 ## Deployment
+GKE Google Documentation: https://cloud.google.com/build/docs/deploying-builds/deploy-gke
+Anthos Google Documentation: https://cloud.google.com/anthos/multicluster-management/gateway/tutorials/cloud-build-integration
 
-* Data-Lake Legal Google Cloud Endpoints on App Engine Flex environment 
-  * Deploy
-    ```sh
-    mvn appengine:deploy -pl org.opengroup.osdu.legal:legal -amd
-    ```
-
-  * If you wish to deploy the search service without running tests
-    ```sh
-    mvn appengine:deploy -pl org.opengroup.osdu.legal:legal -amd -DskipTests
-    ```
-
-or
-* Google Documentation: https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-appengine
 
 ## Licence
 Copyright © Google LLC
