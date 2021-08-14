@@ -18,10 +18,8 @@ package org.opengroup.osdu.legal.aws.jobs;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.AmazonSNS;
-import org.opengroup.osdu.core.aws.ssm.ParameterStorePropertySource;
-import org.opengroup.osdu.core.aws.ssm.SSMConfig;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
 import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
@@ -44,17 +42,14 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
 
     private AmazonSNS snsClient;
 
-    @Value("${aws.legal.sns.topic.arn}")
-    String legalTopicSnsArn;
 
-    private ParameterStorePropertySource ssm;
+
     @PostConstruct
     public void init(){
         AmazonSNSConfig snsConfig = new AmazonSNSConfig(amazonSNSRegion);
         snsClient = snsConfig.AmazonSNS();
-        SSMConfig ssmConfig = new SSMConfig();
-        ssm = ssmConfig.amazonSSM();
-        amazonSNSTopic = ssm.getProperty(legalTopicSnsArn).toString();
+        K8sLocalParameterProvider provider = new K8sLocalParameterProvider();
+        amazonSNSTopic = provider.getParameterAsString("legal-sns-topic-arn");
     }
 
     @Override
