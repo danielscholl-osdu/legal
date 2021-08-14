@@ -18,7 +18,8 @@ package org.opengroup.osdu.legal.aws.jobs;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.AmazonSNS;
-
+import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
+import org.opengroup.osdu.core.aws.ssm.K8sParameterNotFoundException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
 import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
@@ -45,7 +46,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
 
 
     @PostConstruct
-    public void init(){
+    public void init() throws K8sParameterNotFoundException {
         AmazonSNSConfig snsConfig = new AmazonSNSConfig(amazonSNSRegion);
         snsClient = snsConfig.AmazonSNS();
         K8sLocalParameterProvider provider = new K8sLocalParameterProvider();
