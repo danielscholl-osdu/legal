@@ -21,9 +21,9 @@ public abstract class AcceptanceBaseTest {
 
 	protected abstract String getHttpMethod();
 
-	public void setup() throws Exception {};
-    
-    public void teardown() throws Exception {};
+	public void setup() throws Exception {}
+
+	public void teardown() throws Exception {}
 
 	protected String getBody(){
 		return "{}";

@@ -28,6 +28,10 @@ spec:
         app: {{ .Chart.Name }}
         aadpodidbinding: osdu-identity
     spec:
+{{- if .Values.global.isAutoscalingEnabled }}
+      nodeSelector:
+        nodepool: {{ .Values.global.nodepool }} 
+{{- end }}
       volumes:
       - name: azure-keyvault
         csi:
@@ -48,8 +52,14 @@ spec:
             cpu: "300m"
         readinessProbe:
           httpGet:
-            path: /api/legal/v1/swagger-ui.html
-            port: 80
+            path: /actuator/health
+            port: 8081
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8081
+          initialDelaySeconds: 250
+          periodSeconds: 10
         volumeMounts:
         - name: azure-keyvault
           mountPath: "/mnt/azure-keyvault"
@@ -118,5 +128,7 @@ spec:
             value: http://partition/api/partition/v1
           - name: azure_istioauth_enabled
             value: "true"
+          - name: SPRING_CONFIG_NAME
+            value: "common,application"
           - name: azure_activedirectory_AppIdUri
             value: "api://$(aad_client_id)"

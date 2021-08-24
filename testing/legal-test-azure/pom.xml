@@ -15,7 +15,8 @@
   limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -36,19 +37,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.basedir>${project.basedir}</project.main.basedir>
         <jackson.version>2.10.1</jackson.version>
-        <corelib.version>0.0.33</corelib.version>
+        <corelib.version>0.6.2</corelib.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.50.Final</version>
+        </dependency>
+
         <dependency>
             <groupId>org.opengroup.osdu.legal</groupId>
             <artifactId>legal-test-core</artifactId>
             <version>0.11.0-SNAPSHOT</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.microsoft.azure/azure-storage-blob -->
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-storage-blob</artifactId>
-            <version>12.3.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.microsoft.azure/azure-servicebus -->
         <dependency>
@@ -64,23 +65,11 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <!-- Added depdencies Azure Service Principle  -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.50.Final</version>
-        </dependency>
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
             <artifactId>core-lib-azure</artifactId>
             <version>${corelib.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.azure</groupId>
-                    <artifactId>azure-core-http-netty</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -111,7 +100,7 @@
                             </includes>
                         </configuration>
                     </execution>
-                </executions>                
+                </executions>
                 <configuration>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>

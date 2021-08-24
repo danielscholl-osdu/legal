@@ -181,7 +181,6 @@
 	</dependencies>
 
 	<build>
-		<defaultGoal>test</defaultGoal>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -191,6 +190,9 @@
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<threadCount>1</threadCount>
 				</configuration>
+				<goals>
+					<goal>test</goal>
+				</goals>
 			</plugin>
 		</plugins>
 	</build>
