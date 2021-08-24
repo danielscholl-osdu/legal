@@ -4,7 +4,7 @@ variables:
   AWS_SERVICE: legal
   AWS_ENVIRONMENT: dev
   AWS_DEPLOY_TARGET: EKS
-  AWS_EKS_DEPLOYMENT_NAME: os-storage
+  AWS_EKS_DEPLOYMENT_NAME: os-legal
 
   GCP_BUILD_SUBDIR: provider/legal-gcp
   GCP_INT_TEST_SUBDIR: testing/legal-test-gcp
@@ -44,7 +44,7 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws.yml"
     ref: aws-update
-    
+
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/ibm.yml"
 
