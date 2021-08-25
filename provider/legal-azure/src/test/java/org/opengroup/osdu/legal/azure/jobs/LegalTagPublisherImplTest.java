@@ -109,7 +109,7 @@ public class LegalTagPublisherImplTest {
         ArgumentCaptor<String> log = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Exception> exception = ArgumentCaptor.forClass(Exception.class);
 
-        verify(logger).info(log.capture());
+        verify(logger).debug(log.capture());
         assertEquals("Storage publishes message " + CORRELATION_ID, log.getValue());
 
         verify(topicClient).send(msg.capture());

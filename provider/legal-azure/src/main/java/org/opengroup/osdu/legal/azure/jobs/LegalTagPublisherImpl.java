@@ -71,7 +71,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
     private void publishToServiceBus(String projectId, DpsHeaders headers, StatusChangedTags tags) {
         Message message = createMessage(headers, tags);
         try {
-            logger.info("Storage publishes message " + headers.getCorrelationId());
+            logger.debug("Storage publishes message " + headers.getCorrelationId());
             topicClientFactory.getClient(headers.getPartitionId(), serviceBusTopic).send(message);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -100,7 +100,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
                     DateTime.now(),
                     LEGAL_TAGS_CHANGE_EVENT_DATA_VERSION
             ));
-            logger.info("Legal publishes tag changed event: " + data.get(DpsHeaders.CORRELATION_ID));
+            logger.debug("Legal publishes tag changed event: " + data.get(DpsHeaders.CORRELATION_ID));
             eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), eventGridConfig.getTopicName(), eventsList);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
