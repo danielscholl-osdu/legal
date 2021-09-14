@@ -21,3 +21,5 @@ image:
   repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal
   branch: master
   tag: latest
+
+istioDnsHost: ""
