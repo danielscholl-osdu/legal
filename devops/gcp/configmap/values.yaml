@@ -9,8 +9,6 @@ data:
   enable_full_bucket_name: "true"
   project_id: ""
   google_audiences: ""
-  redis_group_host: ""
-  redis_storage_host: ""
   accept_http: "true"
 
 conf:
