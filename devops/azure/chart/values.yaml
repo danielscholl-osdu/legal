@@ -23,3 +23,10 @@ image:
   tag: latest
 
 istioDnsHost: ""
+
+env: demo
+
+featureFlag:
+  resourceLimits:
+    enabledEnvs:
+    - demo

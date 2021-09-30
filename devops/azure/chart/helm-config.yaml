@@ -16,3 +16,10 @@ image:
   tag: #{Build.SourceVersion}#
 
 istioDnsHost: #{ISTIO_DNS_HOST}#
+
+env: #{ENVIRONMENT_NAME}#
+
+featureFlag:
+  resourceLimits:
+    enabledEnvs:
+    - demo
