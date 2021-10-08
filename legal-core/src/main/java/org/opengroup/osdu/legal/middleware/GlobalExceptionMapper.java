@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.gson.Gson;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javassist.NotFoundException;
@@ -27,6 +29,9 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.springframework.core.Ordered;
@@ -104,6 +109,17 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 		JsonNode result = mapper.createObjectNode().set("errors", array);
 
 		return this.getErrorResponse(new AppException(HttpStatus.BAD_REQUEST.value(), "Validation error.", result.toString()));
+	}
+
+	@ExceptionHandler(IOException.class)
+	public ResponseEntity<Object> handleIOException(IOException e) {
+		if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
+			this.logger.warning("Client closed the connection while request still being processed");
+			return null;
+		} else {
+			return this.getErrorResponse(
+					new AppException(HttpStatus.SERVICE_UNAVAILABLE.value(), "Unknown error", e.getMessage(), e));
+		}
 	}
 
 	@ExceptionHandler(Exception.class)
