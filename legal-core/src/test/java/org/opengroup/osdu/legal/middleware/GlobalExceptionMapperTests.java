@@ -1,6 +1,7 @@
 package org.opengroup.osdu.legal.middleware;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 import javassist.NotFoundException;
@@ -18,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.context.request.WebRequest;
+
+import java.io.IOException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GlobalExceptionMapperTests {
@@ -88,5 +91,22 @@ public class GlobalExceptionMapperTests {
 		//assertEquals("An unknown error has occurred.", response.getBody().getMessage());
 	}
 
+	@Test
+	public void should_returnNullResponse_when_BrokenPipeIOExceptionIsCaptured() {
+		IOException ioException = new IOException("Broken pipe");
+
+		ResponseEntity response = sut.handleIOException(ioException);
+
+		assertNull(response);
+	}
+
+	@Test
+	public void should_returnServiceUnavailable_when_IOExceptionIsCaptured() {
+		IOException ioException = new IOException("Not broken yet");
+
+		ResponseEntity response = sut.handleIOException(ioException);
+
+		assertEquals(org.apache.http.HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusCodeValue());
+	}
 
 }
