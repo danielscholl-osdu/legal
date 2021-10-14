@@ -24,6 +24,7 @@ import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperFactory;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
 import org.opengroup.osdu.core.aws.dynamodb.QueryPageResult;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.legal.aws.tags.dataaccess.LegalDoc;
 import org.opengroup.osdu.legal.aws.tags.dataaccess.LegalTagRepositoryImpl;
@@ -51,13 +52,19 @@ public class LegalTagRepositoryImplTest {
     private DpsHeaders headers;
 
     @Mock
+    private JaxRsDpsLog log;
+
+    @Mock
     private DynamoDBQueryHelperFactory dynamoDBQueryHelperFactory;
 
     @Before
     public void setUp() {
         initMocks(this);
-        Mockito.when(dynamoDBQueryHelperFactory.getQueryHelperForPartition(Mockito.any(DpsHeaders.class), Mockito.any()))
+        String testPartition = "test-partition";
+        Mockito.when(dynamoDBQueryHelperFactory.getQueryHelperForPartition(Mockito.eq(testPartition), Mockito.any()))
                 .thenReturn(queryHelper);
+        Mockito.when(headers.getPartitionId())
+                .thenReturn(testPartition);
     }
 
     @Test
