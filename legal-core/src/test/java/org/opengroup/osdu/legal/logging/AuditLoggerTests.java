@@ -11,6 +11,8 @@ import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 
 import java.util.Collections;
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,13 +69,15 @@ public class AuditLoggerTests {
 
     @Test
     public void should_writeLegalTagReadPropertiesSuccessEvent(){
-        sut.readLegalPropertiesSuccess(any());
+        List<String> resource = Collections.singletonList("1");
+        sut.readLegalPropertiesSuccess(resource);
         verify(log).audit(any());
     }
 
     @Test
     public void should_writeLegalTagReadPropertiesFailEvent(){
-        sut.readLegalPropertiesFail(any());
+        List<String> resource = Collections.singletonList("1");
+        sut.readLegalPropertiesFail(resource);
         verify(log).audit(any());
     }
 

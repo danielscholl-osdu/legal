@@ -51,7 +51,7 @@ public class LegalTagStatusJobApi {
         boolean allPassed = true;
         for (TenantInfo tenantInfo : tenantsInfo) {
             convertedHeaders.put(DpsHeaders.ACCOUNT_ID, tenantInfo.getName());
-            boolean result = runJob(convertedHeaders, legalTagStatusJob);
+            boolean result = runJob(convertedHeaders, tenantInfo, legalTagStatusJob);
             if (allPassed)
                 allPassed = result;
         }
@@ -60,11 +60,11 @@ public class LegalTagStatusJobApi {
         return new ResponseEntity<HttpStatus>(status);
     }
 
-    private boolean runJob(DpsHeaders convertedHeaders, LegalTagStatusJob legalTagStatusJob) {
+    private boolean runJob(DpsHeaders convertedHeaders, TenantInfo tenantInfo, LegalTagStatusJob legalTagStatusJob) {
         boolean success = true;
         try {
             String  projectId = requestInfo.getTenantInfo().getProjectId();
-            StatusChangedTags result = legalTagStatusJob.run(projectId, convertedHeaders, requestInfo.getTenantInfo().getName());
+            StatusChangedTags result = legalTagStatusJob.run(projectId, convertedHeaders, tenantInfo.getName());
             auditLogger.legalTagJobRanSuccess(singletonList(result.toString()));
         } catch (Exception e) {
             success = false;
