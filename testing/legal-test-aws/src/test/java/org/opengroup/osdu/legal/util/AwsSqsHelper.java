@@ -49,7 +49,7 @@ public class AwsSqsHelper {
         // comes wrapped in non-escaped double quotes
         data = data.substring(1);
         data = data.substring(0, data.length() - 1);
-        String dataCheck = "{\"statusChangedTags\":[{\"changedTagName\":\"" + name + "\",\"changedTagStatus\":\"incompliant\"}]}";
+        String dataCheck = "{\"statusChangedTags\":[{\"dataPartitionId\":\"" + TestUtils.getMyDataPartition() + "\",\"changedTagName\":\"" + name + "\",\"changedTagStatus\":\"incompliant\"}]}";
         dataCheck = dataCheck.replaceAll("\"", "\\\\\"");
         return data.equals(dataCheck);
     }
