@@ -10,11 +10,13 @@ import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepositoryFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.RequestScope;
 
 import javax.inject.Inject;
 
 @Service
 @Primary
+@RequestScope
 public class LegalTagRepositoryFactoryAwsImpl implements ILegalTagRepositoryFactory {
 
 
