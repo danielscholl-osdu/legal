@@ -65,9 +65,9 @@ phases:
       - printenv
 
       - echo "Building primary service assemblies..."
-      - mvn -ntp -B test install sonar:sonar -pl .,legal-core,provider/legal-aws -Ddeployment.environment=prod -Dsonar.login=${SONAR_USERNAME} -Dsonar.password=${SONAR_PASSWORD} -Dsonar.branch.name=${BRANCH_NAME} 
+      - mvn -ntp -B test install sonar:sonar -pl .,legal-core,provider/legal-aws -Ddeployment.environment=prod -Dsonar.login=${SONAR_USERNAME} -Dsonar.password=${SONAR_PASSWORD} -Dsonar.branch.name=${BRANCH_NAME}
 
-#      Suspended until further notice
+      #      Suspended until further notice
 #      - echo "Copying assemblies to dist..."
 #      - cp ./provider/legal-aws/target/*spring-boot.jar ${OUTPUT_DIR}/bin # copy aws jars
 #      - cp ./legal-core/target/*.jar ${OUTPUT_DIR}/bin # copy core jar

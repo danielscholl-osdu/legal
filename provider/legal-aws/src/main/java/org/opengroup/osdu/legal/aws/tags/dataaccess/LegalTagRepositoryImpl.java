@@ -33,6 +33,7 @@ import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.context.annotation.RequestScope;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -40,6 +41,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Repository // why use repository over component over service
+@RequestScope
 public class LegalTagRepositoryImpl implements ILegalTagRepository {
 
     @Inject
