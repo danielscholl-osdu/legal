@@ -18,7 +18,10 @@ metadata:
   name: {{ .Release.Name }}
   namespace: osdu
 spec:
+  {{- if has .Values.env .Values.featureFlag.hpa.enabledEnvs }}
+  {{- else }}
   replicas: {{ .Values.global.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -48,8 +51,14 @@ spec:
         resources:
           requests:
             cpu: "100m"
+            {{- if has .Values.env .Values.featureFlag.resourceLimits.enabledEnvs }}
+            memory: "1500Mi"
+            {{- end }}
           limits:
-            cpu: "300m"
+            cpu: "500m"
+            {{- if has .Values.env .Values.featureFlag.resourceLimits.enabledEnvs }}
+            memory: "3000Mi"
+            {{- end }}
         readinessProbe:
           httpGet:
             path: /actuator/health

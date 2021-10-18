@@ -14,6 +14,8 @@
 
 global:
   replicaCount: 1
+  maxReplicaCount: 1
+  minReplicaCount: 1
   nodepool: services
   isAutoscalingEnabled: false
 
@@ -21,3 +23,14 @@ image:
   repository: community.opengroup.org:5555/osdu/platform/security-and-compliance/legal
   branch: master
   tag: latest
+
+istioDnsHost: ""
+
+env: demo
+
+featureFlag:
+  resourceLimits:
+    enabledEnvs:
+    - demo
+  hpa:
+    enabledEnvs: []
