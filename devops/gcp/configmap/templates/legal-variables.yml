@@ -12,6 +12,4 @@ data:
   ENABLE_FULL_BUCKET_NAME: "{{ .Values.data.enable_full_bucket_name }}"
   PROJECT_ID: "{{ .Values.data.project_id }}"
   GOOGLE_AUDIENCES: "{{ .Values.data.google_audiences }}"
-  REDIS_GROUP_HOST: "{{ .Values.data.redis_group_host }}"
-  REDIS_STORAGE_HOST: "{{ .Values.data.redis_storage_host }}"
   ACCEPT_HTTP: "{{ .Values.data.accept_http }}"
