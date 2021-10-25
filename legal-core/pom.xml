@@ -84,13 +84,13 @@
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-circuitbreaker</artifactId>
-			<version>0.17.0</version>
+			<version>${resilience4jVersion}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-retry -->
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-retry</artifactId>
-			<version>0.17.0</version>
+			<version>${resilience4jVersion}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
