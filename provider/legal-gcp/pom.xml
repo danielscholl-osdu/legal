@@ -23,18 +23,30 @@
 			<optional>true</optional>
 		</dependency>
         <dependency>
+            <groupId>org.opengroup.osdu</groupId>
+            <artifactId>core-lib-gcp</artifactId>
+            <version>0.12.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.opengroup.osdu.legal</groupId>
             <artifactId>legal-core</artifactId>
             <version>0.12.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.api-client</groupId>
+                    <artifactId>google-api-client</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
             <artifactId>os-core-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opengroup.osdu</groupId>
-            <artifactId>core-lib-gcp</artifactId>
-            <version>0.11.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.http-client</groupId>
+                    <artifactId>google-http-client</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -51,37 +63,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-core</artifactId>
-            <version>1.38.1</version>
-        </dependency>
-		<dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-iam</artifactId>
-            <version>v1-rev281-1.25.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>guava-jdk5</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>27.1-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.12</version>
-        </dependency>
-        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
@@ -92,35 +73,18 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		<dependency>
-			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud-storage</artifactId>
-			<version>1.85.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud-pubsub</artifactId>
-			<version>1.85.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud-datastore</artifactId>
-			<version>1.85.0</version>
-		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-circuitbreaker -->
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-circuitbreaker</artifactId>
-			<version>0.17.0</version>
+			<version>${resilience4jVersion}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-retry -->
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-retry</artifactId>
-			<version>0.17.0</version>
+			<version>${resilience4jVersion}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
 		<dependency>
