@@ -30,9 +30,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class LegalTagPublisherImpl implements ILegalTagPublisher {
@@ -43,7 +45,8 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
 
     private AmazonSNS snsClient;
 
-
+    @Inject
+    private DpsHeaders headers;
 
     @PostConstruct
     public void init() throws K8sParameterNotFoundException {
@@ -75,9 +78,13 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         for (int i = 0; i < tags.getStatusChangedTags().size(); i += BATCH_SIZE){
             List<StatusChangedTag> batch = tags.getStatusChangedTags().subList(i, Math.min(tags.getStatusChangedTags().size(), i + BATCH_SIZE));
 
-            PublishRequestBuilder<StatusChangedTag> publishRequestBuilder = new PublishRequestBuilder<>();
+            List<AwsStatusChangedTag> awsBatch = batch.stream()
+                    .map(t -> new AwsStatusChangedTag(t.getChangedTagName(), t.getChangedTagStatus(), headers.getPartitionId()))
+                    .collect(Collectors.toList());
+
+            PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder = new PublishRequestBuilder<>();
             PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest("statusChangedTags",
-                    batch, messageAttributes, amazonSNSTopic);
+                    awsBatch, messageAttributes, amazonSNSTopic);
             snsClient.publish(publishRequest);
         }
     }
