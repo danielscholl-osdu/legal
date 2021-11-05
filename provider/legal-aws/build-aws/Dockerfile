@@ -13,16 +13,12 @@
 # limitations under the License.
 
 # https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html
-FROM amazoncorretto:8
+FROM amazoncorretto:8-alpine3.12
 
 ARG JAR_FILE=provider/legal-aws/target/*spring-boot.jar
 
-#Default to using self signed generated TLS cert
-ENV USE_SELF_SIGNED_SSL_CERT true
-
 WORKDIR /
 COPY ${JAR_FILE} app.jar
-COPY /provider/legal-aws/build-aws/ssl.sh /ssl.sh
 COPY /provider/legal-aws/build-aws/entrypoint.sh /entrypoint.sh
 EXPOSE 8080
 
