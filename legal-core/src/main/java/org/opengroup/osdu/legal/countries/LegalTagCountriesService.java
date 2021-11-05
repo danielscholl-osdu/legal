@@ -4,14 +4,21 @@ import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.springframework.stereotype.Service;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.model.legal.ServiceConfig;
+import org.springframework.web.context.annotation.RequestScope;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @Service
+@RequestScope
 public class LegalTagCountriesService {
+
+    private List<Country> cloudStorageCountries;
+    private Map<String, String> validORDCs;
 
     @Inject
     private LegalTagCountriesTenantRepositories repositories;
@@ -25,39 +32,35 @@ public class LegalTagCountriesService {
     @Inject
     private DefaultCountriesRepository defaultCountriesRepository;
 
-    public Map<String, String> getValidCOOs() {
-        Map<String,String> coos = new HashMap<>();
-
+    @PostConstruct
+    private void setup() {
         TenantInfo tenant = requestInfo.getTenantInfo();
         LegalTagCountriesRepository legalTagCountriesRepository = repositories.get(tenant, serviceConfig.getRegion());
+        List<Country> sourceCountries = defaultCountriesRepository.read();
+        List<Country> tenantCountries = legalTagCountriesRepository.read();
+        List<Country> cloudStorageCountries = this.mergeCountriesRepositories(sourceCountries, tenantCountries);
+        this.cloudStorageCountries = Collections.unmodifiableList(cloudStorageCountries);
 
-        generateCOOsFromRepository(coos, new DefaultCountriesRepository(), legalTagCountriesRepository, "none");
-        return coos;
+        Map<String,String> ordcs = new HashMap<>();
+        generateORDCsFromRepository(ordcs, sourceCountries);
+        generateORDCsFromRepository(ordcs, tenantCountries);
+        validORDCs = Collections.unmodifiableMap(ordcs);
+    }
+
+    public Map<String, String> getValidCOOs() {
+        return generateCOOsFromRepository("none");
     }
 
     public Map<String, String> getValidCOOs(String dataType) {
-        Map<String,String> coos = new HashMap<>();
-
-        TenantInfo tenant = requestInfo.getTenantInfo();
-        LegalTagCountriesRepository legalTagCountriesRepository = repositories.get(tenant, serviceConfig.getRegion());
-
-        generateCOOsFromRepository(coos, defaultCountriesRepository, legalTagCountriesRepository, dataType);
-        return coos;
+        return generateCOOsFromRepository(dataType);
     }
 
     public Map<String, String> getValidORDCs() {
-        Map<String,String> ordcs = new HashMap<>();
-
-        TenantInfo tenant = requestInfo.getTenantInfo();
-        LegalTagCountriesRepository legalTagCountriesRepository = repositories.get(tenant, serviceConfig.getRegion());
-
-        generateORDCsFromRepository(ordcs, defaultCountriesRepository);
-        generateORDCsFromRepository(ordcs, legalTagCountriesRepository);
-        return ordcs;
+        return validORDCs;
     }
 
-    private void generateCOOsFromRepository(Map<String, String> coos, LegalTagCountriesRepository defaultCountriesRepository, LegalTagCountriesRepository cloudCountriesRepository, String dataType) {
-        List<Country> cloudStorageCountries = this.mergeCountriesRepositories(defaultCountriesRepository, cloudCountriesRepository);
+    private Map<String,String> generateCOOsFromRepository(String dataType) {
+        Map<String,String> coos = new HashMap<>();
         for (Country country : cloudStorageCountries) {
             if (country.getResidencyRisk() != null &&
                     (country.getResidencyRisk().equals(Country.RESIDENCY_RISK.NO_RESTRICTION) ||
@@ -68,11 +71,10 @@ public class LegalTagCountriesService {
                 coos.put(country.getAlpha2(), country.getName());
             }
         }
+        return Collections.unmodifiableMap(coos);
     }
 
-    private List<Country> mergeCountriesRepositories(LegalTagCountriesRepository defaultRepository, LegalTagCountriesRepository cloudRepository) {
-        List<Country> sourceCountries = defaultRepository.read();
-        List<Country> tenantCountries = cloudRepository.read();
+    private List<Country> mergeCountriesRepositories(List<Country> sourceCountries, List<Country> tenantCountries) {
         for (Country tenantCountry : tenantCountries) {
             for (int i = 0; i < sourceCountries.size(); i++) {
                 if (sourceCountries.get(i).isMatchByAlpha2(tenantCountry)) {
@@ -83,10 +85,8 @@ public class LegalTagCountriesService {
         return sourceCountries;
     }
 
-
-    private void generateORDCsFromRepository(Map<String, String> coos, LegalTagCountriesRepository legalTagCountriesRepository) {
-        List<Country> cloudStorageCountries = legalTagCountriesRepository.read();
-        for (Country country : cloudStorageCountries) {
+    private void generateORDCsFromRepository(Map<String, String> coos, List<Country> countries) {
+        for (Country country : countries) {
             if (country.getResidencyRisk() != null && !country.getResidencyRisk().equals(Country.RESIDENCY_RISK.EMBARGOED)) {
                 coos.put(country.getAlpha2(), country.getName());
             } else {

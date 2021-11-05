@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +46,14 @@ public class LegalTagCountriesServiceTests {
     private DefaultCountriesRepository defaultCountriesRepository;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         DefaultCountriesRepository defaultCountriesRepository = new DefaultCountriesRepository();
         this.listOfCountries = defaultCountriesRepository.read();
         when(this.repositories.get(any(), any())).thenReturn(this.legalTagCountriesRepository);
         when(this.legalTagCountriesRepository.read()).thenReturn(this.listOfCountries);
         when(this.requestInfo.getTenantInfo()).thenReturn(this.tenantInfo);
         when(this.defaultCountriesRepository.read()).thenReturn(this.listOfCountries);
+        Whitebox.invokeMethod(sut, "setup");
     }
 
     @Test
