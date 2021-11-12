@@ -45,6 +45,6 @@ public class LegalTagRepositoryFactoryAwsImpl implements ILegalTagRepositoryFact
 	AppException invalidTenantGivenException(String tenantName) {
 		return new AppException(403, "Forbidden",
 				String.format("You do not have access to the %s value given %s",
-						DpsHeaders.ACCOUNT_ID, tenantName));
+						DpsHeaders.DATA_PARTITION_ID, tenantName));
 	}
 }

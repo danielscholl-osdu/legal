@@ -41,7 +41,6 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
 			statusChangedTags.appendField("statusChangedTags", batch);
 			String json = gson.toJson(statusChangedTags);
 			message.put("data", json);
-			message.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
 			message.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
 			headers.addCorrelationIdIfMissing();
 			message.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
