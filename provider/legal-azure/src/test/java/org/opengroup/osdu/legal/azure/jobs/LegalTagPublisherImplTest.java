@@ -21,12 +21,14 @@ import com.microsoft.azure.servicebus.Message;
 import com.microsoft.azure.servicebus.MessageBody;
 import com.microsoft.azure.servicebus.TopicClient;
 import com.microsoft.azure.servicebus.primitives.ServiceBusException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
@@ -38,13 +40,9 @@ import org.opengroup.osdu.legal.azure.di.EventGridConfig;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class LegalTagPublisherImplTest {
 
-    private static final String DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID = "data-partition-account-id";
     private static final String CORRELATION_ID = "correlation-id";
     private static final String USER_EMAIL = "user@email.com";
     private static final String PARTITION_ID = "partition-id";
@@ -72,53 +70,51 @@ public class LegalTagPublisherImplTest {
 
     @Before
     public void init() throws ServiceBusException, InterruptedException {
-        doReturn(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID).when(headers).getPartitionIdWithFallbackToAccountId();
-        doReturn(CORRELATION_ID).when(headers).getCorrelationId();
-        doReturn(USER_EMAIL).when(headers).getUserEmail();
-        doReturn(PARTITION_ID).when(headers).getPartitionId();
-        doReturn(topicClient).when(topicClientFactory).getClient(eq(PARTITION_ID), any());
+        Mockito.doReturn(CORRELATION_ID).when(headers).getCorrelationId();
+        Mockito.doReturn(USER_EMAIL).when(headers).getUserEmail();
+        Mockito.doReturn(PARTITION_ID).when(headers).getPartitionId();
+        Mockito.doReturn(topicClient).when(topicClientFactory).getClient(Mockito.eq(PARTITION_ID), Mockito.any());
     }
 
     @Test
-    public void should_publishToEventGrid_WhenFlagIsSet() throws Exception {
+    public void shouldPublishToEventGridWhenFlagIsSet() throws Exception {
         StatusChangedTags tags = new StatusChangedTags();
 
         ArgumentCaptor<String> partitionNameCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> topicNameArgumentCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<List<EventGridEvent>> listEventGridEventArgumentCaptor = ArgumentCaptor.forClass(List.class);
-        doNothing().when(this.eventGridTopicStore).publishToEventGridTopic(
+        Mockito.doNothing().when(this.eventGridTopicStore).publishToEventGridTopic(
                 partitionNameCaptor.capture(), topicNameArgumentCaptor.capture(), listEventGridEventArgumentCaptor.capture()
         );
-        when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
-        when(this.eventGridConfig.getTopicName()).thenReturn("legaltagschangedtopic");
+        Mockito.when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
+        Mockito.when(this.eventGridConfig.getTopicName()).thenReturn("legaltagschangedtopic");
 
         sut.publish("project-id", headers, tags);
 
-        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(any(), any(), anyList());
+        Mockito.verify(this.eventGridTopicStore, Mockito.times(1))
+                .publishToEventGridTopic(Mockito.any(), Mockito.any(), Mockito.anyList());
 
-        assertEquals(1, listEventGridEventArgumentCaptor.getValue().size());
-        assertEquals(topicNameArgumentCaptor.getValue(), "legaltagschangedtopic");
-        assertEquals(partitionNameCaptor.getValue(), PARTITION_ID);
+        Assert.assertEquals(1, listEventGridEventArgumentCaptor.getValue().size());
+        Assert.assertEquals(topicNameArgumentCaptor.getValue(), "legaltagschangedtopic");
+        Assert.assertEquals(partitionNameCaptor.getValue(), PARTITION_ID);
     }
 
     @Test
-    public void testPublishLegalTag() throws Exception {
+    public void shouldPublishLegalTag() throws Exception {
         StatusChangedTags tags = new StatusChangedTags();
         sut.publish("project-id", headers, tags);
         ArgumentCaptor<Message> msg = ArgumentCaptor.forClass(Message.class);
         ArgumentCaptor<String> log = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<Exception> exception = ArgumentCaptor.forClass(Exception.class);
 
-        verify(logger).debug(log.capture());
-        assertEquals("Storage publishes message " + CORRELATION_ID, log.getValue());
+        Mockito.verify(logger).debug(log.capture());
+        Assert.assertEquals("Storage publishes message " + CORRELATION_ID, log.getValue());
 
-        verify(topicClient).send(msg.capture());
+        Mockito.verify(topicClient).send(msg.capture());
         Map<String, Object> properties = msg.getValue().getProperties();
 
-        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, properties.get(DpsHeaders.ACCOUNT_ID));
-        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
-        assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
-        assertEquals(USER_EMAIL, properties.get(DpsHeaders.USER_EMAIL));
+        Assert.assertEquals(PARTITION_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
+        Assert.assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
+        Assert.assertEquals(USER_EMAIL, properties.get(DpsHeaders.USER_EMAIL));
 
         MessageBody messageBody = msg.getValue().getMessageBody();
         Gson gson = new Gson();
@@ -126,10 +122,9 @@ public class LegalTagPublisherImplTest {
         String dataKey = "data";
         JsonObject jsonObjectMessage = gson.fromJson(new String(messageBody.getBinaryData().get(0)), JsonObject.class);
         JsonObject jsonObject = (JsonObject) jsonObjectMessage.get(messageKey);
-        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, jsonObject.get(DpsHeaders.ACCOUNT_ID).getAsString());
-        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, jsonObject.get(DpsHeaders.DATA_PARTITION_ID).getAsString());
-        assertEquals(CORRELATION_ID, jsonObject.get(DpsHeaders.CORRELATION_ID).getAsString());
-        assertEquals(USER_EMAIL, jsonObject.get(DpsHeaders.USER_EMAIL).getAsString());
-        assertEquals(gson.toJsonTree(tags), jsonObject.get(dataKey));
+        Assert.assertEquals(PARTITION_ID, jsonObject.get(DpsHeaders.DATA_PARTITION_ID).getAsString());
+        Assert.assertEquals(CORRELATION_ID, jsonObject.get(DpsHeaders.CORRELATION_ID).getAsString());
+        Assert.assertEquals(USER_EMAIL, jsonObject.get(DpsHeaders.USER_EMAIL).getAsString());
+        Assert.assertEquals(gson.toJsonTree(tags), jsonObject.get(dataKey));
     }
 }

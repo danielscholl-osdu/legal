@@ -61,9 +61,6 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         final int BATCH_SIZE = 50;
         // attributes
         Map<String, MessageAttributeValue> messageAttributes = new HashMap<>();
-        messageAttributes.put(DpsHeaders.ACCOUNT_ID, new MessageAttributeValue()
-                .withDataType("String")
-                .withStringValue(headers.getPartitionIdWithFallbackToAccountId()));
         messageAttributes.put(DpsHeaders.DATA_PARTITION_ID, new MessageAttributeValue()
                 .withDataType("String")
                 .withStringValue(headers.getPartitionIdWithFallbackToAccountId()));
