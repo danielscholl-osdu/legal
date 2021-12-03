@@ -15,17 +15,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/_ah/liveness_check","/_ah/readiness_check",
-                	"/v2/api-docs",
-                    "/configuration/ui",
-                    "/swagger-resources/**",
-                    "/actuator/**",
-                    "/configuration/security",
-                    "/swagger-ui.html",
-                    "/info",
-                    "/webjars/**").permitAll()
-                .anyRequest().authenticated().and().oauth2ResourceServer().jwt();
+                .csrf().disable();
+                // .authorizeRequests()
+                // .antMatchers("/_ah/liveness_check","/_ah/readiness_check",
+                // 	"/v2/api-docs",
+                //     "/configuration/ui",
+                //     "/swagger-resources/**",
+                //     "/actuator/**",
+                //     "/configuration/security",
+                //     "/swagger-ui.html",
+                //     "/info",
+                //     "/webjars/**").permitAll()
+                // .anyRequest().authenticated().and().oauth2ResourceServer().jwt();
     }
 }
