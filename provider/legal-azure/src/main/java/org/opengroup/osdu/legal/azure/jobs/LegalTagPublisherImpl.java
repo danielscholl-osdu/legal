@@ -61,14 +61,14 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
     private String serviceBusTopic;
 
     @Override
-    public void publish(String projectId, DpsHeaders headers, StatusChangedTags tags) throws Exception {
-        publishToServiceBus(projectId, headers, tags);
+    public void publish(String projectId, DpsHeaders headers, StatusChangedTags tags) {
+        publishToServiceBus(headers, tags);
         if (eventGridConfig.isPublishingToEventGridEnabled()) {
             publishToEventGrid(headers, tags);
         }
     }
 
-    private void publishToServiceBus(String projectId, DpsHeaders headers, StatusChangedTags tags) {
+    private void publishToServiceBus(DpsHeaders headers, StatusChangedTags tags) {
         Message message = createMessage(headers, tags);
         try {
             logger.debug("Storage publishes message " + headers.getCorrelationId());
@@ -85,8 +85,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         HashMap<String, Object> data = new HashMap<>();
         List<EventGridEvent> eventsList = new ArrayList<>();
         data.put("data", tags);
-        data.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
-        data.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
+        data.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionId());
         data.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
         data.put(DpsHeaders.USER_EMAIL, headers.getUserEmail());
         String messageId = UUID.randomUUID().toString();
@@ -113,8 +112,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         Map<String, Object> properties = new HashMap<>();
 
         // properties
-        properties.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
-        properties.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
+        properties.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionId());
         headers.addCorrelationIdIfMissing();
         properties.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
         properties.put(DpsHeaders.USER_EMAIL, headers.getUserEmail());
@@ -124,8 +122,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         // add all to body {"message": {"data":[], "id":...}}
         JsonObject jo = new JsonObject();
         jo.add("data", gson.toJsonTree(tags));
-        jo.addProperty(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
-        jo.addProperty(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
+        jo.addProperty(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionId());
         jo.addProperty(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
         jo.addProperty(DpsHeaders.USER_EMAIL, headers.getUserEmail());
         JsonObject jomsg = new JsonObject();

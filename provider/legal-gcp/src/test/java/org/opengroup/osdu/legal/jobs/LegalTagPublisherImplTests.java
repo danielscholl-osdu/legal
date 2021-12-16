@@ -39,7 +39,7 @@ public class LegalTagPublisherImplTests {
 
         headers.put(DpsHeaders.USER_EMAIL, "ash");
         headers.put(DpsHeaders.CORRELATION_ID, "123");
-        headers.put(DpsHeaders.ACCOUNT_ID, "tenant1");
+        headers.put(DpsHeaders.DATA_PARTITION_ID, "tenant1");
     }
 
     @Test
@@ -52,10 +52,6 @@ public class LegalTagPublisherImplTests {
         String data = capturedMessage.toString();
 
         assertEquals("data: \"{\\\"statusChangedTags\\\":[]}\"\n" +
-                "attributes {\n" +
-                "  key: \"account-id\"\n" +
-                "  value: \"tenant1\"\n" +
-                "}\n" +
                 "attributes {\n" +
                 "  key: \"data-partition-id\"\n" +
                 "  value: \"tenant1\"\n" +

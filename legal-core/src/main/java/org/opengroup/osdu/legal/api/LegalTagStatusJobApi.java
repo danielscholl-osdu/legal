@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/jobs")
 public class LegalTagStatusJobApi {
-    
+
     @Inject
     private RequestInfo requestInfo;
-    
+
     @Inject
     private LegalTagStatusJob legalTagStatusJob;
     
@@ -37,7 +37,7 @@ public class LegalTagStatusJobApi {
 
     @Inject
     private AuditLogger auditLogger;
-    
+
     @Inject
     private JaxRsDpsLog log;
 
@@ -50,21 +50,20 @@ public class LegalTagStatusJobApi {
 
         boolean allPassed = true;
         for (TenantInfo tenantInfo : tenantsInfo) {
-            convertedHeaders.put(DpsHeaders.ACCOUNT_ID, tenantInfo.getName());
             boolean result = runJob(convertedHeaders, tenantInfo, legalTagStatusJob);
-            if (allPassed)
+            if (allPassed) {
                 allPassed = result;
+            }
         }
 
         HttpStatus status = allPassed ? HttpStatus.NO_CONTENT : HttpStatus.INTERNAL_SERVER_ERROR;
-        return new ResponseEntity<HttpStatus>(status);
+        return new ResponseEntity<>(status);
     }
 
     private boolean runJob(DpsHeaders convertedHeaders, TenantInfo tenantInfo, LegalTagStatusJob legalTagStatusJob) {
         boolean success = true;
         try {
-            String  projectId = requestInfo.getTenantInfo().getProjectId();
-            StatusChangedTags result = legalTagStatusJob.run(projectId, convertedHeaders, tenantInfo.getName());
+            StatusChangedTags result = legalTagStatusJob.run(tenantInfo.getProjectId(), convertedHeaders, tenantInfo.getName());
             auditLogger.legalTagJobRanSuccess(singletonList(result.toString()));
         } catch (Exception e) {
             success = false;

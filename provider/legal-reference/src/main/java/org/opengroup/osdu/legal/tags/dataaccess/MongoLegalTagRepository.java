@@ -35,6 +35,7 @@ import org.opengroup.osdu.legal.config.MongoDBConfigProperties;
 import org.opengroup.osdu.legal.entity.LegalTagMongoEntity;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -59,7 +60,15 @@ public class MongoLegalTagRepository implements ILegalTagRepository {
 
     MongoOperations ops = clientProvider.getOps(mongoDBConfigProperties.getMongoDbName());
 
-    LegalTagMongoEntity savedEntity = ops.save(convertFrom(legalTag), LEGAL_TAGS_ENTITYNAME);
+    LegalTagMongoEntity savedEntity = null;
+
+    try {
+      savedEntity = ops.insert(convertFrom(legalTag), LEGAL_TAGS_ENTITYNAME);
+    } catch (DuplicateKeyException ex){
+      throw new AppException(409, "Legal tag conflict", String.format(
+              "A LegalTag already exists for the given name %s. Can't create again. Id is %s",
+              legalTag.getName(), legalTag.getId()));
+    }
 
     return savedEntity.getId();
   }

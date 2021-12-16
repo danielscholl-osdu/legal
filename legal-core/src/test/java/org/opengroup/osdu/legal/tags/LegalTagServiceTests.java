@@ -424,7 +424,6 @@ public class LegalTagServiceTests {
         Map<String, String> headers = new HashMap<>();
         headers.put(DpsHeaders.USER_EMAIL, "ash");
         headers.put(DpsHeaders.CORRELATION_ID, "123");
-        headers.put(DpsHeaders.ACCOUNT_ID, "SIS-INTERNAL-HQ");
 
         DpsHeaders standardHeaders = DpsHeaders.createFromMap(headers);
 

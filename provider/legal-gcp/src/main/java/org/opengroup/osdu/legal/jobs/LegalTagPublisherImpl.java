@@ -74,7 +74,6 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         ByteString statusChangedTagsData = ByteString.copyFromUtf8(statusChangedTagsJson.toString());
 
         PubsubMessage.Builder builder = PubsubMessage.newBuilder();
-        builder.putAttributes(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
         builder.putAttributes(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
         builder.putAttributes(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
         builder.putAttributes(DpsHeaders.USER_EMAIL, headers.getUserEmail());
