@@ -1,6 +1,6 @@
 /*
- * Copyright 2020 Google LLC
- * Copyright 2020 EPAM Systems, Inc
+ * Copyright 2021 Google LLC
+ * Copyright 2021 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.opengroup.osdu.legal.countries;
 
+import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-
+import org.opengroup.osdu.core.gcp.obm.driver.Driver;
+import org.opengroup.osdu.legal.config.GcpAppServiceConfig;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReaderFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class StorageReaderFactoryImpl implements IStorageReaderFactory {
 
-  @Value("#{new Boolean('${enable.full.bucket.name:false}')}")
-  private Boolean isFullBucketName;
+  private final GcpAppServiceConfig config;
+  private final Driver storage;
 
-	@Override
-    public IStorageReader getReader(TenantInfo tenant, String projectRegion) {
-        return new StorageReaderImpl(tenant, projectRegion, isFullBucketName);
-    }
+  @Override
+  public IStorageReader getReader(TenantInfo tenant, String projectRegion) {
+    return new StorageReaderImpl(tenant, projectRegion, storage, config.isEnableFullBucketName());
+  }
 }

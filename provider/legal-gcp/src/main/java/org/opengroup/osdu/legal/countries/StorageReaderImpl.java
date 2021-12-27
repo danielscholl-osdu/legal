@@ -1,6 +1,6 @@
 /*
- * Copyright 2020 Google LLC
- * Copyright 2020 EPAM Systems, Inc
+ * Copyright 2021 Google LLC
+ * Copyright 2021 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,89 +14,80 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.opengroup.osdu.legal.countries;
 
-import com.google.cloud.storage.*;
-
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.gcp.multitenancy.credentials.GcsCredential;
+import org.opengroup.osdu.core.gcp.obm.driver.Driver;
+import org.opengroup.osdu.core.gcp.obm.driver.ObmDriverRuntimeException;
+import org.opengroup.osdu.core.gcp.obm.model.Blob;
+import org.opengroup.osdu.core.gcp.obm.persistence.ObmDestination;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 import org.springframework.http.MediaType;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
+@RequiredArgsConstructor
+@Slf4j
 public class StorageReaderImpl implements IStorageReader {
 
-    private TenantInfo    tenantInfo;
-    private String        projectRegion;
-    private Storage       storage;
+  private TenantInfo tenantInfo;
+  private Driver storage;
 
-    protected static final String BUCKET_NAME = "legal-service-configuration";
-    private static final String FILE_NAME = "Legal_COO.json";
-    private Boolean isFullBucketName = false;
+  protected static final String BUCKET_NAME = "legal-service-configuration";
+  private static final String FILE_NAME = "Legal_COO.json";
+  private boolean isFullBucketName = false;
 
-    public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion) {
-      new StorageReaderImpl(tenantInfo, projectRegion, false);
-    }
+  public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion, Driver storage) {
+    new StorageReaderImpl(tenantInfo, projectRegion, storage, false);
+  }
 
-  public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion, Boolean isFullBucketName) {
-        this.tenantInfo = tenantInfo;
-        this.projectRegion = projectRegion;
-        this.storage = getStorage();
-        this.isFullBucketName = isFullBucketName;
+  public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion, Driver storage,
+      boolean isFullBucketName) {
+    this.tenantInfo = tenantInfo;
+    this.isFullBucketName = isFullBucketName;
+    this.storage = storage;
   }
 
   @Override
-    public byte[] readAllBytes() {
-        BlobId blobId = getBlobId();
-        byte[] content = null;
-
-        try {
-            content = storage.readAllBytes(blobId);
-        } 
-        catch (StorageException e) {
-            if (storage.get(getTenantBucketName(), Storage.BucketGetOption.fields()) == null) {
-                createBucket();
-            }
-            if (storage.get(blobId) == null) {
-                createEmptyObject();
-            }
-        }
+  public byte[] readAllBytes() {
+    byte[] content = null;
+    try {
+      if (storage.getBucket(getTenantBucketName(), getDestination()) == null) {
+        storage.createBucket(getTenantBucketName(), getDestination());
+        Blob emptyBlob = Blob.builder()
+            .bucket(getTenantBucketName())
+            .name(FILE_NAME)
+            .contentType(MediaType.APPLICATION_JSON.toString())
+            .build();
+        storage.createBlob(emptyBlob, new byte[0], getDestination());
+        content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
         return content;
+      } else {
+        Blob blob = storage.getBlob(getTenantBucketName(), FILE_NAME, getDestination());
+        if (Objects.nonNull(blob)) {
+          content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
+        }
+      }
+    } catch (ObmDriverRuntimeException e) {
+      log.error(e.getMessage(), e);
+      throw e;
     }
-
-    private Storage getStorage() {
-        return StorageOptions.newBuilder()
-                             .setCredentials(new GcsCredential(this.tenantInfo.getServiceAccount(),this.tenantInfo.getServiceAccount()))
-                             .setProjectId(this.tenantInfo.getProjectId())
-                             .build()
-                             .getService();
-    }
-    
-    private BlobId getBlobId() {
-        return BlobId.of(getTenantBucketName(), FILE_NAME);
-    }
-
-    private void createBucket() {
-        this.storage.create(BucketInfo.newBuilder(getTenantBucketName())
-                    .setStorageClass(StorageClass.MULTI_REGIONAL)
-                    .setLocation(this.projectRegion)
-                    .build());
-    }
-
-    private void createEmptyObject() {
-        BlobId blobId = getBlobId();
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(MediaType.APPLICATION_JSON.toString()).build();
-        this.storage.create(blobInfo, "".getBytes(UTF_8));
-    }
+    return content;
+  }
 
   protected String getTenantBucketName() {
-      if (Objects.nonNull(isFullBucketName) && isFullBucketName) {
-        return this.tenantInfo.getProjectId() + "-" + this.tenantInfo.getName() + "-" + BUCKET_NAME;
-      }
-      return this.tenantInfo.getName() + "-" + BUCKET_NAME;
+    if (Objects.nonNull(isFullBucketName) && isFullBucketName) {
+      return this.tenantInfo.getProjectId() + "-" + this.tenantInfo.getName() + "-" + BUCKET_NAME;
     }
+    return this.tenantInfo.getName() + "-" + BUCKET_NAME;
+  }
 
+  private ObmDestination getDestination() {
+    return getDestination(tenantInfo.getDataPartitionId());
+  }
+
+  private ObmDestination getDestination(String dataPartitionId) {
+    return ObmDestination.builder().partitionId(dataPartitionId).build();
+  }
 }

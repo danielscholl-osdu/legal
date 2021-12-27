@@ -14,23 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opengroup.osdu.legal.di;
+package org.opengroup.osdu.legal.config;
 
-import org.springframework.beans.factory.config.AbstractFactoryBean;
-import org.springframework.stereotype.Component;
-import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-@Component
-public class TenantFactoryService extends AbstractFactoryBean<ITenantFactory> {
+@Configuration
+@ConfigurationProperties
+@Data
+public class GcpAppServiceConfig {
 
-	@Override
-	protected ITenantFactory createInstance() throws Exception {
-		return new TenantFactory();
-	}
-
-	@Override
-	public Class<?> getObjectType() {
-		return ITenantFactory.class;
-	}
+  private String pubSubLegalTagsTopic = "legaltags_changed";
+  private boolean enableFullBucketName;
 }
