@@ -14,21 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opengroup.osdu.legal.config;
+package org.opengroup.osdu.legal.mappers.osm;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties
-@Getter
-@Setter
-public class MongoDBConfigProperties {
+@ConditionalOnProperty(name = "osmDriver", havingValue = "postgres")
+@ConfigurationProperties(prefix = "osm.postgres")
+@Data
+public class PgOsmConfigurationProperties {
 
-  private String mongoDbUrl;
-  private String mongoDbUser;
-  private String mongoDbPassword;
-  private String mongoDbName;
+  private String partitionPropertiesPrefix = "osm.postgres";
+
+  private Integer maximumPoolSize = 40;
+  private Integer minimumIdle = 0;
+  private Integer idleTimeout = 30000;
+  private Integer maxLifetime = 1800000;
+  private Integer connectionTimeout = 30000;
 }

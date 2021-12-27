@@ -14,23 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opengroup.osdu.legal.di;
+package org.opengroup.osdu.legal.mappers.obm;
 
-import org.springframework.beans.factory.config.AbstractFactoryBean;
-import org.springframework.stereotype.Component;
-import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-@Component
-public class TenantFactoryService extends AbstractFactoryBean<ITenantFactory> {
+@Configuration
+@ConditionalOnProperty(name = "obmDriver", havingValue = "minio")
+@ConfigurationProperties(prefix = "obm.minio")
+@Getter
+@Setter
+public class MinioObmConfigurationProperties {
 
-	@Override
-	protected ITenantFactory createInstance() throws Exception {
-		return new TenantFactory();
-	}
+  private String partitionPropertiesPrefix = "obm.minio";
 
-	@Override
-	public Class<?> getObjectType() {
-		return ITenantFactory.class;
-	}
 }
