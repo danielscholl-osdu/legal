@@ -11,6 +11,7 @@
         <os-core-common.version>0.13.0-rc4</os-core-common.version>
         <snakeyaml.version>1.26</snakeyaml.version>
         <resilience4jVersion>1.7.0</resilience4jVersion>
+        <springfox.version>3.0.0</springfox.version>
     </properties>
 
     <licenses>
@@ -92,6 +93,15 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+	
+		<dependencies>
+		    <!--Swagger-->
+			<dependency>
+      			<groupId>io.springfox</groupId>
+      			<artifactId>springfox-boot-starter</artifactId>
+      			<version>${springfox.version}</version>
+    		</dependency>
+		</dependencies>
 
     <profiles>
         <profile>

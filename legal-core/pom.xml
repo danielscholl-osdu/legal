@@ -16,7 +16,6 @@
 	<description>Legal service core</description>
 
 	<properties>
-		<springfox-version>2.7.0</springfox-version>
 	</properties>
 
 	<dependencies>
@@ -151,27 +150,6 @@
 			<artifactId>system-rules</artifactId>
 			<version>1.2.0</version>
 			<scope>test</scope>
-		</dependency>
-
-		<!-- swagger dependencies -->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>${springfox-version}</version>
-			<exclusions>
-				<exclusion>
-					<!--
-					Excluding com.google.guava:guava:jar:18.0, because it has security vulnerability
-					-->
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${springfox-version}</version>
 		</dependency>
 	</dependencies>
 
