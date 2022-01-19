@@ -54,8 +54,10 @@ public class PgTenantOsmDestinationResolver implements PgDestinationResolver {
 
   private final PgOsmConfigurationProperties properties;
 
-  private static final String DATASOURCE = ".datasource.";
-  private static final String PASSWORD = DATASOURCE.concat("password");
+  private final static String DATASOURCE = ".datasource.";
+  private final static String URL = DATASOURCE.concat("url");
+  private final static String USERNAME = DATASOURCE.concat("username");
+  private final static String PASSWORD = DATASOURCE.concat("password");
 
   private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
@@ -82,10 +84,9 @@ public class PgTenantOsmDestinationResolver implements PgDestinationResolver {
           }
           Map<String, Property> partitionProperties = partitionInfo.getProperties();
 
-          String url = "jdbc:postgresql://localhost:5432/postgres";//getPartitionProperty(partitionId, partitionProperties, URL);
-          String username = "postgres";//getPartitionProperty(partitionId, partitionProperties, USERNAME);
-          String password = "st4s";
-          getPartitionProperty(partitionId, partitionProperties, PASSWORD);
+          String url = getPartitionProperty(partitionId, partitionProperties, URL);
+          String username = getPartitionProperty(partitionId, partitionProperties, USERNAME);
+          String password = getPartitionProperty(partitionId, partitionProperties, PASSWORD);
 
           dataSource = DataSourceBuilder.create()
               .driverClassName(DRIVER_CLASS_NAME)
