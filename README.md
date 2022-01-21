@@ -6,7 +6,7 @@ The steps for running `os-legal-azure` can be found in the [Azure Implementation
 
 ## os-legal-aws
 
-<!-- This should be replaced with a link to AWS specific docs -->
+Instructions for running and testing this service can be found in the [AWS README.md file](./provider/legal-aws/README.md)
 
 # os-legal-gcp
 
