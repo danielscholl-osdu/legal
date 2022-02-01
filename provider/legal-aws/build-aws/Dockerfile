@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html
-FROM amazoncorretto:8-alpine3.12
+FROM amazoncorretto:8
 
 ARG JAR_FILE=provider/legal-aws/target/*spring-boot.jar
 
