@@ -13,3 +13,4 @@ data:
   PROJECT_ID: "{{ .Values.data.project_id }}"
   GOOGLE_AUDIENCES: "{{ .Values.data.google_audiences }}"
   ACCEPT_HTTP: "{{ .Values.data.accept_http }}"
+  SPRING_PROFILES_ACTIVE: "{{ .Values.data.spring_profiles_active }}"
