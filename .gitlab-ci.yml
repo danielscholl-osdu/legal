@@ -37,13 +37,16 @@ include:
     file: "build/maven.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "scanners/fossa.yml"
+    file: "scanners/fossa-maven.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/aws.yml"
+    file: "cloud-providers/aws-global.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/aws-maven.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/ibm.yml"
@@ -53,9 +56,6 @@ include:
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/osdu-gcp-gke.yml"
-
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/gcp.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "publishing/pages.yml"
