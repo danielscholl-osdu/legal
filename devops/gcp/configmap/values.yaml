@@ -10,6 +10,7 @@ data:
   project_id: ""
   google_audiences: ""
   accept_http: "true"
+  spring_profiles_active: "gcp"
 
 conf:
   ent_name: ""
