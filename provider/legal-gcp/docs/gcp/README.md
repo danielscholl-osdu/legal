@@ -56,22 +56,30 @@ It can be overridden by:
 - through the Spring Boot property `pub-sub-legal-tags-topic`
 - environment variable `PUB_SUB_LEGAL_TAGS_TOPIC`
 
-## GCS configuration:
+## GCS configuration <a name="ObjectStoreConfig"></a>
 
-At Google cloud storage should be created bucket:
+### Per-tenant buckets configuration
 
-**name:** `<tenant name>-legal-service-configuration`
+These buckets must be defined in tenants’ “data” GCP projects that names are pointed in tenants’ PartitionInfo registration objects’ “projectId” property at the Partition service.
 
-It can be overridden by:
+<table>
+  <tr>
+   <td>Bucket Naming template 
+   </td>
+   <td>Permissions required
+   </td>
+  </tr>
+  <tr>
+   <td>&lt;PartitionInfo.name>-legal-service-configuration
 
-- through the Spring Boot property `enable-full-bucket-name`
-- environment variable `ENABLE_FULL_BUCKET_NAME`
-
-If `enable-full-bucket-name=true` then bucket name will be:
-
-**name:** `<project id>-<tenant name>-legal-service-configuration`
-
-This bucket should contain `Legal_COO.json` configuration file.
+  **OR** (if $ENABLE_FULL_BUCKET_NAME == true)
+<p>
+&lt;PartitionInfo.projectId>-&lt;PartitionInfo.name>-legal-service-configuration
+   </td>
+   <td>CreateBucket, CRUDObject
+   </td>
+  </tr>
+</table>
 
 ## Google cloud service account configuration :
 TBD

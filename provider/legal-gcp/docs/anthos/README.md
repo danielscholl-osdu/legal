@@ -238,7 +238,7 @@ It can be overridden by:
 
 ![Screenshot](./pics/rabbit.PNG)
 
-## Minio configuration :
+## Minio configuration:
 
 ### Properties set in Partition service:
 
@@ -282,19 +282,28 @@ curl -L -X PATCH 'https://dev.osdu.club/api/partition/v1/partitions/opendes' -H 
 
 </details>
 
-### Bucket configuration:
+## Object store configuration <a name="ObjectStoreConfig"></a>
+### Used Technology
+MinIO (or any other supported by OBM)
 
-At Minio should be created bucket:
+### Per-tenant buckets configuration
+These buckets must be defined in tenants’ dedicated object store servers. OBM connection properties of these servers (url, etc.) are defined as specific properties in tenants’ PartitionInfo registration objects at the Partition service as described in accordant sections of this document.
 
-**name:** `<tenant name>-legal-service-configuration`
+<table>
+  <tr>
+   <td>Bucket Naming template 
+   </td>
+   <td>Permissions required
+   </td>
+  </tr>
+  <tr>
+   <td>&lt;PartitionInfo.name>-legal-service-configuration
 
-It can be overridden by:
-
-- through the Spring Boot property `enable-full-bucket-name`
-- environment variable `ENABLE_FULL_BUCKET_NAME`
-
-If `enable-full-bucket-name=true` then bucket name will be:
-
-**name:** `<project id>-<tenant name>-legal-service-configuration`
-
-This bucket should contain `Legal_COO.json` configuration file.
+<strong>OR</strong> (if $ENABLE_FULL_BUCKET_NAME == true)
+<p>
+&lt;PartitionInfo.projectId>-&lt;PartitionInfo.name>-legal-service-configuration
+   </td>
+   <td>CreateBucket, CRUDObject
+   </td>
+  </tr>
+</table>
