@@ -8,12 +8,16 @@ import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepositoryFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 import javax.inject.Inject;
 
+
+@ConditionalOnProperty(prefix = "repository", name = "implementation",havingValue = "dynamodb",
+		matchIfMissing = true)
 @Service
 @Primary
 @RequestScope
