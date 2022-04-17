@@ -55,6 +55,8 @@ public class StorageReaderImpl implements IStorageReader {
     try {
       if (storage.getBucket(getTenantBucketName(), getDestination()) == null) {
         storage.createBucket(getTenantBucketName(), getDestination());
+      }
+      if (Objects.isNull(storage.getBlob(getTenantBucketName(), FILE_NAME, getDestination()))) {
         Blob emptyBlob = Blob.builder()
             .bucket(getTenantBucketName())
             .name(FILE_NAME)
