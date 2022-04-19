@@ -6,11 +6,9 @@ metadata:
   name: "{{ .Values.conf.configmap }}"
   namespace: "{{ .Release.Namespace }}"
 data:
-  AUTHORIZE_API: "{{ .Values.data.authorize_api }}"
-  PARTITION_API: "{{ .Values.data.partition_api }}"
   LOG_LEVEL: "{{ .Values.data.log_level }}"
-  ENABLE_FULL_BUCKET_NAME: "{{ .Values.data.enable_full_bucket_name }}"
-  PROJECT_ID: "{{ .Values.data.project_id }}"
+  SPRING_PROFILES_ACTIVE: "{{ .Values.data.spring_profiles_active }}"
+  {{- if not .Values.conf.on_prem_enabled }}
   GOOGLE_AUDIENCES: "{{ .Values.data.google_audiences }}"
   ACCEPT_HTTP: "{{ .Values.data.accept_http }}"
-  SPRING_PROFILES_ACTIVE: "{{ .Values.data.spring_profiles_active }}"
+  {{- end }}
