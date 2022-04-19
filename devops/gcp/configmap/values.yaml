@@ -3,16 +3,13 @@
 # Declare variables to be passed into your templates.
 
 data:
-  authorize_api: ""
-  partition_api: ""
-  log_level: ""
-  enable_full_bucket_name: "true"
-  project_id: ""
-  google_audiences: ""
-  accept_http: "true"
+  log_level: "INFO"
   spring_profiles_active: "gcp"
+  # gcp
+  accept_http: "true"
+  google_audiences: ""
 
 conf:
-  ent_name: ""
   configmap: "legal-config"
   app_name: "legal"
+  on_prem_enabled: false
