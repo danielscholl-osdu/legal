@@ -14,7 +14,6 @@ data:
 conf:
   configmap: "legal-config"
   app_name: "legal"
-  keycloak_secret_name: "legal-keycloak-secret"
   minio_secret_name: "legal-minio-secret"
   postgres_secret_name: "legal-postgres-secret"
   rabbitmq_secret_name: "rabbitmq-secret"
