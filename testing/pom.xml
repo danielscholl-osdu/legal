@@ -21,7 +21,9 @@
   <version>0.15.0-SNAPSHOT</version>
 	<description>Root Legal Service project</description>
 	<packaging>pom</packaging>
-
+    <properties>
+        <jackson-databind.version>2.13.2.2</jackson-databind.version>
+    </properties>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
