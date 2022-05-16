@@ -15,9 +15,23 @@ variables:
 
   OSDU_GCP_SERVICE: legal
   OSDU_GCP_VENDOR: gcp
-  OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.project_id=$OSDU_GCP_PROJECT --set data.authorize_api=$OSDU_GCP_AUTHORIZE_API --set data.google_audiences=$GOOGLE_AUDIENCE --set data.partition_api=$OSDU_GCP_PARTITION_API --set data.log_level=INFO --set enable_full_bucket_name=$ENABLE_FULL_BUCKET_NAME"
-  OSDU_GCP_HELM_CONFIG_SERVICE_VARS_DEV2: "--set data.project_id=$OSDU_GCP_PROJECT --set data.authorize_api=$OSDU_GCP_AUTHORIZE_API --set data.google_audiences=$GOOGLE_AUDIENCE --set data.partition_api=$OSDU_GCP_PARTITION_API --set data.log_level=INFO --set enable_full_bucket_name=$ENABLE_FULL_BUCKET_NAME"
-  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=$OSDU_GCP_SERVICE-k8s"
+  OSDU_GCP_HELM_CONFIG_SERVICE_VARS: >
+    --set data.project_id=$OSDU_GCP_PROJECT 
+    --set data.authorize_api=$OSDU_GCP_AUTHORIZE_API 
+    --set data.google_audiences=$GOOGLE_AUDIENCE 
+    --set data.partition_api=$OSDU_GCP_PARTITION_API 
+    --set data.log_level=INFO 
+    --set enable_full_bucket_name=$ENABLE_FULL_BUCKET_NAME
+  OSDU_GCP_HELM_CONFIG_SERVICE_VARS_DEV2: >
+    --set data.project_id=$OSDU_GCP_PROJECT 
+    --set data.authorize_api=$OSDU_GCP_AUTHORIZE_API 
+    --set data.google_audiences=$GOOGLE_AUDIENCE 
+    --set data.partition_api=$OSDU_GCP_PARTITION_API 
+    --set data.log_level=INFO 
+    --set enable_full_bucket_name=$ENABLE_FULL_BUCKET_NAME
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: >
+    --set data.image=$CI_REGISTRY_IMAGE/osdu-gcp-$OSDU_GCP_SERVICE:$CI_COMMIT_SHORT_SHA 
+    --set data.serviceAccountName=$OSDU_GCP_SERVICE-k8s
   OSDU_GCP_HELM_CONFIG_SERVICE: legal-config
   OSDU_GCP_HELM_DEPLOYMENT_SERVICE: legal-deploy
   OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
