@@ -3,13 +3,13 @@
 # Declare variables to be passed into your templates.
 
 data:
-  log_level: "INFO"
-  spring_profiles_active: "gcp"
+  logLevel: "INFO"
+  springProfilesActive: "gcp"
   # gcp
-  accept_http: "true"
-  google_audiences: ""
+  acceptHttp: "true"
+  googleAudiences: ""
 
 conf:
   configmap: "legal-config"
-  app_name: "legal"
-  on_prem_enabled: false
+  appName: "legal"
+  onPremEnabled: false

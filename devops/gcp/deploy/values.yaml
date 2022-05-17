@@ -3,19 +3,19 @@
 # Declare variables to be passed into your templates.
 
 data:
-  requests_cpu: "0.1"
-  requests_memory: "384M"
-  limits_cpu: "1"
-  limits_memory: "1G"
+  requestsCpu: "0.1"
+  requestsMemory: "384M"
+  limitsCpu: "1"
+  limitsMemory: "1G"
   serviceAccountName: "legal"
   imagePullPolicy: "IfNotPresent"
   image: ""
 
 conf:
   configmap: "legal-config"
-  app_name: "legal"
-  minio_secret_name: "legal-minio-secret"
-  postgres_secret_name: "legal-postgres-secret"
-  rabbitmq_secret_name: "rabbitmq-secret"
-  on_prem_enabled: false
+  appName: "legal"
+  minioSecretName: "legal-minio-secret"
+  postgresSecretName: "legal-postgres-secret"
+  rabbitmqSecretName: "rabbitmq-secret"
+  onPremEnabled: false
   domain: ""
