@@ -132,7 +132,7 @@ $ (cd testing/legal-test-core/ && mvn clean install)
 
 ### Running E2E Tests 
 
-This section describes how to run cloud OSDU E2E tests (testing/legal-test-gcp).
+This section describes how to run cloud OSDU E2E tests.
 
 You will need to have the following environment variables defined.
 
