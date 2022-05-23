@@ -37,7 +37,8 @@
 		<module>legal-test-azure</module>
 		<module>legal-test-gcp</module>
 		<module>legal-test-ibm</module>
-	</modules>
+        <module>legal-test-anthos</module>
+    </modules>
 
   <repositories>
     <repository>
