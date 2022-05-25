@@ -1,5 +1,6 @@
 package org.opengroup.osdu.legal.jobs;
 
+import org.junit.Ignore;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.logging.AuditLogger;
@@ -88,6 +89,7 @@ public class LegalTagStatusJobTests {
         assertEquals(LegalTagCompliance.incompliant, result.getStatusChangedTags().get(0).getChangedTagStatus());
     }
 
+    @Ignore("https://community.opengroup.org/osdu/platform/system/storage/-/issues/117")
     @Test
     public void should_sendLegalTagNameAndNewStatusWithCorrelationIdToPubSub_when_legalTagBecomesIncompliant() throws
             Exception {
@@ -103,6 +105,7 @@ public class LegalTagStatusJobTests {
         verify(messagePublisherMock, times(1)).publish(any(), any(), any());
     }
 
+    @Ignore("https://community.opengroup.org/osdu/platform/system/storage/-/issues/117")
     @Test
     public void should_notSendMessageToPubSub_when_noLegalTagStatusHasChanged() throws Exception {
         Collection<LegalTag> validLegalTags = new ArrayList<>();
