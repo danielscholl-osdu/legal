@@ -29,9 +29,10 @@ public class LegalTagStatusJob {
         validator.setHeaders(headers);
         statusChangedTags = checkAndUpdateLegalTagStatus(true, tenantName, statusChangedTags);
         statusChangedTags = checkAndUpdateLegalTagStatus(false, tenantName, statusChangedTags);
-        if (!statusChangedTags.getStatusChangedTags().isEmpty()) {
-            legalTagPublisher.publish(projectId, headers, statusChangedTags);
-        }
+
+        //TODO: Uncomment following event publishing method after this issue is resolved: https://community.opengroup.org/osdu/platform/system/storage/-/issues/117
+        //publishLegalTagStatusUpdateEvents(!statusChangedTags.getStatusChangedTags().isEmpty(), projectId, headers, statusChangedTags);
+
         return statusChangedTags;
     }
 
@@ -49,5 +50,11 @@ public class LegalTagStatusJob {
             }
         }
         return statusChangedTags;
+    }
+
+    private void publishLegalTagStatusUpdateEvents(boolean hasStatusChanges, String projectId, DpsHeaders headers, StatusChangedTags statusChangedTags) throws Exception {
+        if (hasStatusChanges) {
+            legalTagPublisher.publish(projectId, headers, statusChangedTags);
+        }
     }
 }

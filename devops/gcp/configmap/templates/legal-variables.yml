@@ -6,9 +6,9 @@ metadata:
   name: "{{ .Values.conf.configmap }}"
   namespace: "{{ .Release.Namespace }}"
 data:
+  ACCEPT_HTTP: "{{ .Values.data.acceptHttp }}"
   LOG_LEVEL: "{{ .Values.data.logLevel }}"
   SPRING_PROFILES_ACTIVE: "{{ .Values.data.springProfilesActive }}"
   {{- if not .Values.conf.onPremEnabled }}
   GOOGLE_AUDIENCES: "{{ .Values.data.googleAudiences }}"
-  ACCEPT_HTTP: "{{ .Values.data.acceptHttp }}"
   {{- end }}
