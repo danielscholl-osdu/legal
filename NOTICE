@@ -44,7 +44,7 @@ The following software have components provided under the terms of this license:
 - Apache Maven Wagon :: API (from https://repo1.maven.org/maven2/org/apache/maven/wagon/wagon-provider-api)
 - Apache Maven Wagon :: Providers :: File Provider (from https://repo1.maven.org/maven2/org/apache/maven/wagon/wagon-file)
 - Apache Velocity (from http://velocity.apache.org/engine/releases/velocity-1.6.1/, http://velocity.apache.org/engine/releases/velocity-1.6.2/)
-- AssertJ fluent assertions (from https://repo1.maven.org/maven2/org/assertj/assertj-core)
+- AssertJ fluent assertions (from ${project.parent.url}#${project.artifactId}, https://repo1.maven.org/maven2/org/assertj/assertj-core)
 - Bean Validation API (from http://beanvalidation.org)
 - Brave (from https://repo1.maven.org/maven2/io/zipkin/brave/brave)
 - Brave Instrumentation: Http Adapters (from https://repo1.maven.org/maven2/io/zipkin/brave/brave-instrumentation-http)
