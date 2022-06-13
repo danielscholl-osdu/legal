@@ -12,4 +12,3 @@ variables:
     --set data.serviceAccountName=$OSDU_GCP_SERVICE-k8s
   OSDU_GCP_HELM_CONFIG_SERVICE: legal-config
   OSDU_GCP_HELM_DEPLOYMENT_SERVICE: legal-deploy
-  OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
