@@ -1,9 +1,6 @@
 variables:
   OSDU_GCP_SERVICE: legal
   OSDU_GCP_VENDOR: gcp
-  OSDU_GCP_HELM_CONFIG_SERVICE_VARS_DEV2: >
-    --set data.googleAudiences=$GOOGLE_AUDIENCE
-    --set data.logLevel=INFO
 
 osdu-gcp-anthos-test:
   variables:
