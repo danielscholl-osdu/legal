@@ -5,12 +5,16 @@ import org.junit.Rule;
 import org.junit.rules.ExternalResource;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.opengroup.osdu.core.aws.partition.PartitionInfoAws;
 import org.opengroup.osdu.core.aws.partition.PartitionServiceClientWithCache;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.partition.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
+import static org.mockito.ArgumentMatchers.anyString;
 
 public abstract class ParentUtil {
 
@@ -38,6 +42,11 @@ public abstract class ParentUtil {
         @Override
         protected void before() {
             ParentUtil.this.mongoTemplateHelper.dropCollections();
+            PartitionInfoAws partitionInfoAws = new PartitionInfoAws();
+            Property tenantIdProperty = new Property();
+            tenantIdProperty.setValue(DATA_PARTITION);
+            partitionInfoAws.setTenantIdProperty(tenantIdProperty);
+            Mockito.when(partitionServiceClient.getPartition(anyString())).thenReturn(partitionInfoAws);
         }
 
         @Override
