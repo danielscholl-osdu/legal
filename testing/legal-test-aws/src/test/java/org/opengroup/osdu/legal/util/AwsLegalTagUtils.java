@@ -14,18 +14,18 @@
 
 package org.opengroup.osdu.legal.util;
 
+import com.amazonaws.services.s3.AmazonS3;
+import org.opengroup.osdu.core.aws.cognito.AWSCognitoClient;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
+import org.opengroup.osdu.core.aws.mongodb.helper.BasicMongoDBHelper;
+import org.opengroup.osdu.core.aws.s3.S3Config;
+import org.opengroup.osdu.core.common.model.legal.LegalTag;
+import org.opengroup.osdu.legal.util.mongo.MongoDbSimpleTestFactory;
+
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.amazonaws.services.s3.AmazonS3;
-import org.opengroup.osdu.core.aws.cognito.AWSCognitoClient;
-import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
-import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
-import org.opengroup.osdu.core.aws.s3.S3Config;
-import org.opengroup.osdu.core.common.model.legal.Properties;
-import org.springframework.beans.factory.annotation.Value;
 
 public class AwsLegalTagUtils extends LegalTagUtils {
     private static final String FILE_NAME = "Legal_COO.json";
@@ -39,6 +39,10 @@ public class AwsLegalTagUtils extends LegalTagUtils {
     private final static String TABLE_PREFIX = "TABLE_PREFIX";
     private final static String DYNAMO_DB_REGION = "DYNAMO_DB_REGION";
     private final static String DYNAMO_DB_ENDPOINT = "DYNAMO_DB_ENDPOINT";
+    private static final String COLLECTION_PREFIX = "Legal-";
+    private static final String MONGO_DB_CONNECTION_URL = "MONGO_DB_URL";
+    private static final String MONGO_DB_DATABASE_NAME = "MONGO_DB_DATABASE_NAME";
+
 
     private String BearerToken = "";
 
@@ -53,7 +57,7 @@ public class AwsLegalTagUtils extends LegalTagUtils {
 
         try {
             s3Client.putObject(BUCKET_NAME_AWS, String.format("%s/%s", dataPartitionId, FILE_NAME), readTestFile("TenantConfigTestingPurpose.json"));
-        } catch(IOException e){
+        } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -79,9 +83,44 @@ public class AwsLegalTagUtils extends LegalTagUtils {
         doc.setDescription("Expired integration test tag");
         doc.setName(integrationTagTestName);
         doc.setId(Integer.toString(integrationTagTestName.hashCode()));
+        doc.setProperties(getLegalTagProperties());
+        doc.setDataPartitionId(getMyDataPartition());
 
+        String dynamoDbRegion = System.getenv(DYNAMO_DB_REGION);
+        String dynamoDbEndpoint = System.getenv(DYNAMO_DB_ENDPOINT);
+
+        String table = String.format("%s-shared-LegalRepository", System.getenv(TABLE_PREFIX));
+        DynamoDBQueryHelperV2 queryHelper = new DynamoDBQueryHelperV2(dynamoDbEndpoint, dynamoDbRegion, table);
+
+        // delete legal tag if it exists
+        if (queryHelper.keyExistsInTable(LegalDoc.class, doc)) {
+            queryHelper.deleteByPrimaryKey(LegalDoc.class, doc.getId(), doc.getDataPartitionId());
+        }
+
+        queryHelper.save(doc);
+    }
+
+    public void insertExpiredLegalTagMongoDb() {
+        // directly create expired legal tag document
+        String integrationTagTestName = String.format("%s-dps-integration-test-1566474656479", getMyDataPartition()); // name has to match what's hardcoded in the test
+
+        String mongoDbConnectionUrl = System.getenv(MONGO_DB_CONNECTION_URL);
+        String mongoDbDatabaseName = System.getenv(MONGO_DB_DATABASE_NAME);
+        MongoDbSimpleTestFactory mongoDBSimpleFactory = new MongoDbSimpleTestFactory();
+        BasicMongoDBHelper basicMongoDBHelper = mongoDBSimpleFactory.getHelper(mongoDbConnectionUrl, mongoDbDatabaseName);
+
+        LegalTag legalTag = new LegalTag();
+        legalTag.setName(integrationTagTestName);
+        legalTag.setId((long) integrationTagTestName.hashCode());
+        legalTag.setDefaultId();
+        legalTag.setDescription("Expired integration test tag");
+        legalTag.setProperties(getLegalTagProperties());
+        basicMongoDBHelper.save(legalTag, COLLECTION_PREFIX + System.getenv("MY_TENANT"));
+    }
+
+    private org.opengroup.osdu.core.common.model.legal.Properties getLegalTagProperties(){
         org.opengroup.osdu.core.common.model.legal.Properties properties = new org.opengroup.osdu.core.common.model.legal.Properties();
-        List countryOfOrigin = new ArrayList();
+        List<String> countryOfOrigin = new ArrayList<>();
         Date date = new Date(1234567898765L);
         countryOfOrigin.add("US");
         properties.setCountryOfOrigin(countryOfOrigin);
@@ -92,21 +131,6 @@ public class AwsLegalTagUtils extends LegalTagUtils {
         properties.setSecurityClassification("Public");
         properties.setPersonalData("No Personal Data");
         properties.setExportClassification("EAR99");
-        doc.setProperties(properties);
-
-        doc.setDataPartitionId(getMyDataPartition());
-
-        String dynamoDbRegion = System.getenv(DYNAMO_DB_REGION);
-        String dynamoDbEndpoint = System.getenv(DYNAMO_DB_ENDPOINT);
-
-        String table = String.format("%s-shared-LegalRepository", System.getenv(TABLE_PREFIX));
-        DynamoDBQueryHelperV2 queryHelper = new DynamoDBQueryHelperV2(dynamoDbEndpoint, dynamoDbRegion, table);
-
-        // delete legal tag if it exists
-        if(queryHelper.keyExistsInTable(LegalDoc.class, doc)){
-            queryHelper.deleteByPrimaryKey(LegalDoc.class, doc.getId(), doc.getDataPartitionId());
-        }
-
-        queryHelper.save(doc);
+        return properties;
     }
 }

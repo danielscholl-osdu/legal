@@ -14,6 +14,7 @@
 
 package org.opengroup.osdu.legal.acceptanceTests;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.opengroup.osdu.legal.util.AwsLegalTagUtils;
@@ -26,8 +27,11 @@ public class TestValidateLegalTagsApiAcceptance extends ValidateLegalTagsApiAcce
         AwsLegalTagUtils legalTagUtils = new AwsLegalTagUtils();
 
         // Insert expired legal tag directly for should_return200_withLegalTagNamesAndInvalidExpirationDateReason_when_GivenExistingInvalidLegalTagNames
-        legalTagUtils.insertExpiredLegalTag();
-
+        if (StringUtils.isBlank(System.getenv("MONGO_DB_TEST"))) {
+            legalTagUtils.insertExpiredLegalTag();
+        }else {
+            legalTagUtils.insertExpiredLegalTagMongoDb();
+        }
         this.legalTagUtils = legalTagUtils;
 
         super.setup();
