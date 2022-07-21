@@ -49,8 +49,10 @@ public class PersistenceExceptionToAppExceptionMapper {
         switch(code) {
             case(Code.ALREADY_EXISTS_VALUE):
                 output = "Already exists.";
+                break;
             case (Code.INVALID_ARGUMENT_VALUE):
                 output = "Invalid argument given.";
+                break;
             default:
                 break;
         }
