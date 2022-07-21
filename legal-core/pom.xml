@@ -156,6 +156,12 @@
 			<version>2.7</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<version>3.0.16</version>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.github.stefanbirkner/system-rules -->
 		<dependency>
