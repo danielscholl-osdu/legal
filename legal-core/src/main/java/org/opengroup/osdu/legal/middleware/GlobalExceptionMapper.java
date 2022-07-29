@@ -55,7 +55,7 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 	private static final Gson gson = new Gson();
 
 	@Inject
-	private JaxRsDpsLog logger;
+	private JaxRsDpsLog jaxRsDpsLogger;
 
 	@ExceptionHandler(AppException.class)
 	protected ResponseEntity<Object> handleAppException(AppException e) {
@@ -94,7 +94,7 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	protected ResponseEntity<Object> handleConstraintValidationException(ConstraintViolationException e) {
-		logger.error( "Validation exception", e);
+		jaxRsDpsLogger.error( "Validation exception", e);
 
 		List<String> msgs = new ArrayList<String>();
 		for (ConstraintViolation violation : e.getConstraintViolations()) {
@@ -114,7 +114,7 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<Object> handleIOException(IOException e) {
 		if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
-			this.logger.warning("Client closed the connection while request still being processed");
+			this.jaxRsDpsLogger.warning("Client closed the connection while request still being processed");
 			return null;
 		} else {
 			return this.getErrorResponse(
@@ -156,9 +156,9 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 		String exceptionMsg = e.getError().getMessage();
 
 		if (e.getError().getCode() > 499) {
-			this.logger.error(exceptionMsg, e);
+			this.jaxRsDpsLogger.error(exceptionMsg, e);
 		} else {
-			this.logger.warning(exceptionMsg, e);
+			this.jaxRsDpsLogger.warning(exceptionMsg, e);
 		}
 
       return new ResponseEntity<Object>(e.getError(),HttpStatus.resolve(e.getError().getCode()));
