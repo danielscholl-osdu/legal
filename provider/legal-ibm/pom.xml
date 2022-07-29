@@ -12,6 +12,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<os-core-lib-ibm.version>0.15.2</os-core-lib-ibm.version>
+		<spring-webmvc.version>5.3.22</spring-webmvc.version>
 	</properties>
 
 	<dependencies>
@@ -84,6 +85,11 @@
 			<type>pom</type>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring-webmvc.version}</version>
+		</dependency>
 		<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
