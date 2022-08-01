@@ -46,6 +46,10 @@ spec:
       - name: {{ .Chart.Name }}
         image: {{ .Values.image.repository }}/{{ .Chart.Name }}-{{ .Values.image.branch }}:{{ .Values.image.tag | default .Chart.AppVersion }}
         imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sleep","90"]
         ports:
         - containerPort: 80
         resources:
@@ -141,3 +145,4 @@ spec:
             value: "common,application"
           - name: azure_activedirectory_AppIdUri
             value: "api://$(aad_client_id)"
+      terminationGracePeriodSeconds: 101    
