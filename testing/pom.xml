@@ -23,6 +23,7 @@
 	<packaging>pom</packaging>
     <properties>
         <jackson-databind.version>2.13.2.2</jackson-databind.version>
+        <maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
     </properties>
 	<licenses>
 		<license>
