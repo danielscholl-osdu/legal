@@ -1,0 +1,4 @@
+{{- template "common.service" (list . "service.service") -}}
+{{- define "service.service" -}}
+## Define overrides for the service resource here
+{{- end -}}
