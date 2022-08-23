@@ -52,5 +52,6 @@ public class OriginatorValidatorTests {
 		// for coverage purposes. Do nothing method!
 		NameValidator validator = new NameValidator();
 		validator.initialize(null);
+		assertFalse(validator.isValid(null, null));
 	}
 }
