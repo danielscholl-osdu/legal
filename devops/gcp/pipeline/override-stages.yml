@@ -1,7 +1,9 @@
 variables:
   OSDU_GCP_SERVICE: legal
   OSDU_GCP_VENDOR: gcp
+  OSDU_GCP_ENABLE_BOOTSTRAP: "true"
 
 osdu-gcp-anthos-test:
   variables:
     OSDU_GCP_VENDOR: anthos
+
