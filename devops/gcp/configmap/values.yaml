@@ -8,8 +8,14 @@ data:
   # gcp
   acceptHttp: "true"
   googleAudiences: ""
+  # bootstrap
+  dataPartitionId: ""
+  entitlementsHost: "http://entitlements"
+  defaultLegalTag: "default-data-tag"
+  legalHost: "http://legal"
 
 conf:
   configmap: "legal-config"
   appName: "legal"
   onPremEnabled: false
+  bootstrapEnabled: false
