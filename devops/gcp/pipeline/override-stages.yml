@@ -1,9 +1,9 @@
 variables:
   OSDU_GCP_SERVICE: legal
   OSDU_GCP_VENDOR: gcp
-  OSDU_GCP_ENABLE_BOOTSTRAP: "true"
+  # FIXME: bootstrap is disabled by default, should be changed to "true" after all requirements are collected
+  OSDU_GCP_ENABLE_BOOTSTRAP: "false"
 
 osdu-gcp-anthos-test:
   variables:
     OSDU_GCP_VENDOR: anthos
-
