@@ -106,7 +106,7 @@ allowedPrincipals:
   - cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account
   - cluster.local/ns/{{ .Release.Namespace }}/sa/compliance-queue-trigger
   - cluster.local/ns/{{ .Release.Namespace }}/sa/os-policy
-  - cluster.local/ns/{{ .Release.Namespace }}/sa/opa-agent-role
+  - cluster.local/ns/{{ .Release.Namespace }}/sa/opa-agent
   - cluster.local/ns/{{ .Release.Namespace }}/sa/os-storage
   - cluster.local/ns/aws-binary-dms/sa/binary-dms
   - cluster.local/ns/osdu-airflow/sa/airflow-dag-upload
