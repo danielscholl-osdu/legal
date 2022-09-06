@@ -31,7 +31,7 @@ export AWS_COGNITO_AUTH_PARAMS_USER=$ADMIN_USER
 export AWS_COGNITO_CLIENT_ID=$AWS_COGNITO_CLIENT_ID
 if [ -z "$LEGAL_S3_ENDPOINT" ]
 then
-    export AWS_S3_ENDPOINT=s3.us-east-1.amazonaws.com
+    export AWS_S3_ENDPOINT=s3.$AWS_REGION.amazonaws.com
 else
     export AWS_S3_ENDPOINT=$LEGAL_S3_ENDPOINT
 fi
@@ -39,7 +39,7 @@ fi
 export AWS_S3_REGION=$AWS_REGION
 if [ -z "$LEGAL_DYNAMODB_ENDPOINT" ]
 then
-    export DYNAMO_DB_ENDPOINT=dynamodb.us-east-1.amazonaws.com
+    export DYNAMO_DB_ENDPOINT=dynamodb.$AWS_REGION.amazonaws.com
 else
     export DYNAMO_DB_ENDPOINT=$LEGAL_DYNAMODB_ENDPOINT
 
