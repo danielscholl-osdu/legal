@@ -9,12 +9,9 @@ import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.aws.api.mongo.config.LegalTestConfig;
 import org.opengroup.osdu.legal.aws.api.mongo.util.ParentUtil;
-import org.opengroup.osdu.legal.aws.tags.dataaccess.mongodb.config.MultiClusteredConfigReaderLegal;
 import org.opengroup.osdu.legal.aws.tags.dataaccess.mongodb.repository.LegalTagRepositoryMongoDBImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -34,13 +31,11 @@ import static org.opengroup.osdu.legal.aws.api.mongo.util.LegalTagGenerator.gene
 
 @DataMongoTest
 @RunWith(SpringRunner.class)
-@EnableAutoConfiguration
 @SpringJUnitConfig(classes = {LegalTestConfig.class})
-@Import({MultiClusteredConfigReaderLegal.class})
 public class LegalTagRepositoryImplTest extends ParentUtil {
 
     @Autowired
-    private LegalTagRepositoryMongoDBImpl legalTagRepository ;
+    private LegalTagRepositoryMongoDBImpl legalTagRepository;
 
     @Test
     public void create() {
