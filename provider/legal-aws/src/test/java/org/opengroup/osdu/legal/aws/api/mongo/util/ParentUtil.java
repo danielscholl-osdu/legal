@@ -1,10 +1,8 @@
 package org.opengroup.osdu.legal.aws.api.mongo.util;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExternalResource;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.opengroup.osdu.core.aws.partition.PartitionInfoAws;
 import org.opengroup.osdu.core.aws.partition.PartitionServiceClientWithCache;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
@@ -30,23 +28,18 @@ public abstract class ParentUtil {
     @MockBean
     private JaxRsDpsLog log;
 
-    @Before
-    public void setUpAnyTime() {
-        MockitoAnnotations.openMocks(this);
-        this.setHeaderDataPartition(DATA_PARTITION);
-    }
-
-
     @Rule
     public ExternalResource resource = new ExternalResource() {
         @Override
         protected void before() {
             ParentUtil.this.mongoTemplateHelper.dropCollections();
+            ParentUtil.this.setHeaderDataPartition(DATA_PARTITION);
             PartitionInfoAws partitionInfoAws = new PartitionInfoAws();
             Property tenantIdProperty = new Property();
             tenantIdProperty.setValue(DATA_PARTITION);
             partitionInfoAws.setTenantIdProperty(tenantIdProperty);
             Mockito.when(partitionServiceClient.getPartition(anyString())).thenReturn(partitionInfoAws);
+
         }
 
         @Override
