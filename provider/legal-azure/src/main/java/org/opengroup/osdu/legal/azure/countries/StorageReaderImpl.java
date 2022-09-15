@@ -14,7 +14,9 @@
 
 package org.opengroup.osdu.legal.azure.countries;
 
+import org.apache.http.HttpStatus;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 
 import java.nio.charset.StandardCharsets;
@@ -36,7 +38,16 @@ public class StorageReaderImpl implements IStorageReader {
 
     @Override
     public byte[] readAllBytes() {
-        return  blobStore.readFromStorageContainer(dataPartitionId, fileName, containerName).getBytes(StandardCharsets.UTF_8); //should return a json format of an array of Country class
+        try {
+            //should return a json format of an array of Country class
+            return blobStore.readFromStorageContainer(dataPartitionId, fileName, containerName).getBytes(StandardCharsets.UTF_8);
+        } catch (AppException ae) {
+            if (ae.getError().getCode() == HttpStatus.SC_NOT_FOUND) {
+                // Storage File does not exist. No countries are being overwritten using Storage account.
+                // Continue using the DefaultCountryCode.json
+                return new byte[0];
+            }
+            throw ae;
+        }
     }
-
 }
