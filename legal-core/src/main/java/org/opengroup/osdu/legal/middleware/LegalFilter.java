@@ -115,7 +115,7 @@ public class LegalFilter implements Filter {
     }
 
     private boolean isSwagger(String uri) {
-        return uri.contains("/swagger") || uri.contains("/v2/api-docs") || uri.contains("/configuration/ui") || uri.contains("/webjars/");
+        return uri.contains("/swagger") || uri.contains("/v2/api-docs") || uri.contains("/v3/api-docs") || uri.contains("/configuration/ui") || uri.contains("/webjars/");
     }
 
     private boolean isOptionsMethod(HttpServletRequest httpServletRequest){
