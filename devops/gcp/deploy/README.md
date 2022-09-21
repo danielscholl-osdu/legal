@@ -122,6 +122,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **rabbitmqSecretName** | Secret name for rabbitmq service | string | rabbitmq-secret | yes
 **bootstrapSecretName** | Secret name for bootstrap | string | datafier-secret | yes
 **onPremEnabled** | whether on-prem is enabled | boolean | false | yes
+**istionEnabled** | whether enable istio resources | boolean | true | yes
 **bootstrapEnabled** | whether bootstrap is enabled | boolean | false | yes
 **domain** | your domain | string | - | yes
 
