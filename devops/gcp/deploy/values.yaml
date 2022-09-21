@@ -21,5 +21,6 @@ conf:
   rabbitmqSecretName: "rabbitmq-secret"
   bootstrapSecretName: "datafier-secret"
   onPremEnabled: false
+  istioEnabled: true
   bootstrapEnabled: false
   domain: ""
