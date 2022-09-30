@@ -1,6 +1,8 @@
 package org.opengroup.osdu.legal.tags.dto;
 
 import  java.sql.Date;
+import java.util.Map;
+
 import org.opengroup.osdu.core.common.model.legal.validation.ValidDescription;
 import org.opengroup.osdu.core.common.model.legal.validation.ValidName;
 import lombok.AllArgsConstructor;
@@ -24,4 +26,6 @@ public class UpdateLegalTag {
     private String description = "";
 
     private Date expirationDate;
+    
+    private Map<String, Object> extensionProperties;
 }

@@ -109,6 +109,16 @@ public class LegalTagTests {
         properties.setPersonalData("Personally Identifiable");
         properties.setSecurityClassification("Confidential");
         properties.setExportClassification("EAR99");
+        
+        Map<String, Object> extensionProperties = new LinkedHashMap <String, Object>();
+        extensionProperties.put("EffectiveDate", "2022-06-01T00:00:00");
+        extensionProperties.put("AffiliateEnablementIndicator", true);
+        Map<String, Object> agreementParty = new LinkedHashMap <String, Object>();
+        agreementParty.put("AgreementPartyType", "EnabledAffiliate");
+        agreementParty.put("AgreementParty", "osdu:master-data--Organisation:TestCompany");
+        extensionProperties.put("AgreementParties", Arrays.asList(agreementParty));
+        properties.setExtensionProperties(extensionProperties);
+        
         LegalTag legalTag = new LegalTag();
         legalTag.setProperties(properties);
         legalTag.setId(1L);

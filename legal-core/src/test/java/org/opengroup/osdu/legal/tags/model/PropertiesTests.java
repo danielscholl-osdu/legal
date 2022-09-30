@@ -152,6 +152,15 @@ public class PropertiesTests {
         sut.setSecurityClassification("Confidential");
         sut.setExportClassification("EAR99");
         sut.setExpirationDate(Properties.DEFAULT_EXPIRATIONDATE);
+
+        Map<String, Object> extensionProperties = new LinkedHashMap <String, Object>();
+        extensionProperties.put("EffectiveDate", "2022-06-01T00:00:00");
+        extensionProperties.put("AffiliateEnablementIndicator", true);
+        Map<String, Object> agreementParty = new LinkedHashMap <String, Object>();
+        agreementParty.put("AgreementPartyType", "EnabledAffiliate");
+        agreementParty.put("AgreementParty", "osdu:master-data--Organisation:TestCompany");
+        extensionProperties.put("AgreementParties", Arrays.asList(agreementParty));
+        sut.setExtensionProperties(extensionProperties);
         return sut;
     }
 

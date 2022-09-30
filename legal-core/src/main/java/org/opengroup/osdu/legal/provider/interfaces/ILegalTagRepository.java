@@ -18,6 +18,7 @@ public interface ILegalTagRepository {
     String SECURITY_CLASSIFICATION = "securityClassification";
     String EXPORT_CLASSIFICATION = "exportClassification";
     String PERSONAL_DATA = "personalData";
+    String EXTENSION_PROPERTIES = "extensionProperties";
     String DESCRIPTION = "description";
     String NAME = "name";
 
