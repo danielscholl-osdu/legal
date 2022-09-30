@@ -478,6 +478,10 @@ definitions:
         type: string
         example: EAR99
         description: The ECCN value of the data if one applies.
+      extensionProperties:
+        type: object
+        additionalProperties: true
+        description: The optional object field to attach any company specific attributes.
     description: LegalTag properties
   UpdateLegalTag:
     type: object
@@ -498,7 +502,11 @@ definitions:
       expirationDate:
         type: string
         example: '2025-12-25'
-        description: The optional expiration date of the contract in the format YYYY-MM-DD
+        description: The optional expiration date of the contract in the format YYYY-MM-DD.
+      extensionProperties:
+        type: object
+        additionalProperties: true
+        description: The optional object field to attach any company specific attributes.
     description: The model to update an existing LegalTag
   VersionInfo:
     type: "object"
