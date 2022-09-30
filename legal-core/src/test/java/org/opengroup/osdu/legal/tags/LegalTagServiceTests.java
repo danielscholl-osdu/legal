@@ -264,6 +264,7 @@ public class LegalTagServiceTests {
         assertEquals(result.getName(), updateTag.getName());
         assertEquals(result.getProperties().getContractId(), updateTag.getContractId());
         assertEquals(result.getProperties().getExpirationDate(), updateTag.getExpirationDate());
+        assertEquals(result.getProperties().getExtensionProperties(), updateTag.getExtensionProperties());
         assertEquals(result.getDescription(), updateTag.getDescription());
         verify(validator, times(1)).isValidThrows(any());
     }

@@ -101,7 +101,10 @@ curl --request POST \
             "originator":"OSDU",
             "securityClassification":"Public",
             "exportClassification":"EAR99",
-            "personalData":"No Personal Data"
+            "personalData":"No Personal Data",
+            "extensionProperties": {
+                "anyCompanySpecificAttributes": "anyJsonTypeOfvalue"
+            }
         }
 }'
 ```
@@ -109,6 +112,8 @@ curl --request POST \
 </details>
     
 It is good practice for LegalTag names to be clear and descriptive of the properties it represents, so it would be easy to discover and to associate to the correct data with it. Also, the description field is a free form optional field to allow for you to add context to the LegalTag, making easier to understand and retrieve over time.
+
+The "extensionProperties" field is an optional json object field and you may add any company specific attributes inside this field.
 
 When creating LegalTags, the name is automatically prefixed with the data-partition-name that is assigned to the partition. So in the example above, if the given data-partition-name is **mypartition**, then the actual name of the LegalTag would be **mypartition-demo-legaltag**.
 
@@ -435,7 +440,7 @@ Ingestion services forward the request to the LegalTag API using the same _SAuth
 ## Updating a LegalTag<a name="Updating-a-LegalTag"></a>
 One of the main cases where a LegalTag can become invalid is if a contract expiration date passes. This makes both the LegalTag invalid and *all* data associated with that LegalTag including derivatives.
 
-In these situations we can update LegalTags to make them valid again and so make the associated data accessible. Currently we only allow the update of the *description*, *contract ID* and *expiration date* properties. 
+In these situations we can update LegalTags to make them valid again and so make the associated data accessible. Currently we only allow the update of the *description*, *contract ID*, *expiration date* and *extensionProperties* properties. 
 
     PUT /api/legal/v1/legaltags
 
@@ -450,8 +455,11 @@ curl --request PUT \
   --header 'data-partition-id: opendes' \
   --data '{
         "name": "opendes-demo-legaltag",
-        "contractId": "AE12345"
-        "expirationDate": "2099-12-21"
+        "contractId": "AE12345",
+        "expirationDate": "2099-12-21",
+        "extensionProperties": {
+            "anyCompanySpecificAttributes": "anyJsonTypeOfvalue"
+        }
     }
 }'
 ```

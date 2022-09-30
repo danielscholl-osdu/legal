@@ -14,6 +14,8 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -217,6 +219,16 @@ public class PropertiesValidatorTests {
         properties.setOriginator(originator);
         properties.setExpirationDate(ts);
         properties.setCountryOfOrigin(new ArrayList<String>(){{add("FR");}});
+        
+        Map<String, Object> extensionProperties = new LinkedHashMap <String, Object>();
+        extensionProperties.put("EffectiveDate", "2022-06-01T00:00:00");
+        extensionProperties.put("AffiliateEnablementIndicator", true);
+        Map<String, Object> agreementParty = new LinkedHashMap <String, Object>();
+        agreementParty.put("AgreementPartyType", "EnabledAffiliate");
+        agreementParty.put("AgreementParty", "osdu:master-data--Organisation:TestCompany");
+        extensionProperties.put("AgreementParties", Arrays.asList(agreementParty));
+        properties.setExtensionProperties(extensionProperties);
+        
         return properties;
     }
 }

@@ -8,13 +8,14 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <docker.image.prefix>opendes</docker.image.prefix>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <os-core-common.version>0.16.0</os-core-common.version>
+        <os-core-common.version>0.17.0-rc4</os-core-common.version>
         <snakeyaml.version>1.26</snakeyaml.version>
         <resilience4jVersion>1.7.0</resilience4jVersion>
         <springfox.version>3.0.0</springfox.version>
         <log4j.version>2.17.1</log4j.version>
         <json-smart.version>2.4.7</json-smart.version>
         <jackson-databind.version>2.13.2.2</jackson-databind.version>
+        <jackson.version>2.13.2</jackson.version>
     </properties>
 
     <licenses>
@@ -60,7 +61,19 @@
     </distributionManagement>
 
     <dependencyManagement>
-        <dependencies>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.4.12</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.4.12</version>
+			</dependency>
             <dependency>
                 <groupId>org.opengroup.osdu</groupId>
                 <artifactId>os-core-common</artifactId>
@@ -108,6 +121,16 @@
                 <artifactId>json-smart</artifactId>
                 <version>${json-smart.version}</version>
             </dependency>
+	        <dependency>
+	            <groupId>com.fasterxml.jackson.core</groupId>
+	            <artifactId>jackson-core</artifactId>
+	            <version>${jackson.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>com.fasterxml.jackson.core</groupId>
+	            <artifactId>jackson-annotations</artifactId>
+	            <version>${jackson.version}</version>
+	        </dependency>
             <dependency>
 	            <groupId>com.fasterxml.jackson.core</groupId>
 	            <artifactId>jackson-databind</artifactId>

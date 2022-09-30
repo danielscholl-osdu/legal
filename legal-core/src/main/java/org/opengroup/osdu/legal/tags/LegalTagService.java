@@ -166,6 +166,7 @@ public class LegalTagService {
 
         currentLegalTag.getProperties().setContractId(newLegalTag.getContractId());
         currentLegalTag.getProperties().setExpirationDate(newLegalTag.getExpirationDate());
+        currentLegalTag.getProperties().setExtensionProperties(newLegalTag.getExtensionProperties());
         currentLegalTag.setDescription(newLegalTag.getDescription());
 
         validator.isValidThrows(currentLegalTag);
