@@ -18,7 +18,7 @@
     <parent>
         <artifactId>legal-service</artifactId>
         <groupId>org.opengroup.osdu.legal</groupId>
-        <version>0.17.0-SNAPSHOT</version>
+        <version>0.18.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -29,7 +29,7 @@
     <properties>
         <aws.version>1.11.1018</aws.version>
         <deployment.environment>dev</deployment.environment>
-        <version.number>0.17.0-SNAPSHOT</version.number>
+        <version.number>0.18.0-SNAPSHOT</version.number>
         <jackson-databind.version>2.13.2.2</jackson-databind.version>
         <jackson.version>2.13.2</jackson.version>
         <spring-webmvc.version>5.3.22</spring-webmvc.version>
