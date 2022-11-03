@@ -51,19 +51,19 @@ This service uses specific implementations of DestinationResolvers based on the 
 - resolver creates a data source, connects to the resource, remembers the datasource
 - resolver gives the datasource to the mapper in the Resolution object
 - Google Cloud resolvers do not receive special properties from the Partition service for connection,
-  because the location of the resources is unambiguously known - they are in the GCP project.
+  because the location of the resources is unambiguously known - they are in the Google Cloud project.
   And credentials are also not needed - access to data is made on behalf of the Google Identity SA
   under which the service itself is launched. Therefore, resolver takes only
   the value of the **projectId** property from PartitionInfo and uses it to connect to a resource
-  in the corresponding GCP project.
+  in the corresponding Google Cloud project.
 
 # Configuration
 
 ## Service Configuration
 ### Anthos:
 [Anthos service configuration ](docs/anthos/README.md)
-### GCP:
-[Gcp service configuration ](docs/gcp/README.md)
+### Google Cloud:
+[Google Cloud service configuration ](docs/gcp/README.md)
 
 Check that maven is installed:
 
@@ -158,8 +158,8 @@ This section describes how to run cloud OSDU E2E tests.
 
 ### Anthos test configuration:
 [Anthos service configuration ](docs/anthos/README.md)
-### GCP test configuration:
-[Gcp service configuration ](docs/gcp/README.md)
+### Google Cloud test configuration:
+[Google Cloud service configuration ](docs/gcp/README.md)
 
 
 ## Deployment
