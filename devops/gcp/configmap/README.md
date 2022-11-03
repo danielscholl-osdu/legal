@@ -99,14 +99,14 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **logLevel** | logging level | string | INFO | yes
 **springProfilesActive** | active spring profile | string | gcp | yes
 
-### GCP variables
+### Google Cloud variables
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
 **acceptHttp** | accept Http traffic | string | true | yes
-**googleAudiences** | your GCP client ID | string | - | yes
+**googleAudiences** | your Google Cloud client ID | string | - | yes
 
-> googleAudiences: If you are connected to GCP console with `gcloud auth application-default login --no-browser` from your terminal, you can get your client_id using the command:
+> googleAudiences: If you are connected to Google Cloud console with `gcloud auth application-default login --no-browser` from your terminal, you can get your client_id using the command:
 
 ```console
 cat ~/.config/gcloud/application_default_credentials.json | grep client_id

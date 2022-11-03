@@ -13,9 +13,9 @@ Instructions for running and testing this service can be found in the [AWS READM
 ## Running integration tests
 Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
 
-### GCP
+### Google Cloud
 
-Instructions for running the GCP integration tests can be found [here](./provider/legal-gcp/README.md).
+Instructions for running the Google Cloud integration tests can be found [here](./provider/legal-gcp/README.md).
 
 ## License
 Copyright 2017-2019, Schlumberger
