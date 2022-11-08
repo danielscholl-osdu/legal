@@ -15,6 +15,7 @@ AUTHORIZE_API: http://entitlements:8080/api/entitlements/v1
 LEGAL_HOSTNAME: notused
 CRON_JOB_IP: 10.0.0.1
 LOG_PREFIX: legal
+LOG_LEVEL: ${LOG.LEVEL}
 
 ibm:
   env:
