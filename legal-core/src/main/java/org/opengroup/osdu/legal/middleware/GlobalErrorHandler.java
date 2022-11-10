@@ -1,6 +1,7 @@
 package org.opengroup.osdu.legal.middleware;
 
 import com.google.gson.Gson;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Hidden
 @RestController
 public class GlobalErrorHandler implements ErrorController {
 
@@ -32,11 +34,6 @@ public class GlobalErrorHandler implements ErrorController {
       return new ResponseEntity<Object>(gson.toJson(message), HttpStatus.resolve(Integer.parseInt(statusCode.toString())));
     }
     throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server error", "An unknown error has occurred.");
-  }
-
-  @Override
-  public String getErrorPath() {
-    return "/error";
   }
 
 }
