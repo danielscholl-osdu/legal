@@ -1,0 +1,18 @@
+{{- if .Values.conf.bootstrapEnabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ printf "%s-bootstrap" .Values.conf.appName | quote }}
+  name: {{ printf "%s-bootstrap" .Values.conf.configmap | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  DATA_PARTITION_ID: {{ .Values.data.dataPartitionId | quote }}
+  ENTITLEMENTS_HOST: {{ .Values.data.entitlementsHost | quote }}
+  LEGAL_HOST: {{ .Values.data.legalHost | quote }}
+  DEFAULT_LEGAL_TAG: {{ .Values.data.defaultLegalTag | quote }}
+  ONPREM_ENABLED: {{ .Values.conf.onPremEnabled | quote }}
+  {{- if not .Values.conf.onPremEnabled }}
+  GOOGLE_AUDIENCES: {{ .Values.data.googleAudiences | quote }}
+  {{- end }}
+{{- end }}

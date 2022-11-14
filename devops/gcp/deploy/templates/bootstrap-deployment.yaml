@@ -1,0 +1,38 @@
+{{- if .Values.conf.bootstrapEnabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ printf "%s-bootstrap" .Values.conf.appName | quote }}
+  name: {{ printf "%s-bootstrap" .Values.conf.appName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ printf "%s-bootstrap" .Values.conf.appName | quote }}
+  template:
+    metadata:
+      labels:
+        app: {{ printf "%s-bootstrap" .Values.conf.appName | quote }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+    spec:
+      containers:
+        - name: {{ printf "%s-bootstrap" .Values.conf.appName | quote }}
+          image: {{ .Values.data.bootstrapImage | quote }}
+          readinessProbe:
+            exec:
+              command:
+              - cat
+              - /tmp/bootstrap_ready
+          imagePullPolicy: {{ .Values.data.imagePullPolicy | quote }}
+          envFrom:
+          - configMapRef:
+              name: {{ printf "%s-bootstrap" .Values.conf.configmap | quote }}
+          {{- if .Values.conf.onPremEnabled }}
+          - secretRef:
+              name: {{ .Values.conf.bootstrapSecretName | quote }}
+          {{- end }}
+      serviceAccountName: {{ .Values.data.bootstrapServiceAccountName | quote }}
+{{- end }}

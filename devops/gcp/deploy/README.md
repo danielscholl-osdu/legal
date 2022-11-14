@@ -92,7 +92,26 @@ Packages are only needed for installation from a local computer.
 
 First you need to set variables in **values.yaml** file using any code editor. Some of the values are prefilled, but you need to specify some values as well. You can find more information about them below.
 
-### Common variables
+### Configmap variables
+
+| Name | Description | Type | Default |Required |
+|------|-------------|------|---------|---------|
+**logLevel** | logging level | string | ERROR | yes
+**springProfilesActive** | active spring profile | string | gcp | yes
+**acceptHttp** | accept Http traffic | string | true | yes
+**googleAudiences** | your GCP client id | string | - | yes
+**dataPartitionId** | data partition id | string | - | yes
+**entitlementsHost** | Entitlements host URL | string | http://entitlements | yes
+**defaultLegalTag** | Default legal tag | string | default-data-tag| yes
+**legalHost** | Legal host URL | string | http://legal | yes
+
+> googleAudiences: If you are connected to GCP console with `gcloud auth application-default login --no-browser` from your terminal, you can get your client_id using the command:
+
+```console
+cat ~/.config/gcloud/application_default_credentials.json | grep client_id
+```
+
+### Deployment variables
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
@@ -100,18 +119,13 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **requestsMemory** | amount of requests memory| string | 384M | yes
 **limitsCpu** | CPU limit | string | 1 | yes
 **limitsMemory** | memory limit | string | 1G | yes
-**serviceAccountName** | name of your service account | string | legal | yes
-**imagePullPolicy** | when to pull image | string | IfNotPresent | yes
-**image** | your image name | string | - | yes
-
-### Bootstrap variables
-
-| Name | Description | Type | Default |Required |
-|------|-------------|------|---------|---------|
 **bootstrapImage** | name of the bootstrap image | string | - | yes
-**bootstrapServiceAccountName** | name of the bootstrap SA | string | - | yes
+**bootstrapServiceAccountName** | name of the bootstrap service account | string | - | yes
+**serviceAccountName** | name of your service account | string | legal | yes
+**imagePullPolicy** | when to pull the image | string | IfNotPresent | yes
+**image** | path to the image in a registry | string | - | yes
 
-### Config variables
+### Configuration variables
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
