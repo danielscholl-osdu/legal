@@ -3,6 +3,16 @@
 # Declare variables to be passed into your templates.
 
 data:
+  # configmaps
+  logLevel: "ERROR"
+  springProfilesActive: "gcp"
+  acceptHttp: "true"
+  googleAudiences: ""
+  dataPartitionId: ""
+  entitlementsHost: "http://entitlements"
+  defaultLegalTag: "default-data-tag"
+  legalHost: "http://legal"
+  # deployments
   requestsCpu: "0.1"
   requestsMemory: "384M"
   limitsCpu: "1"

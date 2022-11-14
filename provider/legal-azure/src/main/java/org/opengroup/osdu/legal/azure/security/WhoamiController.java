@@ -14,6 +14,7 @@
 
 package org.opengroup.osdu.legal.azure.security;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+@Hidden
 @NoArgsConstructor
 @Controller
 public class WhoamiController {
