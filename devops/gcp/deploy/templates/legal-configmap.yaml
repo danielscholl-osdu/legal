@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    app: {{ printf "%s-bootstrap" .Values.conf.appName | quote }}
+    app: {{ .Values.conf.appName | quote }}
   name: {{ .Values.conf.configmap | quote }}
   namespace: {{ .Release.Namespace | quote }}
 data:

@@ -19,12 +19,12 @@ get_token_onprem() {
         --data-urlencode "scope=openid" \
         --data-urlencode "client_id=${OPENID_PROVIDER_CLIENT_ID}" \
         --data-urlencode "client_secret=${OPENID_PROVIDER_CLIENT_SECRET}" | jq -r ".id_token")"
-    export BEARER_TOKEN="Bearer ${ID_TOKEN}"
+    export ID_TOKEN
 }
 
 get_token_gcp() {
-    BEARER_TOKEN=$(gcloud auth print-identity-token --audiences="${GOOGLE_AUDIENCES}")
-    export BEARER_TOKEN
+    ID_TOKEN=$(gcloud auth print-identity-token --audiences="${GOOGLE_AUDIENCES}")
+    export ID_TOKEN
 }
 
 check_entitlements_readiness() {
@@ -33,7 +33,7 @@ check_entitlements_readiness() {
         --write-out "%{http_code}" --silent --output "/dev/null" \
         --header 'Content-Type: application/json' \
         --header "data-partition-id: ${DATA_PARTITION_ID}" \
-        --header "Authorization: ${BEARER_TOKEN}")
+        --header "Authorization: Bearer ${ID_TOKEN}")
 
     if [ "$status_code" == 200 ]; then
         echo "$status_code: Entitlements provisioning completed successfully!"
@@ -55,7 +55,7 @@ create_legaltag() {
         "countryOfOrigin":["US"],
         "contractId":"No Contract Related",
         "expirationDate":"2099-01-01",
-        "dataType":"Public Domain Data", 
+        "dataType":"Public Domain Data",
         "originator":"OSDU",
         "securityClassification":"Public",
         "exportClassification":"EAR99",
@@ -69,7 +69,7 @@ EOF
         --url "${LEGAL_HOST}/api/legal/v1/legaltags" \
         --write-out "%{http_code}" --silent --output "output.txt" \
         --header "Content-Type: application/json" \
-        --header "authorization: Bearer ${BEARER_TOKEN}" \
+        --header "Authorization: Bearer ${ID_TOKEN}" \
         --header "data-partition-id: ${DATA_PARTITION_ID}" \
         --data @/opt/default_legal_tag.json)
 
