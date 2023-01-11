@@ -24,7 +24,7 @@ Defined in default application property file but possible to override:
 | `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration`  | no | - |
 | `PARTITION_AUTH_ENABLED` | `false` | Disable auth token provisioning for requests to Partition service | no | - |
 
-These variables define service behavior, and are used to switch between `anthos` or `gcp` environments, their overriding and usage in mixed mode was not tested.
+These variables define service behavior, and are used to switch between `anthos` or `gc` environments, their overriding and usage in mixed mode was not tested.
 Usage of spring profiles is preferred.
 
 | name | value | description | sensitive? | source |
@@ -326,7 +326,7 @@ You will need to have the following environment variables defined.
 | `TEST_OPENID_PROVIDER_URL` | `https://keycloak.com/auth/realms/osdu` | OpenID provider url | yes | -- |
 | `TEST_MINIO_ACCESS_KEY` | ex `true` | Minio access key| no | - |
 | `TEST_MINIO_SECRET_KEY` | `********` | Minio secret | yes | -- |
-| `TEST_MINIO_URL` | `https://s3.ref.gcp.gnrg-osdu.projects.epam.com/`| Minio url | -- |
+| `TEST_MINIO_URL` | `https://s3.ref.gc.gnrg-osdu.projects.epam.com/`| Minio url | -- |
 
 
 **Entitlements configuration for integration accounts**

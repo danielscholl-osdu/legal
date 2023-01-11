@@ -36,10 +36,10 @@
 		<module>legal-test-core</module>
 		<module>legal-test-aws</module>
 		<module>legal-test-azure</module>
-		<module>legal-test-gcp</module>
+		<module>legal-test-gc</module>
 		<module>legal-test-ibm</module>
-        <module>legal-test-anthos</module>
-    </modules>
+    <module>legal-test-anthos</module>
+  </modules>
 
   <repositories>
     <repository>

@@ -1,19 +1,20 @@
-# legal-gcp
+# legal-gc
 
-os-legal-gcp is a Spring Boot service that hosts CRUD APIs that enable management of legal tags within the OSDU R2 ecosystem.
+legal-gc is a Spring Boot service that hosts CRUD APIs that enable management of legal tags within the OSDU R2 ecosystem.
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
- 
+
 ### Prerequisites
- 
+
 - [Maven 3.6.0+](https://maven.apache.org/download.cgi)
 - [AdoptOpenJDK8](https://adoptopenjdk.net/)
 - [Lombok 1.16 or later](https://projectlombok.org/setup/maven)
 - [GCloud SDK with java (latest version)](https://cloud.google.com/sdk/docs/install)
 
 # Features of implementation
+
 This is a universal solution created using EPAM OSM and OBM mappers technology.
 It allows you to work with various implementations of KV stores and Blob stores.
 
@@ -39,12 +40,14 @@ They switch between datasources of different tenants due to the work of a bunch 
 ## Mapper tuning mechanisms
 
 This service uses specific implementations of DestinationResolvers based on the tenant information provided by the OSDU Partition service.
+
 - for Google Datastore: osm/DsTenantDestinationResolver.java
 - for Postgres: osm/PgTenantDestinationResolver.java
 - for MinIO: obm/MinioDestinationResolver.java
 - for RabbitMQ: oqm/MqTenantOqmDestinationResolver.java
 
-#### Their algorithms are as follows:
+#### Their algorithms are as follows
+
 - incoming Destination carries data-partition-id
 - resolver accesses the Partition service and gets PartitionInfo
 - from PartitionInfo resolver retrieves properties for the connection: URL, username, password etc.
@@ -60,10 +63,14 @@ This service uses specific implementations of DestinationResolvers based on the 
 # Configuration
 
 ## Service Configuration
-### Anthos:
-[Anthos service configuration ](docs/anthos/README.md)
-### Google Cloud:
-[Google Cloud service configuration ](docs/gcp/README.md)
+
+### Anthos
+
+[Anthos service configuration](docs/anthos/README.md)
+
+### Google Cloud
+
+[Google Cloud service configuration](docs/google_cloud/README.md)
 
 Check that maven is installed:
 
@@ -101,24 +108,25 @@ $ cat ~/.m2/settings.xml
 </settings>
 ```
 
-* Update the Google cloud SDK to the latest version:
+- Update the Google cloud SDK to the latest version:
 
 ```bash
 gcloud components update
 ```
-* Set Google Project Id:
+
+- Set Google Project Id:
 
 ```bash
 gcloud config set project <YOUR-PROJECT-ID>
 ```
 
-* Perform a basic authentication in the selected project:
+- Perform a basic authentication in the selected project:
 
 ```bash
 gcloud auth application-default login
 ```
 
-* Navigate to search service's root folder and run:
+- Navigate to search service's root folder and run:
 
 ```bash
 mvn jetty:run
@@ -129,9 +137,9 @@ mvn jetty:run
 mvn clean install   
 ```
 
-* If you wish to see the coverage report then go to testing/target/site/jacoco-aggregate and open index.html
+- If you wish to see the coverage report then go to testing/target/site/jacoco-aggregate and open index.html
 
-* If you wish to build the project without running tests
+- If you wish to build the project without running tests
 
 ```bash
 mvn clean install -DskipTests
@@ -140,7 +148,7 @@ mvn clean install -DskipTests
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
 
 ```bash
-cd provider/legal-gcp/ && mvn spring-boot:run
+cd provider/legal-gc/ && mvn spring-boot:run
 ```
 
 ## Testing
@@ -152,42 +160,48 @@ Navigate to legal service's root folder and run all the tests:
 $ (cd testing/legal-test-core/ && mvn clean install)
 ```
 
-### Running E2E Tests 
+### Running E2E Tests
 
 This section describes how to run cloud OSDU E2E tests.
 
-### Anthos test configuration:
-[Anthos service configuration ](docs/anthos/README.md)
-### Google Cloud test configuration:
-[Google Cloud service configuration ](docs/gcp/README.md)
+### Anthos test configuration
 
+[Anthos service configuration](docs/anthos/README.md)
+
+### Google Cloud test configuration
+
+[Google Cloud service configuration](docs/google_cloud/README.md)
 
 ## Deployment
 
-* Data-Lake Legal Google Cloud Endpoints on App Engine Flex environment 
-  * Deploy
+- Data-Lake Legal Google Cloud Endpoints on App Engine Flex environment
+  - Deploy
+
     ```sh
     mvn appengine:deploy -pl org.opengroup.osdu.legal:legal -amd
     ```
 
-  * If you wish to deploy the search service without running tests
+  - If you wish to deploy the search service without running tests
+
     ```sh
     mvn appengine:deploy -pl org.opengroup.osdu.legal:legal -amd -DskipTests
     ```
 
 or
-* Google Documentation: https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-appengine
+
+- Google Documentation: <https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-appengine>
 
 ## Licence
+
 Copyright © Google LLC
 Copyright © EPAM Systems
- 
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
- 
+
 [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
- 
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

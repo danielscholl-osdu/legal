@@ -4,7 +4,7 @@ WORKDIR /opt
 
 RUN apt-get update && apt-get install -yq jq
 
-COPY ./provider/legal-gcp/bootstrap/ /opt/
+COPY ./provider/legal-gc/bootstrap/ /opt/
 
 RUN chmod +x bootstrap.sh validate-env.sh
 

@@ -99,13 +99,13 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **logLevel** | logging level | string | ERROR | yes
 **springProfilesActive** | active spring profile | string | gcp | yes
 **acceptHttp** | accept Http traffic | string | true | yes
-**googleAudiences** | your GCP client id | string | - | yes
+**googleAudiences** | your Google Cloud client id | string | - | yes
 **dataPartitionId** | data partition id | string | - | yes
-**entitlementsHost** | Entitlements host URL | string | http://entitlements | yes
+**entitlementsHost** | Entitlements host URL | string | <http://entitlements> | yes
 **defaultLegalTag** | Default legal tag | string | default-data-tag| yes
-**legalHost** | Legal host URL | string | http://legal | yes
+**legalHost** | Legal host URL | string | <http://legal> | yes
 
-> googleAudiences: If you are connected to GCP console with `gcloud auth application-default login --no-browser` from your terminal, you can get your client_id using the command:
+> googleAudiences: If you are connected to Google Cloud console with `gcloud auth application-default login --no-browser` from your terminal, you can get your client_id using the command:
 
 ```console
 cat ~/.config/gcloud/application_default_credentials.json | grep client_id
@@ -145,7 +145,7 @@ cat ~/.config/gcloud/application_default_credentials.json | grep client_id
 Run this command from within this directory:
 
 ```console
-helm install gcp-legal-deploy .
+helm install gc-legal-deploy .
 ```
 
 ## Uninstalling the Chart
@@ -153,7 +153,7 @@ helm install gcp-legal-deploy .
 To uninstall the helm deployment:
 
 ```console
-helm uninstall gcp-legal-deploy
+helm uninstall gc-legal-deploy
 ```
 
 To delete secrets and PVCs:
