@@ -3,7 +3,7 @@
 # Script that bootstraps legal service
 # It creates default legal tag via request to Legal service
 # For now created legal tag name is hardcoded: ${DATA_PARTITION_ID}-initital-data-tag
-# Contains logic for both onprem and gcp version
+# Contains logic for both onprem and gc version
 
 set -ex
 
@@ -22,9 +22,9 @@ get_token_onprem() {
     export ID_TOKEN
 }
 
-get_token_gcp() {
-    ID_TOKEN=$(gcloud auth print-identity-token --audiences="${GOOGLE_AUDIENCES}")
-    export ID_TOKEN
+get_token_gc() {
+    BEARER_TOKEN=$(gcloud auth print-identity-token --audiences="${GOOGLE_AUDIENCES}")
+    export BEARER_TOKEN
 }
 
 check_entitlements_readiness() {
@@ -94,7 +94,7 @@ if [ "${ONPREM_ENABLED}" == "true" ]; then
 else
     source ./validate-env.sh "GOOGLE_AUDIENCES"
 
-    get_token_gcp
+    get_token_gc
 
 fi
 
