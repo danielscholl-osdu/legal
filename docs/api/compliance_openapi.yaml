@@ -336,7 +336,6 @@ securityDefinitions:
     type: oauth2
     x-google-issuer: sauth-preview.OSDU.com
     x-google-jwks_uri: 'https://opsauth-dot-osduauth-preview.appspot.com/v1/certs'
-    x-google-audiences: 'entitlement-osdu.OSDUservice.com,entitlement-osdu.OSDUclient.com,dev-OSDUdev-devportal.OSDUapp.com,test-OSDUdev-devportal.OSDUapp.com,discover-evd-csp-OSDU-com-dtwdev.OSDUapp.com,discover-evt-csp-OSDU-com-dtwcmz.OSDUapp.com,discover-evq-csp-OSDU-com-dtwstage.OSDUapp.com,fuse-evd-csp-OSDU-com-dtwdev.OSDUapp.com,fuse-evt-csp-OSDU-com-dtwcmz.OSDUapp.com,fuse-evq-csp-OSDU-com-dtwstage.OSDUapp.com,local-logstore.OSDUapp.com'
     scopes: {}
   google_id_token:
     authorizationUrl: ''
@@ -344,7 +343,6 @@ securityDefinitions:
     type: oauth2
     x-google-issuer: 'https://accounts.google.com'
     x-google-jwks_uri: 'https://www.googleapis.com/oauth2/v3/certs'
-    x-google-audiences: 245464679631-ktfdfpl147m1mjpbutl00b3cmffissgq.apps.googleusercontent.com
     scopes: {}
 definitions:
   ReadablePropertyValues:

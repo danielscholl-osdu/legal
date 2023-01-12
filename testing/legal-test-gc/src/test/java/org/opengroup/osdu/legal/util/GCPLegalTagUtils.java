@@ -12,10 +12,6 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
 import lombok.extern.java.Log;
 
 @Log
@@ -72,8 +68,7 @@ public class GCPLegalTagUtils extends LegalTagUtils {
     public synchronized String accessToken() throws Exception {
         if (Strings.isNullOrEmpty(token)) {
             String serviceAccountFile = System.getProperty("INTEGRATION_TESTER", System.getenv("INTEGRATION_TESTER"));
-            String audience = System.getProperty("INTEGRATION_TEST_AUDIENCE", System.getenv("INTEGRATION_TEST_AUDIENCE"));
-            token = new GoogleServiceAccount(serviceAccountFile).getAuthToken(audience);
+            token = new GoogleServiceAccount(serviceAccountFile).getAuthToken();
         }
         return "Bearer " + token;
     }
