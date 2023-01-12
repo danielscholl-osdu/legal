@@ -23,7 +23,7 @@ get_token_onprem() {
 }
 
 get_token_gc() {
-    BEARER_TOKEN=$(gcloud auth print-identity-token --audiences="${GOOGLE_AUDIENCES}")
+    BEARER_TOKEN=$(gcloud auth print-identity-token)
     export BEARER_TOKEN
 }
 
@@ -92,7 +92,6 @@ if [ "${ONPREM_ENABLED}" == "true" ]; then
     get_token_onprem
 
 else
-    source ./validate-env.sh "GOOGLE_AUDIENCES"
 
     get_token_gc
 

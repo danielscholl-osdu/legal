@@ -8,7 +8,6 @@ Must have:
 
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
-| `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | <https://console.cloud.google.com/apis/credentials> |
 | `SPRING_PROFILES_ACTIVE` | ex `gcp` | Spring profile that activate default configuration for Google Cloud environment | false | - |
 
 Defined in default application property file but possible to override:
@@ -21,7 +20,6 @@ Defined in default application property file but possible to override:
 | `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration`  | no | - |
 | `SERVICE_TOKEN_PROVIDER` | `GCP` |Service account token provider, `GCP` means use Google service account | no | - |
 | `PARTITION_AUTH_ENABLED` | `true` |Enable auth token provisioning for requests to Partition service | no | - |
-| `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` |  Client ID for getting access to cloud resources | yes | <https://console.cloud.google.com/apis/credentials> |
 | `GOOGLE_APPLICATION_CREDENTIALS` | ex `/path/to/directory/service-key.json` | Service account credentials, serves to gain access to cloud resources and to request tokens | yes | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
 
 These variables define service behavior, and are used to switch between `anthos` or `gc` environments, their overriding and usage in mixed mode was not tested.
@@ -99,7 +97,6 @@ You will need to have the following environment variables defined.
 | ---  | ---   | ---         | ---        | ---    |
 | `GCLOUD_PROJECT` | `nice-etching-277309` | google cloud project ID | yes | - |
 | `MY_TENANT_PROJECT` | `osdu` | my tenant project name | yes | - |
-| `INTEGRATION_TEST_AUDIENCE` | `********` | client application ID | yes | <https://console.cloud.google.com/apis/credentials> |
 | `INTEGRATION_TESTER` | `********` | Service account for API calls. Note: this user must have entitlements configured already | yes | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
 | `HOST_URL` | `http://localhsot:8080/api/legal/v1/` | - | yes | - |
 | `MY_TENANT` | `osdu` | OSDU tenant used for testing | yes | - |

@@ -109,7 +109,7 @@ steps:
   - task: Maven@3
     inputs:
       mavenPomFile: '$(integrationTestGcpPom)'
-      options: '--settings $(mavenSettings) -DargLine="-DGOOGLE_APPLICATION_CREDENTIALS=$(gac.secureFilePath)" -DSKIP_HTTP_TESTS=SKIP_HTTP_TESTS -Dsurefire.useFile=false -DVSTS_FEED_TOKEN=$(VSTS_FEED_TOKEN) -DINTEGRATION_TESTER=$(INTEGRATION_TESTER) -DNO_DATA_ACCESS_TESTER=$(NO_DATA_ACCESS_TESTER) -DHOST_URL=$(HOST_URL) -DINTEGRATION_TEST_AUDIENCE=$(INTEGRATION_TEST_AUDIENCE) -DMY_TENANT=$(MY_TENANT) -DMY_TENANT_PROJECT=$(MY_TENANT_PROJECT) compile'
+      options: '--settings $(mavenSettings) -DargLine="-DGOOGLE_APPLICATION_CREDENTIALS=$(gac.secureFilePath)" -DSKIP_HTTP_TESTS=SKIP_HTTP_TESTS -Dsurefire.useFile=false -DVSTS_FEED_TOKEN=$(VSTS_FEED_TOKEN) -DINTEGRATION_TESTER=$(INTEGRATION_TESTER) -DNO_DATA_ACCESS_TESTER=$(NO_DATA_ACCESS_TESTER) -DHOST_URL=$(HOST_URL) -DMY_TENANT=$(MY_TENANT) -DMY_TENANT_PROJECT=$(MY_TENANT_PROJECT) compile'
       publishJUnitResults: false
       javaHomeOption: 'JDKVersion'
       mavenVersionOption: 'Default'
