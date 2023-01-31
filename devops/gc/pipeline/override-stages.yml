@@ -10,8 +10,8 @@ gc-anthos-test:
 
 gc-containerize-bootstrap-gitlab:
   variables:
-    GC_ENABLE_BOOTSTRAP: "false"
+    GC_ENABLE_BOOTSTRAP: "true"
 
 gc-containerize-bootstrap-gcr:
   variables:
-    GC_ENABLE_BOOTSTRAP: "false"
+    GC_ENABLE_BOOTSTRAP: "true"
