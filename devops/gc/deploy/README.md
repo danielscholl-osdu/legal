@@ -99,17 +99,10 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **logLevel** | logging level | string | ERROR | yes
 **springProfilesActive** | active spring profile | string | gcp | yes
 **acceptHttp** | accept Http traffic | string | true | yes
-**googleAudiences** | your Google Cloud client id | string | - | yes
 **dataPartitionId** | data partition id | string | - | yes
 **entitlementsHost** | Entitlements host URL | string | <http://entitlements> | yes
 **defaultLegalTag** | Default legal tag | string | default-data-tag| yes
 **legalHost** | Legal host URL | string | <http://legal> | yes
-
-> googleAudiences: If you are connected to Google Cloud console with `gcloud auth application-default login --no-browser` from your terminal, you can get your client_id using the command:
-
-```console
-cat ~/.config/gcloud/application_default_credentials.json | grep client_id
-```
 
 ### Deployment variables
 
