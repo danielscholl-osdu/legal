@@ -7,7 +7,6 @@ data:
   logLevel: "ERROR"
   springProfilesActive: "gcp"
   acceptHttp: "true"
-  googleAudiences: ""
   dataPartitionId: ""
   entitlementsHost: "http://entitlements"
   defaultLegalTag: "default-data-tag"

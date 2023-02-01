@@ -9,6 +9,3 @@ data:
   ACCEPT_HTTP: {{ .Values.data.acceptHttp | quote }}
   LOG_LEVEL: {{ .Values.data.logLevel | quote }}
   SPRING_PROFILES_ACTIVE: {{ .Values.data.springProfilesActive | quote }}
-  {{- if not .Values.conf.onPremEnabled }}
-  GOOGLE_AUDIENCES: {{ .Values.data.googleAudiences | quote }}
-  {{- end }}
