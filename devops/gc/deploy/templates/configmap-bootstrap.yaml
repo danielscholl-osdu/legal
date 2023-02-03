@@ -12,7 +12,4 @@ data:
   LEGAL_HOST: {{ .Values.data.legalHost | quote }}
   DEFAULT_LEGAL_TAG: {{ .Values.data.defaultLegalTag | quote }}
   ONPREM_ENABLED: {{ .Values.conf.onPremEnabled | quote }}
-  {{- if not .Values.conf.onPremEnabled }}
-  GOOGLE_AUDIENCES: {{ .Values.data.googleAudiences | quote }}
-  {{- end }}
 {{- end }}
