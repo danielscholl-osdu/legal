@@ -23,8 +23,8 @@ get_token_onprem() {
 }
 
 get_token_gc() {
-    BEARER_TOKEN=$(gcloud auth print-identity-token)
-    export BEARER_TOKEN
+    ID_TOKEN=$(gcloud auth print-identity-token)
+    export ID_TOKEN
 }
 
 check_entitlements_readiness() {
