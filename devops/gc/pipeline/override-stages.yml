@@ -1,8 +1,6 @@
 variables:
   GC_SERVICE: legal
   GC_VENDOR: gc
-  # FIXME: Delete after merging all helm charts
-  GC_ENABLE_HELM_CONFIG: "false"
 
 gc-anthos-test:
   variables:
