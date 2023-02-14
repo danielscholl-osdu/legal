@@ -96,42 +96,53 @@ First you need to set variables in **values.yaml** file using any code editor. S
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
-**logLevel** | logging level | string | ERROR | yes
-**springProfilesActive** | active spring profile | string | gcp | yes
-**acceptHttp** | accept Http traffic | string | true | yes
-**dataPartitionId** | data partition id | string | - | yes
-**entitlementsHost** | Entitlements host URL | string | <http://entitlements> | yes
-**defaultLegalTag** | Default legal tag | string | default-data-tag| yes
-**legalHost** | Legal host URL | string | <http://legal> | yes
+**data.logLevel** | logging level | string | ERROR | yes
+**data.springProfilesActive** | active spring profile | string | gcp | yes
+**data.acceptHttp** | accept Http traffic | string | true | yes
+**data.dataPartitionId** | data partition id | string | - | yes
+**data.entitlementsHost** | Entitlements host URL | string | <http://entitlements> | yes
+**data.defaultLegalTag** | Default legal tag | string | default-data-tag| yes
+**data.legalHost** | Legal host URL | string | <http://legal> | yes
 
 ### Deployment variables
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
-**requestsCpu** | amount of requests CPU | string | 0.1 | yes
-**requestsMemory** | amount of requests memory| string | 384M | yes
-**limitsCpu** | CPU limit | string | 1 | yes
-**limitsMemory** | memory limit | string | 1G | yes
-**bootstrapImage** | name of the bootstrap image | string | - | yes
-**bootstrapServiceAccountName** | name of the bootstrap service account | string | - | yes
-**serviceAccountName** | name of your service account | string | legal | yes
-**imagePullPolicy** | when to pull the image | string | IfNotPresent | yes
-**image** | path to the image in a registry | string | - | yes
+**data.requestsCpu** | amount of requests CPU | string | 0.1 | yes
+**data.requestsMemory** | amount of requests memory| string | 384M | yes
+**data.limitsCpu** | CPU limit | string | 1 | yes
+**data.limitsMemory** | memory limit | string | 1G | yes
+**data.bootstrapImage** | name of the bootstrap image | string | - | yes
+**data.bootstrapServiceAccountName** | name of the bootstrap service account | string | - | yes
+**data.serviceAccountName** | name of your service account | string | legal | yes
+**data.imagePullPolicy** | when to pull the image | string | IfNotPresent | yes
+**data.image** | path to the image in a registry | string | - | yes
 
 ### Configuration variables
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
-**configmap** | configmap to be used | string | legal-config | yes
-**appName** | name of the app | string | legal | yes
-**minioSecretName** | Secret name for minio service | string | legal-minio-secret | yes
-**postgresSecretName** | Secret name for postgres service | string | legal-postgres-secret | yes
-**rabbitmqSecretName** | Secret name for rabbitmq service | string | rabbitmq-secret | yes
-**bootstrapSecretName** | Secret name for bootstrap | string | datafier-secret | yes
-**onPremEnabled** | whether on-prem is enabled | boolean | false | yes
-**istionEnabled** | whether enable istio resources | boolean | true | yes
-**bootstrapEnabled** | whether bootstrap is enabled | boolean | false | yes
-**domain** | your domain | string | - | yes
+**conf.configmap** | configmap to be used | string | legal-config | yes
+**conf.appName** | name of the app | string | legal | yes
+**conf.minioSecretName** | Secret name for minio service | string | legal-minio-secret | yes
+**conf.postgresSecretName** | Secret name for postgres service | string | legal-postgres-secret | yes
+**conf.rabbitmqSecretName** | Secret name for rabbitmq service | string | rabbitmq-secret | yes
+**conf.bootstrapSecretName** | Secret name for bootstrap | string | datafier-secret | yes
+**conf.onPremEnabled** | whether on-prem is enabled | boolean | false | yes
+**conf.istionEnabled** | whether enable istio resources | boolean | true | yes
+**conf.bootstrapEnabled** | whether bootstrap is enabled | boolean | false | yes
+**conf.domain** | your domain | string | - | yes
+
+### Istio variables
+
+| Name | Description | Type | Default |Required |
+|------|-------------|------|---------|---------|
+**istio.proxyCPU** | CPU request for Envoy sidecars | string | `50m` | yes
+**istio.proxyCPULimit** | CPU limit for Envoy sidecars | string | `500m` | yes
+**istio.proxyMemory** | memory request for Envoy sidecars | string | `64Mi` | yes
+**istio.proxyMemoryLimit** | memory limit for Envoy sidecars | string | `512Mi` | yes
+**istio.bootstrapProxyCPU** | CPU request for Envoy sidecars | string | `10m` | yes
+**istio.bootstrapProxyCPULimit** | CPU limit for Envoy sidecars | string | `100m` | yes
 
 ### Install the helm chart
 
