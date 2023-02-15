@@ -12,8 +12,8 @@ data:
   defaultLegalTag: "default-data-tag"
   legalHost: "http://legal"
   # deployments
-  requestsCpu: "0.1"
-  requestsMemory: "384M"
+  requestsCpu: "10m"
+  requestsMemory: "550Mi"
   limitsCpu: "1"
   limitsMemory: "1G"
   bootstrapImage: ""
@@ -35,9 +35,9 @@ conf:
   domain: ""
 
 istio:
-  proxyCPU: "50m"
+  proxyCPU: "10m"
   proxyCPULimit: "500m"
-  proxyMemory: "64Mi"
+  proxyMemory: "100Mi"
   proxyMemoryLimit: "512Mi"
   bootstrapProxyCPU: "10m"
   bootstrapProxyCPULimit: "100m"
