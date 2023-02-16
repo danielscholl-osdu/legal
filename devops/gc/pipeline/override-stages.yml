@@ -1,8 +1,6 @@
 variables:
   GC_SERVICE: legal
   GC_VENDOR: gc
-  # FIXME: Delete after merging all helm charts
-  GC_ENABLE_HELM_CONFIG: "false"
 
 gc-anthos-test:
   variables:
@@ -10,8 +8,8 @@ gc-anthos-test:
 
 gc-containerize-bootstrap-gitlab:
   variables:
-    GC_ENABLE_BOOTSTRAP: "false"
+    GC_ENABLE_BOOTSTRAP: "true"
 
 gc-containerize-bootstrap-gcr:
   variables:
-    GC_ENABLE_BOOTSTRAP: "false"
+    GC_ENABLE_BOOTSTRAP: "true"
