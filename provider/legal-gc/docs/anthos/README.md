@@ -229,7 +229,7 @@ curl -L -X PATCH 'https://dev.osdu.club/api/partition/v1/partitions/opendes' -H 
 
 At RabbitMq should be created exchange with name:
 
-**name:** `legaltags_changed`
+**name:** `legaltags-changed`
 
 It can be overridden by:
 

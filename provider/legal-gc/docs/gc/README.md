@@ -33,6 +33,15 @@ Usage of spring profiles is preferred.
 | `OBMDRIVER` | `gcs` | Obm driver mode that defines which object storage will be used | no | - |
 | `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID` |Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no | - |
 
+### Running Locally
+
+Mandatory variables to run service, others are located into local spring profile default env configuration.
+
+| name                             | value      | description                                                                     | sensitive? | source                              |
+|----------------------------------|------------|---------------------------------------------------------------------------------|------------|-------------------------------------|
+| `SPRING_PROFILES_ACTIVE`         | `local`    | Spring profile that activate default configuration for Google Cloud environment | false      | -                                   |
+| `GOOGLE_APPLICATION_CREDENTIALS` | `********` | Google Cloud service account                                                    | yes        | -                                   |
+
 ## Datastore configuration
 
 There must be a namespace for each tenant, which is the same as the tenant name.
@@ -47,7 +56,7 @@ Kind `LegalTagOsm` will be created by service if it does not exist.
 
 At Pubsub should be created topic with name:
 
-**name:** `legaltags_changed`
+**name:** `legaltags-changed`
 
 It can be overridden by:
 
