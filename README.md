@@ -15,7 +15,7 @@ Integration tests are located in a separate project for each cloud in the ```tes
 
 ### Google Cloud
 
-Instructions for running the Google Cloud integration tests can be found [here](./provider/legal-gcp/README.md).
+Instructions for running the Google Cloud integration tests can be found [here](./provider/legal-gc/README.md).
 
 ## License
 Copyright 2017-2019, Schlumberger
