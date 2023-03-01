@@ -25,6 +25,6 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class GcpAppServiceConfig {
 
-  private String pubSubLegalTagsTopic = "legaltags-changed";
+  private String pubSubLegalTagsTopic;
   private boolean enableFullBucketName;
 }
