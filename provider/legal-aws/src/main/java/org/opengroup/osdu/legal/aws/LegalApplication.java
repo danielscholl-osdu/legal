@@ -17,8 +17,10 @@ package org.opengroup.osdu.legal.aws;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 
 @ComponentScan({"org.opengroup.osdu"})
+@PropertySource("classpath:swagger.properties")
 @SpringBootApplication
 public class LegalApplication {
     public static void main(String[] args)
