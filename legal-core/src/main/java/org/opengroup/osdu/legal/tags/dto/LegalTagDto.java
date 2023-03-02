@@ -2,6 +2,8 @@ package org.opengroup.osdu.legal.tags.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opengroup.osdu.core.common.model.legal.CountryCodes;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.Properties;
@@ -26,15 +28,19 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = "Represents a single LegalTag")
 public class LegalTagDto {
 
+    @Schema(description = "The name of the LegalTag", example = "OSDU-Private-EHCData")
     @ValidName
     private String name = "";
 
+    @Schema(description = "The description of the LegalTag")
     @XmlJavaTypeAdapter(HtmlEncodeAdapter.class)
     @ValidDescription
     private String description = "";
 
+    @Schema(description = "LegalTag properties")
     @Valid
     private Properties properties = new Properties();
 
