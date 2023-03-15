@@ -1,5 +1,6 @@
 package org.opengroup.osdu.legal.tags.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opengroup.osdu.core.common.model.legal.validation.ValidName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,8 +16,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "The model to retrieve multiple LegalTags in batch.")
 public class RequestLegalTags {
 
+    @Schema(description = "The name of all the LegalTags to retrieve.")
     @NotNull
     @Size(min=1, max=25)
     @Valid

@@ -13,6 +13,13 @@ Instructions for running and testing this service can be found in the [AWS READM
 ## Running integration tests
 Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
 
+### Open API 3.0 - Swagger
+- Swagger UI : https://host/context-path/swagger (will redirect to https://host/context-path/swagger-ui/index.html)
+- api-docs (JSON) : https://host/context-path/api-docs
+- api-docs (YAML) : https://host/context-path/api-docs.yaml
+
+All the Swagger and OpenAPI related common properties are managed here [swagger.properties](./legal-core/src/main/resources/swagger.properties)
+
 ### Google Cloud
 
 Instructions for running the Google Cloud integration tests can be found [here](./provider/legal-gc/README.md).

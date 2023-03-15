@@ -1,5 +1,6 @@
 package org.opengroup.osdu.legal.tags.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,9 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "Represents a collection of LegalTags.")
 public class LegalTagDtos {
+
+    @Schema(description = "A collection of complete LegalTags")
     private Collection<LegalTagDto> legalTags = new ArrayList<>();
 }
