@@ -53,14 +53,6 @@ environmentVariables:
     value: "/mnt/params"
   - name: LEGAL_SERVICE_REPOSITORY_IMPLEMENTATION
     value: "{{ default `dynamodb` .Values.global.coreDbProvider }}"
-  - name: MONGODB_RETRY_WRITES
-    value: "true"
-  - name: MONGODB_WRITE_MODE
-    value: "majority"
-  - name: MONGODB_USE_SRV_ENDPOINT
-    value: "true"
-  - name: MONGODB_ENABLE_TLS
-    value: "false"
 
 # Resource Config
 maxConnections: 200
