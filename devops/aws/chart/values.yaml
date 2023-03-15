@@ -21,15 +21,6 @@ serviceParameters:
 - objectName: "/osdu/{{ .Values.global.resourcePrefix }}/redis-core/end-point-port"
   objectType: "ssmparameter"
   objectAlias: "CACHE_CLUSTER_PORT"
-- objectName: "/osdu/{{ .Values.global.resourcePrefix }}/mongodb/endpoint"
-  objectType: "ssmparameter"
-  objectAlias: "mongodb_host"
-- objectName: "/osdu/{{ .Values.global.resourcePrefix }}/mongodb/port"
-  objectType: "ssmparameter"
-  objectAlias: "mongodb_port"
-- objectName: "/osdu/{{ .Values.global.resourcePrefix }}/mongodb/credentials"
-  objectType: "secretsmanager"
-  objectAlias: "mongodb_credentials"
 environmentVariables:
   - name: APPLICATION_PORT
     value: "{{ .Values.service.port }}"
