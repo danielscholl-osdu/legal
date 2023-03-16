@@ -21,15 +21,6 @@ serviceParameters:
 - objectName: "/osdu/{{ .Values.global.resourcePrefix }}/redis-core/end-point-port"
   objectType: "ssmparameter"
   objectAlias: "CACHE_CLUSTER_PORT"
-- objectName: "/osdu/{{ .Values.global.resourcePrefix }}/mongodb/endpoint"
-  objectType: "ssmparameter"
-  objectAlias: "mongodb_host"
-- objectName: "/osdu/{{ .Values.global.resourcePrefix }}/mongodb/port"
-  objectType: "ssmparameter"
-  objectAlias: "mongodb_port"
-- objectName: "/osdu/{{ .Values.global.resourcePrefix }}/mongodb/credentials"
-  objectType: "secretsmanager"
-  objectAlias: "mongodb_credentials"
 environmentVariables:
   - name: APPLICATION_PORT
     value: "{{ .Values.service.port }}"
@@ -53,14 +44,6 @@ environmentVariables:
     value: "/mnt/params"
   - name: LEGAL_SERVICE_REPOSITORY_IMPLEMENTATION
     value: "{{ default `dynamodb` .Values.global.coreDbProvider }}"
-  - name: MONGODB_RETRY_WRITES
-    value: "true"
-  - name: MONGODB_WRITE_MODE
-    value: "majority"
-  - name: MONGODB_USE_SRV_ENDPOINT
-    value: "true"
-  - name: MONGODB_ENABLE_TLS
-    value: "false"
 
 # Resource Config
 maxConnections: 200
