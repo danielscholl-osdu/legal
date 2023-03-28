@@ -44,6 +44,8 @@ environmentVariables:
     value: "/mnt/params"
   - name: LEGAL_SERVICE_REPOSITORY_IMPLEMENTATION
     value: "{{ default `dynamodb` .Values.global.coreDbProvider }}"
+  - name: TMP_VOLUME_PATH
+    value: "/tmp"
 
 # Resource Config
 maxConnections: 200
@@ -80,7 +82,7 @@ cors:
 securityContext: 
   runAsUser: 10001
   runAsNonRoot: true
-  readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
   capabilities:
     drop:
