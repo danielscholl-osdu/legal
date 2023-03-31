@@ -30,7 +30,7 @@
 		<dependency>
     		<groupId>com.google.protobuf</groupId>
     		<artifactId>protobuf-java</artifactId>
-    		<version>3.18.2</version>
+    		<version>3.19.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opengroup.osdu</groupId>
@@ -100,7 +100,16 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-codec</artifactId>
+			<version>4.1.86.Final</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.tomcat.embed</groupId>
+		    <artifactId>tomcat-embed-core</artifactId>
+		    <version>9.0.69</version>
+		</dependency>
 	</dependencies>
 
 	<build>
