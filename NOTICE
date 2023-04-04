@@ -45,9 +45,6 @@ The following software have components provided under the terms of this license:
 - Proton-J (from https://repo1.maven.org/maven2/org/apache/qpid/proton-j)
 - QpidJMS Client (from https://repo1.maven.org/maven2/org/apache/qpid/qpid-jms-client)
 - oro (from https://repo1.maven.org/maven2/oro/oro)
-- tomcat-annotations-api (from http://tomcat.apache.org/, https://tomcat.apache.org/)
-- tomcat-embed-el (from http://tomcat.apache.org/, https://tomcat.apache.org/)
-- tomcat-embed-websocket (from http://tomcat.apache.org/, https://tomcat.apache.org/)
 
 ========================================================================
 Apache-2.0
@@ -394,7 +391,7 @@ The following software have components provided under the terms of this license:
 - GSON extensions to the Google HTTP Client Library for Java. (from https://repo1.maven.org/maven2/com/google/http-client/google-http-client-gson)
 - Google APIs Client Library for Java (from https://repo1.maven.org/maven2/com/google/api-client/google-api-client)
 - Google App Engine extensions to the Google HTTP Client Library for Java. (from https://repo1.maven.org/maven2/com/google/http-client/google-http-client-appengine)
-- Google Cloud Core (from https://github.com/googleapis/google-cloud-java, https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core, https://github.com/googleapis/java-core)
+- Google Cloud Core (from https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core, https://github.com/googleapis/java-core, https://repo1.maven.org/maven2/com/google/cloud/google-cloud-core)
 - Google Cloud Core HTTP (from https://github.com/GoogleCloudPlatform/google-cloud-java/tree/master/google-cloud-core-http, https://github.com/googleapis/google-cloud-java, https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core-http, https://github.com/googleapis/java-core)
 - Google Cloud Core gRPC (from https://github.com/googleapis/google-cloud-java, https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core-grpc, https://github.com/googleapis/java-core)
 - Google Cloud Datastore (from https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-datastore, https://github.com/googleapis/java-datastore)
@@ -697,7 +694,6 @@ The following software have components provided under the terms of this license:
 - Protocol Buffer Java API (from http://code.google.com/p/protobuf, https://repo1.maven.org/maven2/com/google/protobuf/protobuf-java)
 - Protocol Buffers [Util] (from https://repo1.maven.org/maven2/com/google/protobuf/protobuf-java-util)
 - Redisson (from http://redisson.org)
-- SnakeYAML (from http://code.google.com/p/snakeyaml/, http://www.snakeyaml.org, https://bitbucket.org/snakeyaml/snakeyaml)
 - Spring Core (from http://www.springframework.org, https://github.com/spring-projects/spring-framework, https://repo1.maven.org/maven2/org/springframework/spring-core)
 - ThreeTen backport (from https://github.com/ThreeTen/threetenbp, https://www.threeten.org/threetenbp)
 - jaxen (from http://jaxen.codehaus.org/, https://repo1.maven.org/maven2/jaxen/jaxen)
@@ -748,6 +744,7 @@ The following software have components provided under the terms of this license:
 - LatencyUtils (from http://latencyutils.github.io/LatencyUtils/)
 - MongoDB Java Driver (from http://mongodb.org/, http://www.mongodb.org, https://www.mongodb.com/)
 - Netty/Common (from https://repo1.maven.org/maven2/io/netty/netty-common)
+- RabbitMQ Java Client (from http://www.rabbitmq.com, https://www.rabbitmq.com)
 - reactive-streams (from http://www.reactive-streams.org/)
 
 ========================================================================
@@ -805,7 +802,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Java SDK Spring Boot starter (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Java SDK Web Module (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
-- SnakeYAML (from http://code.google.com/p/snakeyaml/, http://www.snakeyaml.org, https://bitbucket.org/snakeyaml/snakeyaml)
 
 ========================================================================
 EPL-2.0
@@ -849,7 +845,6 @@ GPL-2.0-or-later
 The following software have components provided under the terms of this license:
 
 - Cobertura (from http://cobertura.sourceforge.net)
-- SnakeYAML (from http://code.google.com/p/snakeyaml/, http://www.snakeyaml.org, https://bitbucket.org/snakeyaml/snakeyaml)
 
 ========================================================================
 GPL-2.0-with-classpath-exception
@@ -941,7 +936,6 @@ The following software have components provided under the terms of this license:
 - Java Native Access (from https://github.com/java-native-access/jna, https://github.com/twall/jna)
 - Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Javassist (from http://www.javassist.org/)
-- SnakeYAML (from http://code.google.com/p/snakeyaml/, http://www.snakeyaml.org, https://bitbucket.org/snakeyaml/snakeyaml)
 
 ========================================================================
 MIT
@@ -1017,6 +1011,7 @@ The following software have components provided under the terms of this license:
 
 - Cobertura (from http://cobertura.sourceforge.net)
 - Javassist (from http://www.javassist.org/)
+- RabbitMQ Java Client (from http://www.rabbitmq.com, https://www.rabbitmq.com)
 
 ========================================================================
 MPL-2.0
@@ -1104,6 +1099,7 @@ public-domain
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Apache Groovy (from http://groovy-lang.org, http://groovy.codehaus.org/, https://groovy-lang.org)
 - HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
 - JBoss Logging 3 (from http://www.jboss.org)
 - JSON in Java (from https://github.com/douglascrockford/JSON-java)
