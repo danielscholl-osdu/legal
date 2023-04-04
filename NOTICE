@@ -45,9 +45,6 @@ The following software have components provided under the terms of this license:
 - Proton-J (from https://repo1.maven.org/maven2/org/apache/qpid/proton-j)
 - QpidJMS Client (from https://repo1.maven.org/maven2/org/apache/qpid/qpid-jms-client)
 - oro (from https://repo1.maven.org/maven2/oro/oro)
-- tomcat-annotations-api (from http://tomcat.apache.org/, https://tomcat.apache.org/)
-- tomcat-embed-el (from http://tomcat.apache.org/, https://tomcat.apache.org/)
-- tomcat-embed-websocket (from http://tomcat.apache.org/, https://tomcat.apache.org/)
 
 ========================================================================
 Apache-2.0
@@ -746,6 +743,7 @@ The following software have components provided under the terms of this license:
 - LatencyUtils (from http://latencyutils.github.io/LatencyUtils/)
 - MongoDB Java Driver (from http://mongodb.org/, http://www.mongodb.org, https://www.mongodb.com/)
 - Netty/Common (from https://repo1.maven.org/maven2/io/netty/netty-common)
+- RabbitMQ Java Client (from http://www.rabbitmq.com, https://www.rabbitmq.com)
 - reactive-streams (from http://www.reactive-streams.org/)
 
 ========================================================================
@@ -1012,6 +1010,7 @@ The following software have components provided under the terms of this license:
 
 - Cobertura (from http://cobertura.sourceforge.net)
 - Javassist (from http://www.javassist.org/)
+- RabbitMQ Java Client (from http://www.rabbitmq.com, https://www.rabbitmq.com)
 
 ========================================================================
 MPL-2.0
@@ -1099,6 +1098,7 @@ public-domain
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Apache Groovy (from http://groovy-lang.org, http://groovy.codehaus.org/, https://groovy-lang.org)
 - HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
 - JBoss Logging 3 (from http://www.jboss.org)
 - JSON in Java (from https://github.com/douglascrockford/JSON-java)
