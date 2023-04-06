@@ -10,6 +10,7 @@ import org.opengroup.osdu.legal.aws.jobs.LegalTagPublisherImpl;
 import org.opengroup.osdu.legal.aws.tags.dataaccess.mongodb.config.MultiClusteredConfigReaderLegal;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +40,7 @@ public class LegalTestConfig {
     }
 
     @Bean
+    @Primary
     public ITenantFactory tenantFactory() {
         return Mockito.mock(ITenantFactory.class);
     }
