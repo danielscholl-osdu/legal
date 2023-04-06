@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>legal-service</artifactId>
 		<groupId>org.opengroup.osdu.legal</groupId>
-		<version>0.20.0-SNAPSHOT</version>
+		<version>0.21.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.opengroup.osdu.legal</groupId>
 			<artifactId>legal-core</artifactId>
-			<version>0.20.0-SNAPSHOT</version>
+			<version>0.21.0-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.protobuf</groupId>
@@ -30,7 +30,7 @@
 		<dependency>
     		<groupId>com.google.protobuf</groupId>
     		<artifactId>protobuf-java</artifactId>
-    		<version>3.18.2</version>
+    		<version>3.19.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opengroup.osdu</groupId>
@@ -91,6 +91,11 @@
 			<version>${spring-webmvc.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
+			<version>2.7.10</version>
+		</dependency>
+		<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -100,7 +105,16 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-codec</artifactId>
+			<version>4.1.86.Final</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.tomcat.embed</groupId>
+		    <artifactId>tomcat-embed-core</artifactId>
+		    <version>9.0.69</version>
+		</dependency>
 	</dependencies>
 
 	<build>

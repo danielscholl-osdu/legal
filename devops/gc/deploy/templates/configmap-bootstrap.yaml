@@ -11,5 +11,5 @@ data:
   ENTITLEMENTS_HOST: {{ .Values.data.entitlementsHost | quote }}
   LEGAL_HOST: {{ .Values.data.legalHost | quote }}
   DEFAULT_LEGAL_TAG: {{ .Values.data.defaultLegalTag | quote }}
-  ONPREM_ENABLED: {{ .Values.conf.onPremEnabled | quote }}
+  ONPREM_ENABLED: {{ .Values.global.onPremEnabled | quote }}
 {{- end }}
