@@ -33,7 +33,6 @@ conf:
   postgresSecretName: "legal-postgres-secret"
   rabbitmqSecretName: "rabbitmq-secret"
   bootstrapSecretName: "datafier-secret"
-  istioEnabled: true
   bootstrapEnabled: false
 
 istio:
