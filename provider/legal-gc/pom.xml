@@ -58,12 +58,6 @@
         <scope>compile</scope>
       </dependency>
       <dependency>
-        <groupId>io.minio</groupId>
-        <artifactId>minio</artifactId>
-        <version>8.3.4</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
         <version>2.13.4</version>
@@ -105,8 +99,8 @@
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>core-lib-gcp</artifactId>
-      <version>0.19.0-rc3</version>
+      <artifactId>core-lib-gc</artifactId>
+      <version>0.21.0-rc4</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -231,6 +225,24 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
       <version>5.3.22</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>oqm</artifactId>
+      <version>0.21.0-rc3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>osm</artifactId>
+      <version>0.21.0-rc3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>obm</artifactId>
+      <version>0.21.0-rc2</version>
     </dependency>
   </dependencies>
 
