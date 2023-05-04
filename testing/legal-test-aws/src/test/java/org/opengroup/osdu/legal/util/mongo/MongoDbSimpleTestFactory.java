@@ -25,7 +25,7 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 public class MongoDbSimpleTestFactory extends MongoDBSimpleFactory {
 
     public BasicMongoDBHelper getHelper(String url, String dbName) {
-        MongoDatabaseFactory mongoFactory = new SimpleMongoClientDatabaseFactory(this.mongoClient(url), dbName);
+        MongoDatabaseFactory mongoFactory = new SimpleMongoClientDatabaseFactory(this.mongoClient(url, false), dbName);
         MongoTemplate mongoTemplate = super.mongoTemplate(mongoFactory);
         return new BasicMongoDBHelper(mongoTemplate);
     }
