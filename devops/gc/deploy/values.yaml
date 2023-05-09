@@ -16,8 +16,8 @@ data:
   defaultLegalTag: "default-data-tag"
   legalHost: "http://legal"
   # deployments
-  requestsCpu: "10m"
-  requestsMemory: "550Mi"
+  requestsCpu: "5m"
+  requestsMemory: "325Mi"
   limitsCpu: "1"
   limitsMemory: "1G"
   bootstrapImage: ""
@@ -33,13 +33,12 @@ conf:
   postgresSecretName: "legal-postgres-secret"
   rabbitmqSecretName: "rabbitmq-secret"
   bootstrapSecretName: "datafier-secret"
-  istioEnabled: true
   bootstrapEnabled: false
 
 istio:
-  proxyCPU: "10m"
+  proxyCPU: "5m"
   proxyCPULimit: "500m"
-  proxyMemory: "100Mi"
+  proxyMemory: "50Mi"
   proxyMemoryLimit: "512Mi"
-  bootstrapProxyCPU: "10m"
+  bootstrapProxyCPU: "5m"
   bootstrapProxyCPULimit: "100m"
