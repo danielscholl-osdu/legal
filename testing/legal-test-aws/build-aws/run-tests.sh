@@ -18,7 +18,7 @@ echo "$SCRIPT_SOURCE_DIR"
 # ELASTIC_PORT
 # FILE_URL
 # LEGAL_URL
-# RESOURCE_PREFIX
+# TENANT_GROUP_NAME
 # SEARCH_URL
 # LEGAL_QUEUE
 # LEGAL_S3_BUCKET
@@ -49,7 +49,7 @@ export HOST_URL=$LEGAL_URL
 export MY_TENANT=int-test-legal
 export S3_LEGAL_CONFIG_BUCKET=$LEGAL_S3_BUCKET
 export SKIP_HTTP_TESTS=true
-export TABLE_PREFIX=$RESOURCE_PREFIX
+export TABLE_PREFIX=$TENANT_GROUP_NAME
 
 
 #### RUN INTEGRATION TEST #########################################################################
