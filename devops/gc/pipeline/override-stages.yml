@@ -2,9 +2,9 @@ variables:
   GC_SERVICE: legal
   GC_VENDOR: gc
 
-gc-anthos-test:
+gc-baremetal-test:
   variables:
-    GC_VENDOR: anthos
+    GC_VENDOR: baremetal
 
 gc-containerize-bootstrap-gitlab:
   variables:

@@ -44,7 +44,7 @@ public class AnthosLegalTagUtils extends LegalTagUtils {
 
     private static String getTenantBucketName() {
         String tenantName = System.getProperty("MY_TENANT", System.getenv("MY_TENANT")).toLowerCase();
-        String projectName = System.getProperty("ANTHOS_PROJECT_ID", System.getenv("ANTHOS_PROJECT_ID")).toLowerCase();
+        String projectName = System.getProperty("BAREMETAL_PROJECT_ID", System.getenv("BAREMETAL_PROJECT_ID")).toLowerCase();
         String enableFullBucketName = System.getProperty("ENABLE_FULL_BUCKET_NAME", System.getenv("ENABLE_FULL_BUCKET_NAME"));
 
         enableFullBucketName = (Strings.isNullOrEmpty(enableFullBucketName) ? "false"
