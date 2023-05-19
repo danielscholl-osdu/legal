@@ -22,7 +22,7 @@ Defined in default application property file but possible to override:
 | `PARTITION_AUTH_ENABLED` | `true` |Enable auth token provisioning for requests to Partition service | no | - |
 | `GOOGLE_APPLICATION_CREDENTIALS` | ex `/path/to/directory/service-key.json` | Service account credentials, serves to gain access to cloud resources and to request tokens | yes | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
 
-These variables define service behavior, and are used to switch between `anthos` or `gc` environments, their overriding and usage in mixed mode was not tested.
+These variables define service behavior, and are used to switch between `baremetal` or `gc` environments, their overriding and usage in mixed mode was not tested.
 Usage of spring profiles is preferred.
 
 | name | value | description | sensitive? | source |

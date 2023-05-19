@@ -64,9 +64,9 @@ This service uses specific implementations of DestinationResolvers based on the 
 
 ## Service Configuration
 
-### Anthos
+### Baremetal
 
-[Anthos service configuration](docs/anthos/README.md)
+[Baremetal service configuration](docs/baremetal/README.md)
 
 ### Google Cloud
 
@@ -164,9 +164,9 @@ $ (cd testing/legal-test-core/ && mvn clean install)
 
 This section describes how to run cloud OSDU E2E tests.
 
-### Anthos test configuration
+### Baremetal test configuration
 
-[Anthos service configuration](docs/anthos/README.md)
+[Baremetal service configuration](docs/baremetal/README.md)
 
 ### Google Cloud test configuration
 
