@@ -1,4 +1,4 @@
-## Service Configuration for Anthos
+## Service Configuration for Baremetal
 
 ## Environment variables:
 
@@ -24,7 +24,7 @@ Defined in default application property file but possible to override:
 | `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration`  | no | - |
 | `PARTITION_AUTH_ENABLED` | `false` | Disable auth token provisioning for requests to Partition service | no | - |
 
-These variables define service behavior, and are used to switch between `anthos` or `gc` environments, their overriding and usage in mixed mode was not tested.
+These variables define service behavior, and are used to switch between `baremetal` or `gc` environments, their overriding and usage in mixed mode was not tested.
 Usage of spring profiles is preferred.
 
 | name | value | description | sensitive? | source |
@@ -310,7 +310,7 @@ These buckets must be defined in tenants’ dedicated object store servers. OBM 
 
 ### Running E2E Tests
 
-This section describes how to run cloud OSDU E2E tests (testing/legal-test-anthos).
+This section describes how to run cloud OSDU E2E tests (testing/legal-test-baremetal).
 
 You will need to have the following environment variables defined.
 
@@ -320,7 +320,7 @@ You will need to have the following environment variables defined.
 | `MY_TENANT` | `osdu` | OSDU tenant used for testing | yes | - |
 | `SKIP_HTTP_TESTS` | ex `true` | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes | - |
 | `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name | no | - |
-| `ANTHOS_PROJECT_ID` | ex `osdu-anthos` | project id used to specify bucket name if `ENABLE_FULL_BUCKET_NAME`=true | no | - |
+| `BAREMETAL_PROJECT_ID` | ex `osdu-anthos` | project id used to specify bucket name if `ENABLE_FULL_BUCKET_NAME`=true | no | - |
 | `TEST_OPENID_PROVIDER_CLIENT_ID` | `********` | Client Id for `$INTEGRATION_TESTER` | yes | -- |
 | `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********` |  | Client secret for `$INTEGRATION_TESTER` | -- |
 | `TEST_OPENID_PROVIDER_URL` | `https://keycloak.com/auth/realms/osdu` | OpenID provider url | yes | -- |
@@ -341,5 +341,5 @@ Execute following command to build code and run all the integration tests:
 # Note: this assumes that the environment variables for integration tests as outlined
 #       above are already exported in your environment.
 $ (cd testing/legal-test-core/ && mvn clean install)
-$ (cd testing/legal-test-anthos/ && mvn clean test)
+$ (cd testing/legal-test-baremetal/ && mvn clean test)
 ```
