@@ -98,6 +98,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 |------|-------------|------|---------|---------|
 **global.domain** | your domain for the external endpoint, ex `example.com` | string | - | yes
 **global.onPremEnabled** | whether on-prem is enabled | boolean | false | yes
+**global.dataBootstrapEnabled** | whether bootstrap is enabled | boolean | false | yes
 
 ### Configmap variables
 
@@ -135,7 +136,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **conf.postgresSecretName** | Secret name for postgres service | string | legal-postgres-secret | yes
 **conf.rabbitmqSecretName** | Secret name for rabbitmq service | string | rabbitmq-secret | yes
 **conf.bootstrapSecretName** | Secret name for bootstrap | string | datafier-secret | yes
-**conf.bootstrapEnabled** | whether bootstrap is enabled | boolean | false | yes
 
 ### Istio variables
 

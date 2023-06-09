@@ -5,6 +5,7 @@
 global:
   domain: ""
   onPremEnabled: false
+  dataBootstrapEnabled: false
 
 data:
   # configmaps
@@ -33,7 +34,6 @@ conf:
   postgresSecretName: "legal-postgres-secret"
   rabbitmqSecretName: "rabbitmq-secret"
   bootstrapSecretName: "datafier-secret"
-  bootstrapEnabled: false
 
 istio:
   proxyCPU: "5m"
