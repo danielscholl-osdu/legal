@@ -41,6 +41,7 @@ include:
     file: "standard-setup.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: "az/td-jdk-17-migration"
     file: "build/maven.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
@@ -65,6 +66,7 @@ include:
     file: "cloud-providers/ibm.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: "az/td-jdk-17-migration"
     file: "cloud-providers/azure.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
