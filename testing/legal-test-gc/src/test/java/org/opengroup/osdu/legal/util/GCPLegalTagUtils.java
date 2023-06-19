@@ -42,7 +42,7 @@ public class GCPLegalTagUtils extends LegalTagUtils {
 
   private static String getTenantBucketName() {
     String tenantName = System
-        .getProperty("MY_TENANT_PROJECT", System.getenv("MY_TENANT_PROJECT")).toLowerCase();
+        .getProperty("MY_TENANT", System.getenv("MY_TENANT")).toLowerCase();
     String projectName = System.getProperty("GCLOUD_PROJECT", System.getenv("GCLOUD_PROJECT"))
         .toLowerCase();
     String enableFullBucketName = System.getProperty("ENABLE_FULL_BUCKET_NAME",
