@@ -41,8 +41,8 @@ include:
     file: "standard-setup.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "az/td-jdk-17-migration"
-    file: "build/maven.yml"
+    ref: "az/java-17-migration"
+    file: "build/maven-17.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa-maven.yml"
