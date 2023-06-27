@@ -1,4 +1,4 @@
-FROM openjdk:17-oracle
+FROM azul/zulu-openjdk:17
 WORKDIR /app
 ARG PROVIDER_NAME
 ENV PROVIDER_NAME $PROVIDER_NAME
@@ -7,4 +7,5 @@ ENV PORT $PORT
 # Copy the jar to the production image from the builder stage.
 COPY provider/legal-${PROVIDER_NAME}/target/legal-${PROVIDER_NAME}-*-spring-boot.jar legal-${PROVIDER_NAME}.jar
 # Run the web service on container startup.
+#--add-opens args used to open modules and allow illegal(reflection\private classes and fields) access from the code.
 CMD java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT} -Dlog4j.formatMsgNoLookups=true -jar /app/legal-${PROVIDER_NAME}.jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED
