@@ -99,6 +99,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **global.domain** | your domain for the external endpoint, ex `example.com` | string | - | yes
 **global.onPremEnabled** | whether on-prem is enabled | boolean | false | yes
 **global.dataBootstrapEnabled** | whether bootstrap is enabled | boolean | false | yes
+**global.limitsEnabled** | whether CPU and memory limits are enabled | boolean | true | yes
 
 ### Configmap variables
 
@@ -118,8 +119,8 @@ First you need to set variables in **values.yaml** file using any code editor. S
 |------|-------------|------|---------|---------|
 **data.requestsCpu** | amount of requests CPU | string | 10m | yes
 **data.requestsMemory** | amount of requests memory| string | 550Mi | yes
-**data.limitsCpu** | CPU limit | string | 1 | yes
-**data.limitsMemory** | memory limit | string | 1G | yes
+**data.limitsCpu** | CPU limit | string | 1 | only if `global.limitsEnabled` is true
+**data.limitsMemory** | memory limit | string | 1G | only if `global.limitsEnabled` is true
 **data.bootstrapImage** | name of the bootstrap image | string | - | yes
 **data.bootstrapServiceAccountName** | name of the bootstrap service account | string | - | yes
 **data.serviceAccountName** | name of your service account | string | legal | yes
