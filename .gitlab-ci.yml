@@ -76,3 +76,7 @@ include:
     file: "publishing/pages.yml"
 
   - local: "devops/gc/pipeline/override-stages.yml"
+
+gemnasium-maven-dependency_scanning:
+ variables:
+    DS_JAVA_VERSION: 17
