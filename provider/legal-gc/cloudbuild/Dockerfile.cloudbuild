@@ -8,4 +8,4 @@ ENV PORT $PORT
 COPY provider/legal-${PROVIDER_NAME}/target/legal-${PROVIDER_NAME}-*-spring-boot.jar legal-${PROVIDER_NAME}.jar
 # Run the web service on container startup.
 #--add-opens args used to open modules and allow illegal(reflection\private classes and fields) access from the code.
-CMD java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT} -Dlog4j.formatMsgNoLookups=true -jar /app/legal-${PROVIDER_NAME}.jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+CMD java --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT} -Dlog4j.formatMsgNoLookups=true -jar /app/legal-${PROVIDER_NAME}.jar
