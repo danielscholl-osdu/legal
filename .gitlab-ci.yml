@@ -12,6 +12,7 @@ variables:
   MONGODB_AWS_BUILD_SUBDIR: provider/legal-aws/build-aws
   MONGODB_AWS_TEST_SUBDIR: testing/legal-test-aws
   MONGODB_AWS_EKS_DEPLOYMENT_NAME: os-legal
+  MONGODB_AWS_DEPLOY_TARGET: TF
 
   GCP_BUILD_SUBDIR: provider/legal-gcp
   GCP_INT_TEST_SUBDIR: testing/legal-test-gcp
