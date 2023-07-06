@@ -6,6 +6,11 @@ ARG PORT
 ENV PORT $PORT
 # Copy the jar to the production image from the builder stage.
 COPY provider/legal-${PROVIDER_NAME}/target/legal-${PROVIDER_NAME}-*-spring-boot.jar legal-${PROVIDER_NAME}.jar
+# Add a non-root user
+RUN groupadd -g 10001 -r nonroot \
+  && useradd -g 10001 -r -u 10001 nonroot
+# Run as non-root user
+USER 10001:10001
 # Run the web service on container startup.
 #--add-opens args used to open modules and allow illegal(reflection\private classes and fields) access from the code.
 CMD java --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT} -Dlog4j.formatMsgNoLookups=true -jar /app/legal-${PROVIDER_NAME}.jar
