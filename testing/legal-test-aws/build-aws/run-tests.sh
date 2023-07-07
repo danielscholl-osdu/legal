@@ -53,7 +53,7 @@ export TABLE_PREFIX=$TENANT_GROUP_NAME
 
 
 #### RUN INTEGRATION TEST #########################################################################
-export JAVA_HOME='/usr/lib/jvm/java-17-openjdk-amd64'
+JAVA_HOME=$JAVA17_HOME
 
 mvn  -ntp test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
 TEST_EXIT_CODE=$?
