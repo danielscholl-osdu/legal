@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.opengroup.osdu.legal</groupId>
         <artifactId>os-legal-testing</artifactId>
-        <version>0.22.0-SNAPSHOT</version>
+        <version>0.23.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.opengroup.osdu.legal</groupId>
     <artifactId>legal-test-azure</artifactId>
-    <version>0.22.0-SNAPSHOT</version>
+    <version>0.23.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.opengroup.osdu.legal</groupId>
             <artifactId>legal-test-core</artifactId>
-            <version>0.22.0-SNAPSHOT</version>
+            <version>0.23.0-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.microsoft.azure/azure-servicebus -->
