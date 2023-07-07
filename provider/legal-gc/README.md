@@ -8,9 +8,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-- [Maven 3.6.0+](https://maven.apache.org/download.cgi)
-- [AdoptOpenJDK8](https://adoptopenjdk.net/)
-- [Lombok 1.16 or later](https://projectlombok.org/setup/maven)
+- [Maven 3.8.0+](https://maven.apache.org/download.cgi)
+- [JDK17](https://adoptopenjdk.net/)
+- [Lombok 1.28 or later](https://projectlombok.org/setup/maven)
 - [GCloud SDK with java (latest version)](https://cloud.google.com/sdk/docs/install)
 
 # Features of implementation
@@ -76,9 +76,9 @@ Check that maven is installed:
 
 ```bash
 $ mvn --version
-Apache Maven 3.6.0
+Apache Maven 3.8.7
 Maven home: /usr/share/maven
-Java version: 1.8.0_212, vendor: AdoptOpenJDK, runtime: /usr/lib/jvm/jdk8u212-b04/jre
+Java version: 17.0.7
 ...
 ```
 
@@ -148,7 +148,7 @@ mvn clean install -DskipTests
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
 
 ```bash
-cd provider/legal-gc/ && mvn spring-boot:run
+cd provider/legal-gc/ && mvn spring-boot:run -Dspring-boot.run.jvmArguments="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens  java.base/java.lang.reflect=ALL-UNNAMED"
 ```
 
 ## Testing
