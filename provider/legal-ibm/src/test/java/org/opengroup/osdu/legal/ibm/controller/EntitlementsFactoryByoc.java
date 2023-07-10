@@ -1,7 +1,7 @@
 /* Licensed Materials - Property of IBM              */
 /* (c) Copyright IBM Corp. 2020. All Rights Reserved.*/
 
-package org.opengroup.osdu.legal.ibm.api;
+package org.opengroup.osdu.legal.ibm.controller;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;

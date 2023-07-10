@@ -1,8 +1,9 @@
-package org.opengroup.osdu.legal.api;
+package org.opengroup.osdu.legal.controller;
 
 import com.google.common.collect.Iterables;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.legal.controller.LegalTagController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LegalTagApiTests {
+public class LegalTagControllerTests {
 
     @Mock
     private RequestInfo requestInfo;
@@ -55,7 +56,7 @@ public class LegalTagApiTests {
     private DpsHeaders dpsHeaders;
 
     @InjectMocks
-    private LegalTagApi sut;
+    private LegalTagController sut;
 
     @Before
     public void setup() {

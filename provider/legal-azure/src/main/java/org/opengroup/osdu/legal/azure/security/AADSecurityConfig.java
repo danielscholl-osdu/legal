@@ -30,7 +30,7 @@ import javax.inject.Inject;
 @ConditionalOnProperty(value = "azure.istio.auth.enabled", havingValue = "false", matchIfMissing = false)
 public class AADSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String[] AUTH_ALLOWLIST = {"/", "/index.html",
+    private static final String[] AUTH_ALLOWLIST = {"/", "/index.html",
             "/api-docs.yaml",
             "/api-docs/swagger-config",
             "/api-docs/**",

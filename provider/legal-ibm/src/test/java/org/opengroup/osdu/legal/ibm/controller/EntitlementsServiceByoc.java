@@ -2,7 +2,7 @@
 /* (c) Copyright IBM Corp. 2020. All Rights Reserved.*/
 
 
-package org.opengroup.osdu.legal.ibm.api;
+package org.opengroup.osdu.legal.ibm.controller;
 
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.model.entitlements.*;
