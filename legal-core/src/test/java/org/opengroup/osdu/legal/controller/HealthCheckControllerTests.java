@@ -1,18 +1,19 @@
-package org.opengroup.osdu.legal.api;
+package org.opengroup.osdu.legal.controller;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opengroup.osdu.legal.controller.HealthCheckController;
 import org.springframework.http.HttpStatus;
 
-public class HealthCheckTests {
+public class HealthCheckControllerTests {
 
-	private HealthCheckApi sut;
+	private HealthCheckController sut;
 
 	@Before
 	public void setup() {
-		this.sut = new HealthCheckApi();
+		this.sut = new HealthCheckController();
 	}
 
 	@Test

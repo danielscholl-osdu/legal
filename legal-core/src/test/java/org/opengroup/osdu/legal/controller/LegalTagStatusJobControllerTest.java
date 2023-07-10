@@ -1,4 +1,4 @@
-package org.opengroup.osdu.legal.api;
+package org.opengroup.osdu.legal.controller;
 
 import org.junit.Assert;
 import org.mockito.Mockito;
@@ -8,6 +8,7 @@ import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
+import org.opengroup.osdu.legal.controller.LegalTagStatusJobController;
 import org.opengroup.osdu.legal.jobs.LegalTagCompliance;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LegalTagStatusJobApiTest {
+public class LegalTagStatusJobControllerTest {
 
     public static final DpsHeaders dpsHeaders = new DpsHeaders();
 
@@ -45,7 +46,7 @@ public class LegalTagStatusJobApiTest {
     private ITenantFactory tenantStorageFactory;
 
     @InjectMocks
-    private LegalTagStatusJobApi sut;
+    private LegalTagStatusJobController sut;
 
     @Before
     public void setup() {

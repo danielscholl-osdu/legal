@@ -2,7 +2,7 @@
 /* (c) Copyright IBM Corp. 2020. All Rights Reserved.*/
 
  
-package org.opengroup.osdu.legal.ibm.api;
+package org.opengroup.osdu.legal.ibm.controller;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -22,7 +22,7 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.model.legal.ServiceConfig;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.legal.api.LegalTagApi;
+import org.opengroup.osdu.legal.controller.LegalTagController;
 import org.opengroup.osdu.legal.ibm.LegalApplication;
 import org.opengroup.osdu.legal.tags.LegalTagService;
 import org.opengroup.osdu.legal.tags.dto.LegalTagDto;
@@ -36,7 +36,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes={LegalApplication.class})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class LegalTagApiTest {
+public class LegalTagControllerTest {
 	
     @Mock
     TenantInfo tenantInfo;
@@ -49,7 +49,7 @@ public class LegalTagApiTest {
 
     @InjectMocks
     @Inject
-    private LegalTagApi sut;
+    private LegalTagController sut;
 
     @Before
     public void Setup() {

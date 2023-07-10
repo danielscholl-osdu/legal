@@ -1,4 +1,4 @@
-package org.opengroup.osdu.legal.byoc.api;
+package org.opengroup.osdu.legal.byoc.controller;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
-import org.opengroup.osdu.legal.api.LegalTagApi;
+import org.opengroup.osdu.legal.controller.LegalTagController;
 import org.opengroup.osdu.legal.byoc.LegalApplication;
 import org.opengroup.osdu.legal.tags.LegalTagService;
 import org.opengroup.osdu.legal.tags.dto.LegalTagDto;
@@ -30,7 +30,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes={LegalApplication.class})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class LegalTagApiTest {
+public class LegalTagControllerTest {
     @Mock
     TenantInfo tenantInfo;
 
@@ -42,7 +42,7 @@ public class LegalTagApiTest {
 
     @InjectMocks
     @Inject
-    private LegalTagApi sut;
+    private LegalTagController sut;
 
     @Before
     public void Setup() {
