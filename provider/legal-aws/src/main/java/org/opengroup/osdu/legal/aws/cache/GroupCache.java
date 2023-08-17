@@ -22,8 +22,6 @@ import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.cache.VmCache;
 import org.opengroup.osdu.core.common.model.entitlements.Groups;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.util.Crc32c;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
