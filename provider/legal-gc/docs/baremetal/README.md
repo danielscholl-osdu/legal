@@ -250,6 +250,10 @@ It can be overridden by:
 - through the Spring Boot property `pub-sub-legal-tags-topic`
 - environment variable `PUB_SUB_LEGAL_TAGS_TOPIC`
 
+Legal service responsible for publishing only.
+Consumer side `legaltags-changed` topic configuration located in
+[Storage Baremetal Rabbit documentation](https://community.opengroup.org/osdu/platform/system/storage/-/tree/master/provider/storage-gc/docs/anthos#exchanges-and-queues-configuration)
+
 ![Screenshot](./pics/rabbit.PNG)
 
 ## Minio configuration:

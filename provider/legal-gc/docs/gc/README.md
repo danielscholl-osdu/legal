@@ -1,4 +1,4 @@
-## Service Configuration for Google Cloud
+# Service Configuration for Google Cloud
 
 
 ## Run args
@@ -78,6 +78,10 @@ It can be overridden by:
 - through the Spring Boot property `pub-sub-legal-tags-topic`
 - environment variable `PUB_SUB_LEGAL_TAGS_TOPIC`
 
+Legal service responsible for publishing only. 
+Consumer side `legaltags-changed` topic configuration located in
+[Storage Google Cloud PubSub documentation](https://community.opengroup.org/osdu/platform/system/storage/-/blob/master/provider/storage-gc/docs/gc/README.md#pubsub-configuration)
+
 ## GCS configuration <a name="ObjectStoreConfig"></a>
 
 ### Per-tenant buckets configuration
@@ -117,20 +121,20 @@ This section describes how to run cloud OSDU E2E tests (testing/legal-test-gc).
 
 You will need to have the following environment variables defined.
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `GCLOUD_PROJECT` | `nice-etching-277309` | google cloud project ID | yes | - |
-| `MY_TENANT_PROJECT` | `osdu` | my tenant project name | yes | - |
-| `INTEGRATION_TESTER` | `********` | Service account for API calls. Note: this user must have entitlements configured already | yes | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
-| `HOST_URL` | `http://localhsot:8080/api/legal/v1/` | - | yes | - |
-| `MY_TENANT` | `osdu` | OSDU tenant used for testing | yes | - |
-| `SKIP_HTTP_TESTS` | ex `true` | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes | - |
-| `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name | no | - |
+| name                      | value                                 | description                                                                                                                                                                                                                    | sensitive? | source                                                       |
+|---------------------------|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|--------------------------------------------------------------|
+| `GCLOUD_PROJECT`          | `nice-etching-277309`                 | google cloud project ID                                                                                                                                                                                                        | yes        | -                                                            |
+| `MY_TENANT_PROJECT`       | `osdu`                                | my tenant project name                                                                                                                                                                                                         | yes        | -                                                            |
+| `INTEGRATION_TESTER`      | `********`                            | Service account for API calls. Note: this user must have entitlements configured already                                                                                                                                       | yes        | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
+| `HOST_URL`                | `http://localhsot:8080/api/legal/v1/` | -                                                                                                                                                                                                                              | yes        | -                                                            |
+| `MY_TENANT`               | `osdu`                                | OSDU tenant used for testing                                                                                                                                                                                                   | yes        | -                                                            |
+| `SKIP_HTTP_TESTS`         | ex `true`                             | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes        | -                                                            |
+| `ENABLE_FULL_BUCKET_NAME` | ex `true`                             | Full bucket name                                                                                                                                                                                                               | no         | -                                                            |
 
 **Entitlements configuration for integration accounts**
 
-| INTEGRATION_TESTER |
-| ---  |
+| INTEGRATION_TESTER                                                                                                                                   |
+|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | users<br/>service.entitlements.user<br/>service.legal.admin<br/>service.legal.editor<br/>service.legal.user<br/>data.test1<br/>data.integration.test |
 
 Execute following command to build code and run all the integration tests:
