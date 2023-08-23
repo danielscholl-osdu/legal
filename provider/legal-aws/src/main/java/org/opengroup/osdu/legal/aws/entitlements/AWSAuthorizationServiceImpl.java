@@ -68,14 +68,14 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 		return authorizationResponse;
 	}
 
-	protected static String getGroupCacheKey(DpsHeaders headers) {
-		String key = String.format("entitlement-groups:%s:%s", headers.getPartitionIdWithFallbackToAccountId(),
+	protected String getGroupCacheKey(DpsHeaders headers) {
+		var key = String.format("entitlement-groups:%s:%s", headers.getPartitionIdWithFallbackToAccountId(),
 				headers.getAuthorization());
 		return Crc32c.hashToBase64EncodedString(key);
 	}
 
 	public Groups getGroups(DpsHeaders headers) {
-		String cacheKey = this.getGroupCacheKey(headers);
+		var cacheKey = this.getGroupCacheKey(headers);
 
 		Groups groups = null;
 		try {
@@ -83,7 +83,7 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 		} catch (RedisException ex) {
 			this.jaxRsDpsLog.error(String.format("Error getting key %s from redis: %s", cacheKey, ex.getMessage()), ex);
 		}
-
+		
 		if (groups == null) {
 			IEntitlementsService service = this.factory.create(headers);
 			try {
@@ -92,7 +92,7 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 				this.jaxRsDpsLog.debug("Entitlements cache miss");
 
 			} catch (EntitlementsException e) {
-				HttpResponse response = e.getHttpResponse();
+				var response = e.getHttpResponse();
 				this.jaxRsDpsLog.error(String.format("Error requesting entitlements service %s", response));
 				throw new AppException(e.getHttpResponse().getResponseCode(), ERROR_REASON, ERROR_MSG, e);
 			} catch (RedisException ex) {
@@ -120,10 +120,10 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 	}
 
 	private void handleEntitlementsException(Exception e, DpsHeaders headers) {
-		throw new AppException(500, "Access denied", "The user is not authorized to perform this action", HeadersUtil.toLogMsg(headers, null), e);
+		throw new AppException(500, ERROR_REASON, ERROR_MSG, HeadersUtil.toLogMsg(headers, null), e);
 	}
 
-	private AuthorizationResponse authorizeAny(DpsHeaders headers, Groups groups, String... roles) {
+	AuthorizationResponse authorizeAny(DpsHeaders headers, Groups groups, String... roles) {
 		String userEmail = null;
 		List<String> logMessages = new ArrayList<>();
 		Long curTimeStamp = System.currentTimeMillis();
@@ -133,7 +133,7 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 		logMessages.add(String.format("groups: %s", getEmailFromGroups(groups)));
 		if (groups != null) {
 			userEmail = groups.getMemberEmail();
-			if (groups.any(roles)) {
+			if (Boolean.TRUE.equals(groups.any(roles))) {
 				return AuthorizationResponse.builder().user(userEmail).groups(groups).build();
 			}
 		}
