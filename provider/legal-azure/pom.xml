@@ -31,7 +31,7 @@
         <azure.appservice.plan />
         <azure.appservice.appname />
         <azure.appservice.subscription />
-        <osdu.corelibazure.version>0.24.0-SNAPSHOT</osdu.corelibazure.version>
+        <osdu.corelibazure.version>0.20.0-rc5</osdu.corelibazure.version>
         <osdu.legal-core.version>0.24.0-SNAPSHOT</osdu.legal-core.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
