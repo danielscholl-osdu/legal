@@ -46,6 +46,8 @@ public class LegalTagRepositoryMongoDBImpl implements ILegalTagRepository {
     private static final String ID = "_id";
     public static final String IS_VALID = "isValid";
 
+    private static final String ERR_MSG = "Legal tag conflict";
+
     //collection prefix
     public static final String COLLECTION_PREFIX = "Legal-";
 
@@ -75,12 +77,12 @@ public class LegalTagRepositoryMongoDBImpl implements ILegalTagRepository {
     @Override
     public Long create(LegalTag legalTag) {
         if (legalTag.getId().equals(-1L)) {
-            throw new AppException(409, "Legal tag conflict", String.format("Cannot create a LegalTag id for the given name %s. Id is %s", legalTag.getName(), legalTag.getId()));
+            throw new AppException(409, ERR_MSG, String.format("Cannot create a LegalTag id for the given name %s. Id is %s", legalTag.getName(), legalTag.getId()));
         }
         try {
             this.mongoDBMultiClusterFactory.getHelper(getDataPartitionId()).insert(legalTag, getLegalCollectionName(this.getDataPartitionId()));
         } catch (DuplicateKeyException e) {
-            throw new AppException(409, "Legal tag conflict", String.format("A LegalTag already exists for the given name %s. Cannot duplicate LegalTag. Id is %s", legalTag.getName(), legalTag.getId()));
+            throw new AppException(409, ERR_MSG, String.format("A LegalTag already exists for the given name %s. Cannot duplicate LegalTag. Id is %s", legalTag.getName(), legalTag.getId()));
         }
         return legalTag.getId();
     }
@@ -124,7 +126,7 @@ public class LegalTagRepositoryMongoDBImpl implements ILegalTagRepository {
         Query query = Query.query(Criteria.where(ID).is(newLegalTag.getId()));
         LegalTag replaced = this.mongoDBMultiClusterFactory.getHelper(getDataPartitionId()).findAndReplace(query, newLegalTag, getLegalCollectionName(this.getDataPartitionId()));
         if (replaced == null) {
-            throw new AppException(409, "Legal tag conflict", String.format("A LegalTag does not exist for the given name %s. Cannot update LegalTag. Id is %s", newLegalTag.getName(), newLegalTag.getId()));
+            throw new AppException(409, ERR_MSG, String.format("A LegalTag does not exist for the given name %s. Cannot update LegalTag. Id is %s", newLegalTag.getName(), newLegalTag.getId()));
         }
         return newLegalTag;
     }

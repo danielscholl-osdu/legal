@@ -19,8 +19,6 @@ import org.opengroup.osdu.core.aws.cache.DummyCache;
 import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
 import org.opengroup.osdu.core.aws.ssm.K8sParameterNotFoundException;
 import org.opengroup.osdu.core.common.cache.ICache;
-import org.opengroup.osdu.core.common.cache.RedisCache;
-import org.opengroup.osdu.core.common.cache.VmCache;
 import org.opengroup.osdu.core.common.model.entitlements.Groups;
 import org.opengroup.osdu.core.aws.cache.CacheFactory;
 import org.springframework.beans.factory.annotation.Value;
