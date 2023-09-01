@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +45,24 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
 
     private AmazonSNS snsClient;
 
-    @Inject
-    private DpsHeaders headers;
+    private AmazonSNSConfig snsConfig;
+
+    private K8sLocalParameterProvider k8sLocalParameterProvider;
+
+    private PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder;
+
+    private static final String dataType = "String";
 
     @PostConstruct
     public void init() throws K8sParameterNotFoundException {
-        AmazonSNSConfig snsConfig = new AmazonSNSConfig(amazonSNSRegion);
+        snsConfig = new AmazonSNSConfig(amazonSNSRegion);
         snsClient = snsConfig.AmazonSNS();
-        K8sLocalParameterProvider provider = new K8sLocalParameterProvider();
-        amazonSNSTopic = provider.getParameterAsString("legal-sns-topic-arn");
+        setK8LocalParameterProvider(k8sLocalParameterProvider);
+        amazonSNSTopic = k8sLocalParameterProvider.getParameterAsString("legal-sns-topic-arn");
+    }
+
+    void setK8LocalParameterProvider(K8sLocalParameterProvider k8sLocalParameterProvider) {
+        this.k8sLocalParameterProvider = k8sLocalParameterProvider;
     }
 
     @Override
@@ -62,24 +71,21 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         // attributes
         Map<String, MessageAttributeValue> messageAttributes = new HashMap<>();
         messageAttributes.put(DpsHeaders.DATA_PARTITION_ID, new MessageAttributeValue()
-                .withDataType("String")
+                .withDataType(dataType)
                 .withStringValue(headers.getPartitionIdWithFallbackToAccountId()));
         headers.addCorrelationIdIfMissing();
         messageAttributes.put(DpsHeaders.CORRELATION_ID, new MessageAttributeValue()
-                .withDataType("String")
+                .withDataType(dataType)
                 .withStringValue(headers.getCorrelationId()));
         messageAttributes.put(DpsHeaders.AUTHORIZATION, new MessageAttributeValue()
-                .withDataType("String")
+                .withDataType(dataType)
                 .withStringValue(headers.getAuthorization()));
-
         for (int i = 0; i < tags.getStatusChangedTags().size(); i += BATCH_SIZE){
             List<StatusChangedTag> batch = tags.getStatusChangedTags().subList(i, Math.min(tags.getStatusChangedTags().size(), i + BATCH_SIZE));
-
             List<AwsStatusChangedTag> awsBatch = batch.stream()
                     .map(t -> new AwsStatusChangedTag(t.getChangedTagName(), t.getChangedTagStatus(), headers.getPartitionId()))
                     .collect(Collectors.toList());
-
-            PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder = new PublishRequestBuilder<>();
+            publishRequestBuilder = new PublishRequestBuilder<>();
             PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest("statusChangedTags",
                     awsBatch, messageAttributes, amazonSNSTopic);
             snsClient.publish(publishRequest);

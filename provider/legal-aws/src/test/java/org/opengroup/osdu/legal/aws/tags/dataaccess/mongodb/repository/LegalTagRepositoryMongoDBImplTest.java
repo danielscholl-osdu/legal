@@ -1,9 +1,5 @@
 package org.opengroup.osdu.legal.aws.tags.dataaccess.mongodb.repository;
 
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Basic;
-import com.google.common.primitives.Longs;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,7 +9,6 @@ import org.opengroup.osdu.core.aws.mongodb.helper.BasicMongoDBHelper;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
-import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.aws.api.mongo.config.LegalTestConfig;
 import org.opengroup.osdu.legal.aws.api.mongo.util.ParentUtil;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -22,19 +17,15 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -42,7 +33,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import org.mockito.MockitoAnnotations;
-import static org.opengroup.osdu.legal.aws.api.mongo.util.LegalTagGenerator.generateLegalTag;
 import static org.opengroup.osdu.legal.aws.api.mongo.util.LegalTagGenerator.generateLegalTags;
 
 
