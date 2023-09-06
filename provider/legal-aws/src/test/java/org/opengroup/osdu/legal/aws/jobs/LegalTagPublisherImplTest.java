@@ -2,6 +2,7 @@ package org.opengroup.osdu.legal.aws.jobs;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
@@ -19,7 +20,6 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.model.PublishRequest;
 
 class LegalTagPublisherImplTest {
     
@@ -41,8 +41,6 @@ class LegalTagPublisherImplTest {
     @Mock
     private PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder;
 
-    PublishRequest publishRequest;
-
 
     private final String testTopic = "testTopic";
 
@@ -55,7 +53,6 @@ class LegalTagPublisherImplTest {
     @BeforeEach
     void setup() throws K8sParameterNotFoundException {
         MockitoAnnotations.openMocks(this);
-        publishRequest = new PublishRequest();
         when(snsConfig.AmazonSNS()).thenReturn(snsClient);
         when(k8sLocalParameterProvider.getParameterAsString("legal-sns-topic-arn"))
                 .thenReturn(testTopic);
@@ -74,6 +71,7 @@ class LegalTagPublisherImplTest {
         
         // Assert
         assertNotNull(legalTagPublisherImpl);
-    }
+    }       
+
 }
 

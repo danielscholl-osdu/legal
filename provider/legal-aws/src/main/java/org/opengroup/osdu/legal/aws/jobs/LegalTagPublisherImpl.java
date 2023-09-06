@@ -26,6 +26,7 @@ import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -46,23 +47,25 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
     private AmazonSNS snsClient;
 
     private AmazonSNSConfig snsConfig;
-
+ 
     private K8sLocalParameterProvider k8sLocalParameterProvider;
 
     private PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder;
 
     private static final String dataType = "String";
 
+    public void setK8sLocalParameterProvider(K8sLocalParameterProvider k8sLocalParameterProvider) {
+        this.k8sLocalParameterProvider = k8sLocalParameterProvider;
+    }
     @PostConstruct
     public void init() throws K8sParameterNotFoundException {
+        if (this.k8sLocalParameterProvider == null) {
+            this.k8sLocalParameterProvider = new K8sLocalParameterProvider(); 
+        }
+
         snsConfig = new AmazonSNSConfig(amazonSNSRegion);
         snsClient = snsConfig.AmazonSNS();
-        setK8LocalParameterProvider(k8sLocalParameterProvider);
         amazonSNSTopic = k8sLocalParameterProvider.getParameterAsString("legal-sns-topic-arn");
-    }
-
-    void setK8LocalParameterProvider(K8sLocalParameterProvider k8sLocalParameterProvider) {
-        this.k8sLocalParameterProvider = k8sLocalParameterProvider;
     }
 
     @Override
