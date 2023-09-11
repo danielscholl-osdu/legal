@@ -40,6 +40,17 @@
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.8.0-beta4</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.2.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opengroup.osdu</groupId>
+            <artifactId>os-core-common</artifactId>
+            <version>0.23.1</version>
+        </dependency>
     </dependencies>
 
 </project>
