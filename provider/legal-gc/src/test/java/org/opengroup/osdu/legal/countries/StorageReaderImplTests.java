@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2020-2023 Google LLC
+ * Copyright 2020-2023 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.opengroup.osdu.legal.countries;
 
 import static org.junit.Assert.assertEquals;
@@ -30,10 +31,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
 import org.opengroup.osdu.core.gcp.obm.model.Blob;
 import org.opengroup.osdu.core.gcp.obm.model.Bucket;
 import org.opengroup.osdu.core.gcp.obm.persistence.ObmDestination;
+import org.opengroup.osdu.legal.config.PartitionPropertyNames;
+
+import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StorageReaderImplTests {
@@ -47,6 +52,12 @@ public class StorageReaderImplTests {
 
   @Mock
   private Driver storage;
+
+  @Mock
+  private PartitionPropertyNames partitionPropertyNames;
+
+  @Mock
+  private PartitionPropertyResolver partitionPropertyResolver;
 
   @InjectMocks
   private StorageReaderImpl sut;
@@ -92,8 +103,9 @@ public class StorageReaderImplTests {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
     when(tenantInfo.getProjectId()).thenReturn("projectId1");
     String bucketName = tenantInfo.getProjectId() + "-" + tenantInfo.getName() + "-" + BUCKET_NAME;
-    StorageReaderImpl storageReader = new StorageReaderImpl(tenantInfo, null, storage,
-        true);
+    StorageReaderImpl storageReader =
+        new StorageReaderImpl(
+            tenantInfo, null, storage, true, partitionPropertyResolver, partitionPropertyNames);
     String resultBucketName = storageReader.getTenantBucketName();
     assertEquals(bucketName, resultBucketName);
   }
@@ -102,8 +114,9 @@ public class StorageReaderImplTests {
   public void should_returnBucketName_when_IsFullBucketName_is_false() {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
     String bucketName = tenantInfo.getName() + "-" + BUCKET_NAME;
-    StorageReaderImpl storageReader = new StorageReaderImpl(tenantInfo, null, storage,
-        false);
+    StorageReaderImpl storageReader =
+        new StorageReaderImpl(
+            tenantInfo, null, storage, false, partitionPropertyResolver, partitionPropertyNames);
     String resultBucketName = storageReader.getTenantBucketName();
     assertEquals(bucketName, resultBucketName);
   }
@@ -115,10 +128,27 @@ public class StorageReaderImplTests {
     when(tenantInfo.getProjectId()).thenReturn("projectId1");
     String bucketName = tenantInfo.getName() + "-" + BUCKET_NAME;
     TenantInfo tenantInfo1 = new TenantInfo();
-    StorageReaderImpl storageReader = new StorageReaderImpl(tenantInfo1, null, null);
+    StorageReaderImpl storageReader =
+        new StorageReaderImpl(
+            tenantInfo1, null, null, false, partitionPropertyResolver, partitionPropertyNames);
 
     String resultBucketName = storageReader.getTenantBucketName();
     assertEquals(bucketName, resultBucketName);
+  }
+
+  @Test
+  public void should_returnBucketName_fromPartition() {
+    when(partitionPropertyNames.getLegalBucketName()).thenReturn("partition-bucket-name");
+    when(partitionPropertyResolver.getOptionalPropertyValue(
+            partitionPropertyNames.getLegalBucketName(), tenantInfo.getDataPartitionId()))
+        .thenReturn(Optional.of("partition-bucket-name"));
+    TenantInfo tenantInfo1 = new TenantInfo();
+    StorageReaderImpl storageReader =
+        new StorageReaderImpl(
+            tenantInfo1, null, null, false, partitionPropertyResolver, partitionPropertyNames);
+
+    String resultBucketName = storageReader.getTenantBucketName();
+    assertEquals("partition-bucket-name", resultBucketName);
   }
 
   private ObmDestination getDestination() {
