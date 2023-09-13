@@ -22,7 +22,7 @@ public class AwsStatusChangedTag extends StatusChangedTag {
 
 	private String dataPartitionId;
 
-    public AwsStatusChangedTag(String changedTagName, Enum changedTagStatus, String dataPartitionId) {
+    public <E extends Enum<E>> AwsStatusChangedTag(String changedTagName, E changedTagStatus, String dataPartitionId) {
     	super(changedTagName, changedTagStatus);
         this.dataPartitionId = dataPartitionId;
     }

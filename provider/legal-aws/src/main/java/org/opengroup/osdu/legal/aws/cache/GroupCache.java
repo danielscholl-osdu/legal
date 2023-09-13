@@ -29,11 +29,11 @@ import java.util.Map;
 @Component
 public class GroupCache<K,V> implements ICache<K,V>{
     @Value("${aws.elasticache.cluster.endpoint:null}")
-    String REDIS_SEARCH_HOST;
+    String redisSearchHost;
     @Value("${aws.elasticache.cluster.port:null}")
-    String REDIS_SEARCH_PORT;
+    String redisSearchPort;
     @Value("${aws.elasticache.cluster.key:null}")
-    String REDIS_SEARCH_KEY;
+    String redisSearchKey;
 
     private ICache<K,V> cache;
     
@@ -47,7 +47,7 @@ public class GroupCache<K,V> implements ICache<K,V>{
     }
 
 
-    public GroupCache(String disableCacheResult, K8sLocalParameterProvider givenProvider, String REDIS_SEARCH_KEY, CacheFactory<K,V> cacheFactory) throws K8sParameterNotFoundException, JsonProcessingException {
+    public GroupCache(String disableCacheResult, K8sLocalParameterProvider givenProvider, String redisSearchKey, CacheFactory<K,V> cacheFactory) throws K8sParameterNotFoundException, JsonProcessingException {
         if (cacheFactory != null) {
             this.cacheFactory = cacheFactory;
         } else {
@@ -59,24 +59,24 @@ public class GroupCache<K,V> implements ICache<K,V>{
         else{
             this.provider = givenProvider;
         }
-        if (REDIS_SEARCH_KEY != null){
-            this.REDIS_SEARCH_KEY = REDIS_SEARCH_KEY;
+        if (redisSearchKey != null){
+            this.redisSearchKey = redisSearchKey;
         }
-        if (provider.getLocalMode()){
+        if (Boolean.TRUE.equals(provider.getLocalMode())){
             if (Boolean.parseBoolean(disableCacheResult)){
-                this.cache =  new DummyCache();
+                this.cache =  new DummyCache<>();
             }
             this.cache =  this.cacheFactory.getVmCache(60, 10);
 
         } else {
-            String host = provider.getParameterAsStringOrDefault("CACHE_CLUSTER_ENDPOINT", REDIS_SEARCH_HOST);
-            int port = Integer.parseInt(provider.getParameterAsStringOrDefault("CACHE_CLUSTER_PORT", REDIS_SEARCH_PORT));
+            String host = provider.getParameterAsStringOrDefault("CACHE_CLUSTER_ENDPOINT", redisSearchHost);
+            int port = Integer.parseInt(provider.getParameterAsStringOrDefault("CACHE_CLUSTER_PORT", redisSearchPort));
             Map<String, String > credential =provider.getCredentialsAsMap("CACHE_CLUSTER_KEY");
             String password;
             if (credential !=null){
                 password = credential.get("token");
             } else{
-                password = REDIS_SEARCH_KEY;
+                password = redisSearchKey;
             }
             this.cache =  this.cacheFactory.getRedisCache(host, port, password, 60, (Class<K>) String.class, (Class<V>) Groups.class);
 
@@ -94,7 +94,7 @@ public class GroupCache<K,V> implements ICache<K,V>{
 
     @Override
     public V get(K k) {
-        return (V) this.cache.get(k);
+        return this.cache.get(k);
     }
 
     @Override

@@ -26,7 +26,6 @@ import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +51,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
 
     private PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder;
 
-    private static final String dataType = "String";
+    private static final String DATATYPE = "String";
 
     public void setK8sLocalParameterProvider(K8sLocalParameterProvider k8sLocalParameterProvider) {
         this.k8sLocalParameterProvider = k8sLocalParameterProvider;
@@ -74,14 +73,14 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         // attributes
         Map<String, MessageAttributeValue> messageAttributes = new HashMap<>();
         messageAttributes.put(DpsHeaders.DATA_PARTITION_ID, new MessageAttributeValue()
-                .withDataType(dataType)
+                .withDataType(DATATYPE)
                 .withStringValue(headers.getPartitionIdWithFallbackToAccountId()));
         headers.addCorrelationIdIfMissing();
         messageAttributes.put(DpsHeaders.CORRELATION_ID, new MessageAttributeValue()
-                .withDataType(dataType)
+                .withDataType(DATATYPE)
                 .withStringValue(headers.getCorrelationId()));
         messageAttributes.put(DpsHeaders.AUTHORIZATION, new MessageAttributeValue()
-                .withDataType(dataType)
+                .withDataType(DATATYPE)
                 .withStringValue(headers.getAuthorization()));
         for (int i = 0; i < tags.getStatusChangedTags().size(); i += BATCH_SIZE){
             List<StatusChangedTag> batch = tags.getStatusChangedTags().subList(i, Math.min(tags.getStatusChangedTags().size(), i + BATCH_SIZE));
