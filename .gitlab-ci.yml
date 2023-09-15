@@ -27,6 +27,7 @@ variables:
   AZURE_SERVICE: legal
   AZURE_BUILD_SUBDIR: provider/legal-azure
   AZURE_TEST_SUBDIR: testing/legal-test-azure
+  SERVICE_JAVA_VERSION: "17"
 
   IBM_HELM_CONFIG_PATH: devops/ibm/ibm-legal-config
   IBM_HELM_DEPLOY_PATH: devops/ibm/ibm-legal-deploy
