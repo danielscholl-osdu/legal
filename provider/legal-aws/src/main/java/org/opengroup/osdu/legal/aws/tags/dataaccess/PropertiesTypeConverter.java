@@ -15,50 +15,35 @@
 package org.opengroup.osdu.legal.aws.tags.dataaccess;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 
-import javax.inject.Inject;
+import java.io.IOException;
 
 public class PropertiesTypeConverter implements DynamoDBTypeConverter<String, Properties> {
-
-    @Inject
-    private ObjectMapper objectMapper;
-
-    @Inject
-    private Properties properties;
-
-    @Inject
-    private JaxRsDpsLog logger;
-
     @Override
     public String convert(Properties properties) {
         String propString = "";
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             propString = objectMapper.writeValueAsString(properties);
         } catch (JsonProcessingException e) {
-            logger.error(String.format("There was an error processing the properties JSON string. %s", e.getMessage()));
+            e.printStackTrace();
         }
         return propString;
     }
 
+    @Override
     public Properties unconvert(String propString) {
+        Properties properties = new Properties();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             properties = objectMapper.readValue(propString, new TypeReference<Properties>(){});
-            return properties;
-        } catch (JsonParseException e) {
-            logger.error(String.format("There was an error parsing the properties JSON string. %s", e.getMessage()));
-        } catch(JsonMappingException e ) {
-            logger.error(String.format("There was an error mapping the properties JSON string. %s", e.getMessage()));
-        } catch (JsonProcessingException e) {
-            logger.error(String.format("There was an error processing the properties JSON string. %s", e.getMessage()));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
+        return properties;
     }
 }
