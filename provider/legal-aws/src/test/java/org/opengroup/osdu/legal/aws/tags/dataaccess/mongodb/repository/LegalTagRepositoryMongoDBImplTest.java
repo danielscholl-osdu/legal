@@ -38,7 +38,7 @@ import static org.opengroup.osdu.legal.aws.api.mongo.util.LegalTagGenerator.gene
 
 @DataMongoTest
 @SpringJUnitConfig(classes = {LegalTestConfig.class})
-public class LegalTagRepositoryMongoDBImplTest extends ParentUtil {
+class LegalTagRepositoryMongoDBImplTest extends ParentUtil {
 
     @InjectMocks
     private LegalTagRepositoryMongoDBImpl legalTagRepository;

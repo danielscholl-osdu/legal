@@ -15,7 +15,6 @@
 package org.opengroup.osdu.legal.aws.jobs;
 
 
-import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.AmazonSNS;
 import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
@@ -33,9 +32,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service

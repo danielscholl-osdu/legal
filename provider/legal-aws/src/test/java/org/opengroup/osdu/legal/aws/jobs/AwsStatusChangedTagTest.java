@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class AwsStatusChangedTagTest {
+class AwsStatusChangedTagTest {
 
     @Mock
     private Enum mockEnum;
@@ -21,7 +21,7 @@ public class AwsStatusChangedTagTest {
     }
 
     @Test
-    public void testConstructor() {
+    void testConstructor() {
         assertEquals("testName", awsStatusChangedTag.getChangedTagName());
         assertEquals(mockEnum, awsStatusChangedTag.getChangedTagStatus());
         assertEquals("partition123", awsStatusChangedTag.getDataPartitionId());

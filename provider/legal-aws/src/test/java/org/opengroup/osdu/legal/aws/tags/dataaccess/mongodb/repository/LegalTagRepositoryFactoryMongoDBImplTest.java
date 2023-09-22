@@ -9,7 +9,7 @@ import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LegalTagRepositoryFactoryMongoDBImplTest {
+class LegalTagRepositoryFactoryMongoDBImplTest {
 
     @InjectMocks
     private LegalTagRepositoryFactoryMongoDBImpl factory;
@@ -23,7 +23,7 @@ public class LegalTagRepositoryFactoryMongoDBImplTest {
     }
 
     @Test
-    public void testGet() {
+    void testGet() {
         ILegalTagRepository result = factory.get("someTenantName");
 
         // Verifying that the get method returns the correct repoImpl
