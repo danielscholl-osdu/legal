@@ -1,4 +1,4 @@
-## Service Configuration for Google Cloud
+# Service Configuration for Google Cloud
 
 
 ## Run args
@@ -27,15 +27,16 @@ Must have:
 
 Defined in default application property file but possible to override:
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `LOG_PREFIX` | `legal` | Logging prefix | no | - |
-| `AUTHORIZE_API` | `http://entitlements/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment | |
-| `PARTITION_API` | ex `http://partition/api/partition/v1` | Partition service endpoint | no | - |
-| `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration`  | no | - |
-| `SERVICE_TOKEN_PROVIDER` | `GCP` |Service account token provider, `GCP` means use Google service account | no | - |
-| `PARTITION_AUTH_ENABLED` | `true` |Enable auth token provisioning for requests to Partition service | no | - |
-| `GOOGLE_APPLICATION_CREDENTIALS` | ex `/path/to/directory/service-key.json` | Service account credentials, serves to gain access to cloud resources and to request tokens | yes | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
+| name                                     | value                                    | description                                                                                                                                                         | sensitive? | source                                                       |
+|------------------------------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|--------------------------------------------------------------|
+| `LOG_PREFIX`                             | `legal`                                  | Logging prefix                                                                                                                                                      | no         | -                                                            |
+| `AUTHORIZE_API`                          | `http://entitlements/entitlements/v1`    | Entitlements API endpoint                                                                                                                                           | no         | output of infrastructure deployment                          | |
+| `PARTITION_API`                          | ex `http://partition/api/partition/v1`   | Partition service endpoint                                                                                                                                          | no         | -                                                            |
+| `ENABLE_FULL_BUCKET_NAME`                | ex `true`                                | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration` | no         | -                                                            |
+| `SERVICE_TOKEN_PROVIDER`                 | `GCP`                                    | Service account token provider, `GCP` means use Google service account                                                                                              | no         | -                                                            |
+| `PARTITION_AUTH_ENABLED`                 | `true`                                   | Enable auth token provisioning for requests to Partition service                                                                                                    | no         | -                                                            |
+| `GOOGLE_APPLICATION_CREDENTIALS`         | ex `/path/to/directory/service-key.json` | Service account credentials, serves to gain access to cloud resources and to request tokens                                                                         | yes        | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
+| `PARTITION_PROPERTIES_LEGAL_BUCKET_NAME` | ex `legal.bucket.name`                   | Name of partition property for legal bucket name value                                                                                                      | yes        | -                                                            |
 
 These variables define service behavior, and are used to switch between `baremetal` or `gc` environments, their overriding and usage in mixed mode was not tested.
 Usage of spring profiles is preferred.
@@ -78,6 +79,10 @@ It can be overridden by:
 - through the Spring Boot property `pub-sub-legal-tags-topic`
 - environment variable `PUB_SUB_LEGAL_TAGS_TOPIC`
 
+Legal service responsible for publishing only. 
+Consumer side `legaltags-changed` topic configuration located in
+[Storage Google Cloud PubSub documentation](https://community.opengroup.org/osdu/platform/system/storage/-/blob/master/provider/storage-gc/docs/gc/README.md#pubsub-configuration)
+
 ## GCS configuration <a name="ObjectStoreConfig"></a>
 
 ### Per-tenant buckets configuration
@@ -117,20 +122,21 @@ This section describes how to run cloud OSDU E2E tests (testing/legal-test-gc).
 
 You will need to have the following environment variables defined.
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `GCLOUD_PROJECT` | `nice-etching-277309` | google cloud project ID | yes | - |
-| `MY_TENANT_PROJECT` | `osdu` | my tenant project name | yes | - |
-| `INTEGRATION_TESTER` | `********` | Service account for API calls. Note: this user must have entitlements configured already | yes | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
-| `HOST_URL` | `http://localhsot:8080/api/legal/v1/` | - | yes | - |
-| `MY_TENANT` | `osdu` | OSDU tenant used for testing | yes | - |
-| `SKIP_HTTP_TESTS` | ex `true` | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes | - |
-| `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name | no | - |
+| name                      | value                                        | description                                                                                                                                                                                                                    | sensitive? | source                                                       |
+|---------------------------|----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|--------------------------------------------------------------|
+| `GCLOUD_PROJECT`          | `nice-etching-277309`                        | google cloud project ID                                                                                                                                                                                                        | yes        | -                                                            |
+| `MY_TENANT_PROJECT`       | `osdu`                                       | my tenant project name                                                                                                                                                                                                         | yes        | -                                                            |
+| `INTEGRATION_TESTER`      | `********`                                   | Service account for API calls. Note: this user must have entitlements configured already                                                                                                                                       | yes        | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
+| `HOST_URL`                | `http://localhsot:8080/api/legal/v1/`        | -                                                                                                                                                                                                                              | yes        | -                                                            |
+| `MY_TENANT`               | `osdu`                                       | OSDU tenant used for testing                                                                                                                                                                                                   | yes        | -                                                            |
+| `SKIP_HTTP_TESTS`         | ex `true`                                    | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes        | -                                                            |
+| `ENABLE_FULL_BUCKET_NAME` | ex `true`                                    | Full bucket name                                                                                                                                                                                                               | no         | -                                                            |
+| `PARTITION_API`           | ex `http://localhost:8080/api/partition/v1 ` | Partition service host                                                                                                                                                                                                         | no         | --                                                           |
 
 **Entitlements configuration for integration accounts**
 
-| INTEGRATION_TESTER |
-| ---  |
+| INTEGRATION_TESTER                                                                                                                                   |
+|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | users<br/>service.entitlements.user<br/>service.legal.admin<br/>service.legal.editor<br/>service.legal.user<br/>data.test1<br/>data.integration.test |
 
 Execute following command to build code and run all the integration tests:

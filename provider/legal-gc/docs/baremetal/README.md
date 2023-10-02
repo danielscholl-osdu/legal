@@ -30,13 +30,14 @@ Must have:
 
 Defined in default application property file but possible to override:
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `LOG_PREFIX` | `legal` | Logging prefix | no | - |
-| `AUTHORIZE_API` | `http://entitlements/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment | |
-| `PARTITION_API` | ex `http://partition/api/partition/v1` | Partition service endpoint | no | - |
-| `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration`  | no | - |
-| `PARTITION_AUTH_ENABLED` | `false` | Disable auth token provisioning for requests to Partition service | no | - |
+| name                                     | value                                        | description                                                                                                                                                         | sensitive? | source                              |
+|------------------------------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------|
+| `LOG_PREFIX`                             | `legal`                                      | Logging prefix                                                                                                                                                      | no         | -                                   |
+| `AUTHORIZE_API`                          | `http://entitlements/entitlements/v1`        | Entitlements API endpoint                                                                                                                                           | no         | output of infrastructure deployment | |
+| `PARTITION_API`                          | ex `http://partition/api/partition/v1`       | Partition service endpoint                                                                                                                                          | no         | -                                   |
+| `ENABLE_FULL_BUCKET_NAME`                | ex `true`                                    | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration` | no         | -                                   |
+| `PARTITION_AUTH_ENABLED`                 | `false`                                      | Disable auth token provisioning for requests to Partition service                                                                                                   | no         | -                                   |
+| `PARTITION_PROPERTIES_LEGAL_BUCKET_NAME` | ex `legal.bucket.name`                       | Name of partition property for legal bucket name value                                                                                                              | yes        | -                                   |
 
 These variables define service behavior, and are used to switch between `baremetal` or `gc` environments, their overriding and usage in mixed mode was not tested.
 Usage of spring profiles is preferred.
@@ -250,6 +251,10 @@ It can be overridden by:
 - through the Spring Boot property `pub-sub-legal-tags-topic`
 - environment variable `PUB_SUB_LEGAL_TAGS_TOPIC`
 
+Legal service responsible for publishing only.
+Consumer side `legaltags-changed` topic configuration located in
+[Storage Baremetal Rabbit documentation](https://community.opengroup.org/osdu/platform/system/storage/-/tree/master/provider/storage-gc/docs/anthos#exchanges-and-queues-configuration)
+
 ![Screenshot](./pics/rabbit.PNG)
 
 ## Minio configuration:
@@ -328,19 +333,20 @@ This section describes how to run cloud OSDU E2E tests (testing/legal-test-barem
 
 You will need to have the following environment variables defined.
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `HOST_URL` | `http://localhsot:8080/api/legal/v1/` | - | yes | - |
-| `MY_TENANT` | `osdu` | OSDU tenant used for testing | yes | - |
-| `SKIP_HTTP_TESTS` | ex `true` | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes | - |
-| `ENABLE_FULL_BUCKET_NAME` | ex `true` | Full bucket name | no | - |
-| `BAREMETAL_PROJECT_ID` | ex `osdu-anthos` | project id used to specify bucket name if `ENABLE_FULL_BUCKET_NAME`=true | no | - |
-| `TEST_OPENID_PROVIDER_CLIENT_ID` | `********` | Client Id for `$INTEGRATION_TESTER` | yes | -- |
-| `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********` |  | Client secret for `$INTEGRATION_TESTER` | -- |
-| `TEST_OPENID_PROVIDER_URL` | `https://keycloak.com/auth/realms/osdu` | OpenID provider url | yes | -- |
-| `TEST_MINIO_ACCESS_KEY` | ex `true` | Minio access key| no | - |
-| `TEST_MINIO_SECRET_KEY` | `********` | Minio secret | yes | -- |
-| `TEST_MINIO_URL` | `https://s3.ref.gc.gnrg-osdu.projects.epam.com/`| Minio url | -- |
+| name                                 | value                                            | description                                                                                                                                                                                                                    | sensitive?                              | source |
+|--------------------------------------|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------|--------|
+| `HOST_URL`                           | `http://localhsot:8080/api/legal/v1/`            | -                                                                                                                                                                                                                              | yes                                     | -      |
+| `MY_TENANT`                          | `osdu`                                           | OSDU tenant used for testing                                                                                                                                                                                                   | yes                                     | -      |
+| `SKIP_HTTP_TESTS`                    | ex `true`                                        | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes                                     | -      |
+| `ENABLE_FULL_BUCKET_NAME`            | ex `true`                                        | Full bucket name                                                                                                                                                                                                               | no                                      | -      |
+| `BAREMETAL_PROJECT_ID`               | ex `osdu-anthos`                                 | project id used to specify bucket name if `ENABLE_FULL_BUCKET_NAME`=true                                                                                                                                                       | no                                      | -      |
+| `TEST_OPENID_PROVIDER_CLIENT_ID`     | `********`                                       | Client Id for `$INTEGRATION_TESTER`                                                                                                                                                                                            | yes                                     | --     |
+| `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********`                                       |                                                                                                                                                                                                                                | Client secret for `$INTEGRATION_TESTER` | --     |
+| `TEST_OPENID_PROVIDER_URL`           | `https://keycloak.com/auth/realms/osdu`          | OpenID provider url                                                                                                                                                                                                            | yes                                     | --     |
+| `TEST_MINIO_ACCESS_KEY`              | ex `true`                                        | Minio access key                                                                                                                                                                                                               | no                                      | -      |
+| `TEST_MINIO_SECRET_KEY`              | `********`                                       | Minio secret                                                                                                                                                                                                                   | yes                                     | --     |
+| `TEST_MINIO_URL`                     | `https://s3.ref.gc.gnrg-osdu.projects.epam.com/` | Minio url                                                                                                                                                                                                                      | --                                      |
+| `PARTITION_API`                      | ex `http://localhost:8080/api/partition/v1 `     | Partition service host                                                                                                                                                                                                         | no                                      | --     |
 
 
 **Entitlements configuration for integration accounts**

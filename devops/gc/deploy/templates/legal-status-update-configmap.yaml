@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-status-update" .Values.conf.configmap | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  DATA_PARTITION_ID: {{ .Values.data.dataPartitionId | quote }}
+  LEGAL_HOST: {{ .Values.data.legalHost | quote }}
+  ONPREM_ENABLED: {{ .Values.global.onPremEnabled | quote }}
+
