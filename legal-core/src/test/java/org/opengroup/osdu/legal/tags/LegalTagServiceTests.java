@@ -449,6 +449,19 @@ public class LegalTagServiceTests {
         verify(messagePublisherMock, never()).publish(any(), any(), any());
     }
 
+    @Test
+    public void should_returnLegalTag_when_givenExistingNames() {
+        sut = createSut();
+
+        LegalTagDto result = sut.get("mykind", "tenant1");
+
+        assertEquals("kind2", result.getName());
+
+        result = sut.get("tenant1-mykind", "tenant1");
+
+        assertEquals("kind2", result.getName());
+    }
+
     private LegalTagService createSut() {
         LegalTag output = new LegalTag();
         output.setName("kind2");
