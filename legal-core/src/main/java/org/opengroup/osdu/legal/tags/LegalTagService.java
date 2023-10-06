@@ -217,8 +217,13 @@ public class LegalTagService {
 
     private Collection<LegalTag> getLegalTags(String[] names, String tenantName) {
         long[] ids = new long[names.length];
+        String prefix = tenantName + "-";
         for (int i = 0; i < ids.length; i++) {
-            ids[i] = LegalTag.getDefaultId(names[i]);
+            var legalTag = names[i];
+            if (!legalTag.startsWith(prefix)) {
+                legalTag = prefix + legalTag;
+            }
+            ids[i] = LegalTag.getDefaultId(legalTag);
         }
         ILegalTagRepository legalTagRepository = repositories.get(tenantName);
         return exceptionMapper.run(legalTagRepository::get, ids, "Error retrieving LegalTag(s).");
