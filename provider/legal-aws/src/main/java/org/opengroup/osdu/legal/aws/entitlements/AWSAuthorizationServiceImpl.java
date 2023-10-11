@@ -1,17 +1,17 @@
-// Copyright © Amazon
-// Copyright 2017-2019, Schlumberger
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/* Copyright © Amazon
+Copyright 2017-2019, Schlumberger
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. */
 
 package org.opengroup.osdu.legal.aws.entitlements;
 
@@ -27,7 +27,6 @@ import org.opengroup.osdu.core.common.model.entitlements.Groups;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.provider.interfaces.IAuthorizationService;
 import org.opengroup.osdu.core.common.http.HeadersUtil;
-import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.util.Crc32c;
 import org.springframework.context.annotation.Lazy;
@@ -68,14 +67,14 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 		return authorizationResponse;
 	}
 
-	protected static String getGroupCacheKey(DpsHeaders headers) {
-		String key = String.format("entitlement-groups:%s:%s", headers.getPartitionIdWithFallbackToAccountId(),
+	protected String getGroupCacheKey(DpsHeaders headers) {
+		var key = String.format("entitlement-groups:%s:%s", headers.getPartitionIdWithFallbackToAccountId(),
 				headers.getAuthorization());
 		return Crc32c.hashToBase64EncodedString(key);
 	}
 
 	public Groups getGroups(DpsHeaders headers) {
-		String cacheKey = this.getGroupCacheKey(headers);
+		var cacheKey = this.getGroupCacheKey(headers);
 
 		Groups groups = null;
 		try {
@@ -83,7 +82,7 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 		} catch (RedisException ex) {
 			this.jaxRsDpsLog.error(String.format("Error getting key %s from redis: %s", cacheKey, ex.getMessage()), ex);
 		}
-
+		
 		if (groups == null) {
 			IEntitlementsService service = this.factory.create(headers);
 			try {
@@ -92,7 +91,7 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 				this.jaxRsDpsLog.debug("Entitlements cache miss");
 
 			} catch (EntitlementsException e) {
-				HttpResponse response = e.getHttpResponse();
+				var response = e.getHttpResponse();
 				this.jaxRsDpsLog.error(String.format("Error requesting entitlements service %s", response));
 				throw new AppException(e.getHttpResponse().getResponseCode(), ERROR_REASON, ERROR_MSG, e);
 			} catch (RedisException ex) {
@@ -120,10 +119,10 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 	}
 
 	private void handleEntitlementsException(Exception e, DpsHeaders headers) {
-		throw new AppException(500, "Access denied", "The user is not authorized to perform this action", HeadersUtil.toLogMsg(headers, null), e);
+		throw new AppException(500, ERROR_REASON, ERROR_MSG, HeadersUtil.toLogMsg(headers, null), e);
 	}
 
-	private AuthorizationResponse authorizeAny(DpsHeaders headers, Groups groups, String... roles) {
+	AuthorizationResponse authorizeAny(DpsHeaders headers, Groups groups, String... roles) {
 		String userEmail = null;
 		List<String> logMessages = new ArrayList<>();
 		Long curTimeStamp = System.currentTimeMillis();
@@ -133,7 +132,7 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 		logMessages.add(String.format("groups: %s", getEmailFromGroups(groups)));
 		if (groups != null) {
 			userEmail = groups.getMemberEmail();
-			if (groups.any(roles)) {
+			if (Boolean.TRUE.equals(groups.any(roles))) {
 				return AuthorizationResponse.builder().user(userEmail).groups(groups).build();
 			}
 		}

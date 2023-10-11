@@ -40,7 +40,7 @@ public class LegalTagRepositoryFactoryAwsImpl implements ILegalTagRepositoryFact
 		if (StringUtils.isBlank(tenantName)) {
 			throw invalidTenantGivenException(tenantName);
 		}
-		TenantInfo tenantInfo = tenantFactory.getTenantInfo(tenantName);
+		tenantInfo = tenantFactory.getTenantInfo(tenantName);
 		repoImpl.setTenantInfo(tenantInfo);
 
 		return repoImpl;

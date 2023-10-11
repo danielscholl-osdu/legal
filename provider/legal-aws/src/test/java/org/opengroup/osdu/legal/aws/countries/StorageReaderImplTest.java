@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StorageReaderImplTest {
+class StorageReaderImplTest {
 
     @InjectMocks
     private StorageReaderImpl storageReader;
@@ -43,7 +43,7 @@ public class StorageReaderImplTest {
     private final String content = "[...]";  // Dummy JSON for Country array
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         when(s3ClientWithBucket.getS3Client()).thenReturn(s3Client);
         when(s3ClientWithBucket.getBucketName()).thenReturn(bucketName);
@@ -54,21 +54,21 @@ public class StorageReaderImplTest {
     }
 
     @Test
-    public void testGetConfigFile_HappyPath() {
+    void testGetConfigFile_HappyPath() {
         when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenReturn(content);
         String result = storageReader.getConfigFile();
         assertEquals(content, result);
     }
 
     @Test
-    public void testReadAllBytes(){
+    void testReadAllBytes(){
         when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenReturn(content);
         byte[] result = storageReader.readAllBytes();
         assertArrayEquals(content.getBytes(), result);
     }
 
     @Test
-    public void testGetConfigFile_WhenAmazonS3ExceptionWithStatus404() {
+    void testGetConfigFile_WhenAmazonS3ExceptionWithStatus404() {
         AmazonS3Exception exception = mock(AmazonS3Exception.class);
         when(exception.getStatusCode()).thenReturn(404);
         when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenThrow(exception);
@@ -77,7 +77,7 @@ public class StorageReaderImplTest {
     }
 
     @Test
-    public void testGetConfigFile_WhenAmazonS3ExceptionWithStatusOtherThan404() {
+    void testGetConfigFile_WhenAmazonS3ExceptionWithStatusOtherThan404() {
         AmazonS3Exception exception = mock(AmazonS3Exception.class);
         when(exception.getStatusCode()).thenReturn(500);
         when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenThrow(exception);
@@ -85,13 +85,13 @@ public class StorageReaderImplTest {
     }
 
     @Test
-    public void testGetConfigFile_WhenAmazonServiceExceptionThrown() {
+    void testGetConfigFile_WhenAmazonServiceExceptionThrown() {
         when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenThrow(AmazonServiceException.class);
         assertThrows(AppException.class, () -> storageReader.getConfigFile());
     }
 
     @Test
-    public void testGetConfigFile_WhenSdkClientExceptionThrown() {
+    void testGetConfigFile_WhenSdkClientExceptionThrown() {
         when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenThrow(SdkClientException.class);
         assertThrows(AppException.class, () -> storageReader.getConfigFile());
     }
