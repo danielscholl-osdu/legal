@@ -10,7 +10,7 @@ import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class StorageReaderFactoryImplTest {
+class StorageReaderFactoryImplTest {
 
     @InjectMocks
     private StorageReaderFactoryImpl factory;
@@ -19,12 +19,12 @@ public class StorageReaderFactoryImplTest {
     private StorageReaderImpl storageReaderImpl;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testGetReader() {
+    void testGetReader() {
         TenantInfo mockTenantInfo = new TenantInfo();
         String mockProjectRegion = "mockRegion";
     

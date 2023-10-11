@@ -1,17 +1,17 @@
-// Copyright MongoDB, Inc or its affiliates. All Rights Reserved.
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/* Copyright MongoDB, Inc or its affiliates. All Rights Reserved.
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. */
 
 package org.opengroup.osdu.legal.aws.tags.dataaccess.mongodb.repository;
 
@@ -46,6 +46,8 @@ public class LegalTagRepositoryMongoDBImpl implements ILegalTagRepository {
     private static final String ID = "_id";
     public static final String IS_VALID = "isValid";
 
+    private static final String ERR_MSG = "Legal tag conflict";
+
     //collection prefix
     public static final String COLLECTION_PREFIX = "Legal-";
 
@@ -75,12 +77,12 @@ public class LegalTagRepositoryMongoDBImpl implements ILegalTagRepository {
     @Override
     public Long create(LegalTag legalTag) {
         if (legalTag.getId().equals(-1L)) {
-            throw new AppException(409, "Legal tag conflict", String.format("Cannot create a LegalTag id for the given name %s. Id is %s", legalTag.getName(), legalTag.getId()));
+            throw new AppException(409, ERR_MSG, String.format("Cannot create a LegalTag id for the given name %s. Id is %s", legalTag.getName(), legalTag.getId()));
         }
         try {
             this.mongoDBMultiClusterFactory.getHelper(getDataPartitionId()).insert(legalTag, getLegalCollectionName(this.getDataPartitionId()));
         } catch (DuplicateKeyException e) {
-            throw new AppException(409, "Legal tag conflict", String.format("A LegalTag already exists for the given name %s. Cannot duplicate LegalTag. Id is %s", legalTag.getName(), legalTag.getId()));
+            throw new AppException(409, ERR_MSG, String.format("A LegalTag already exists for the given name %s. Cannot duplicate LegalTag. Id is %s", legalTag.getName(), legalTag.getId()));
         }
         return legalTag.getId();
     }
@@ -124,7 +126,7 @@ public class LegalTagRepositoryMongoDBImpl implements ILegalTagRepository {
         Query query = Query.query(Criteria.where(ID).is(newLegalTag.getId()));
         LegalTag replaced = this.mongoDBMultiClusterFactory.getHelper(getDataPartitionId()).findAndReplace(query, newLegalTag, getLegalCollectionName(this.getDataPartitionId()));
         if (replaced == null) {
-            throw new AppException(409, "Legal tag conflict", String.format("A LegalTag does not exist for the given name %s. Cannot update LegalTag. Id is %s", newLegalTag.getName(), newLegalTag.getId()));
+            throw new AppException(409, ERR_MSG, String.format("A LegalTag does not exist for the given name %s. Cannot update LegalTag. Id is %s", newLegalTag.getName(), newLegalTag.getId()));
         }
         return newLegalTag;
     }
