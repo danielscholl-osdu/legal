@@ -71,7 +71,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
     public void publish(String projectId, DpsHeaders headers, StatusChangedTags tags) {
         final int BATCH_SIZE = 50;
         // attributes
-        PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder = new PublishRequestBuilder<>();
+        PublishRequestBuilder<AwsStatusChangedTags> publishRequestBuilder = new PublishRequestBuilder<>();
         publishRequestBuilder.setGeneralParametersFromHeaders(headers);
         log.debug("Publishing to topic " + osduLegalTopic);
         for (int i = 0; i < tags.getStatusChangedTags().size(); i += BATCH_SIZE){
@@ -79,8 +79,11 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
             List<AwsStatusChangedTag> awsBatch = batch.stream()
                     .map(t -> new AwsStatusChangedTag(t.getChangedTagName(), t.getChangedTagStatus(), headers.getPartitionId()))
                     .collect(Collectors.toList());
-            PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest(osduLegalTopic, amazonSNSTopic, awsBatch);
+            AwsStatusChangedTags awsBatchTags = new AwsStatusChangedTags(awsBatch);
+            PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest(osduLegalTopic, amazonSNSTopic, awsBatchTags);
             snsClient.publish(publishRequest);
         }
     }
 }
+
+record AwsStatusChangedTags(List<AwsStatusChangedTag> statusChangedTags) { }
