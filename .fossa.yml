@@ -16,6 +16,10 @@ analyze:
       type: mvn
       target: legal-core/pom.xml
       path: .
+    - name: legal-core-plus
+      type: mvn
+      target: provider/legal-core-plus/pom.xml
+      path: .
     - name: legal-gcp
       type: mvn
       target: provider/legal-gc/pom.xml
