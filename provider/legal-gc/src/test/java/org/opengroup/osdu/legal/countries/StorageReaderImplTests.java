@@ -17,11 +17,6 @@
 
 package org.opengroup.osdu.legal.countries;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.opengroup.osdu.legal.countries.StorageReaderImpl.BUCKET_NAME;
-import static org.powermock.api.mockito.PowerMockito.when;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,15 +25,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
+import org.opengroup.osdu.core.gcp.obm.driver.ObmDriverRuntimeException;
 import org.opengroup.osdu.core.gcp.obm.model.Blob;
 import org.opengroup.osdu.core.gcp.obm.model.Bucket;
 import org.opengroup.osdu.core.gcp.obm.persistence.ObmDestination;
 import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 
 import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.opengroup.osdu.legal.countries.StorageReaderImpl.BUCKET_NAME;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StorageReaderImplTests {
@@ -70,15 +71,12 @@ public class StorageReaderImplTests {
     bucketName = "legal-service-configuration";
   }
 
-  @Test
-  public void should_createBucketAndObject_when_bucketDoesNotExist() {
+  @Test(expected = AppException.class)
+  public void should_throw_Exception_when_bucketDoesNotExist() {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
     when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
-    when(storage.getBlobContent(BUCKET_FULL_NAME, FILE_NAME, getDestination())).thenReturn(
-        new byte[0]);
 
-    byte[] bytes = sut.readAllBytes();
-    assertNotNull(bytes);
+    sut.readAllBytes();
   }
 
   @Test
