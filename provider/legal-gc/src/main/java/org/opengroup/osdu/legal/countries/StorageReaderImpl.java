@@ -19,6 +19,8 @@ package org.opengroup.osdu.legal.countries;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
@@ -27,7 +29,6 @@ import org.opengroup.osdu.core.gcp.obm.model.Blob;
 import org.opengroup.osdu.core.gcp.obm.persistence.ObmDestination;
 import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
-import org.springframework.http.MediaType;
 
 import java.util.Objects;
 
@@ -57,18 +58,16 @@ public class StorageReaderImpl implements IStorageReader {
   public byte[] readAllBytes() {
     byte[] content = null;
     try {
-      if (storage.getBucket(getTenantBucketName(), getDestination()) == null) {
-        storage.createBucket(getTenantBucketName(), getDestination());
+      if (Objects.isNull(storage.getBucket(getTenantBucketName(), getDestination()))) {
+        log.error("Bucket %s is not existing.".formatted(getTenantBucketName()));
+        throw new AppException(
+            HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal error.", "Internal error.");
       }
       if (Objects.isNull(storage.getBlob(getTenantBucketName(), FILE_NAME, getDestination()))) {
-        Blob emptyBlob = Blob.builder()
-            .bucket(getTenantBucketName())
-            .name(FILE_NAME)
-            .contentType(MediaType.APPLICATION_JSON.toString())
-            .build();
-        storage.createBlob(emptyBlob, new byte[0], getDestination());
-        content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
-        return content;
+        log.error(
+            "File %s in bucket %s is not existing.".formatted(FILE_NAME, getTenantBucketName()));
+        throw new AppException(
+            HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal error.", "Internal error.");
       } else {
         Blob blob = storage.getBlob(getTenantBucketName(), FILE_NAME, getDestination());
         if (Objects.nonNull(blob)) {
