@@ -19,8 +19,6 @@ version: 0.2
 
 env:
   secrets-manager:
-    DOCKER_USERNAME: /osdu/devops/docker_credentials:username
-    DOCKER_PASSWORD: /osdu/devops/docker_credentials:password
     SONAR_USERNAME: /osdu/devops/sonar_credentials:username
     SONAR_PASSWORD: /osdu/devops/sonar_credentials:password
   
@@ -49,8 +47,6 @@ phases:
     commands:
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-      - echo "Logging into Docker Hub..."
-      - docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
   build:
     commands:
       - export REPO_NAME=${PWD##*/}
@@ -85,6 +81,7 @@ phases:
       - echo "Building docker image..."
       - docker build -f provider/legal-aws/build-aws/Dockerfile -t ${ECR_IMAGE} .
       - docker tag  ${ECR_IMAGE} ${ECR_IMAGE_BRANCH_LATEST}
+
       - echo "Pushing docker image..."
       - docker push ${ECR_IMAGE}
       - docker push ${ECR_IMAGE_BRANCH_LATEST}
