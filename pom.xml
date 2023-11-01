@@ -8,7 +8,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <docker.image.prefix>opendes</docker.image.prefix>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <os-core-common.version>0.23.3</os-core-common.version>
+        <os-core-common.version>0.24.0</os-core-common.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <resilience4jVersion>1.7.0</resilience4jVersion>
         <openapi.version>1.6.14</openapi.version>
@@ -28,13 +28,14 @@
 
     <groupId>org.opengroup.osdu.legal</groupId>
     <artifactId>legal-service</artifactId>
-    <version>0.24.0-SNAPSHOT</version>
+    <version>0.25.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>legal-service</name>
     <description>Legal service</description>
 
     <modules>
         <module>legal-core</module>
+        <module>provider/legal-core-plus</module>
         <module>provider/legal-gc</module>
         <module>provider/legal-byoc</module>
         <module>provider/legal-azure</module>

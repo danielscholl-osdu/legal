@@ -19,7 +19,7 @@
     <parent>
         <artifactId>legal-service</artifactId>
         <groupId>org.opengroup.osdu.legal</groupId>
-        <version>0.24.0-SNAPSHOT</version>
+        <version>0.25.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -31,8 +31,8 @@
         <azure.appservice.plan />
         <azure.appservice.appname />
         <azure.appservice.subscription />
-        <osdu.corelibazure.version>0.24.0-rc2</osdu.corelibazure.version>
-        <osdu.legal-core.version>0.24.0-SNAPSHOT</osdu.legal-core.version>
+        <osdu.corelibazure.version>0.24.0</osdu.corelibazure.version>
+        <osdu.legal-core.version>0.25.0-SNAPSHOT</osdu.legal-core.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <woodstox-core.version>6.4.0</woodstox-core.version>
