@@ -16,19 +16,20 @@ package org.opengroup.osdu.legal.azure.jobs;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.microsoft.azure.CloudException;
 import com.microsoft.azure.eventgrid.models.EventGridEvent;
 import com.microsoft.azure.servicebus.Message;
 import com.microsoft.azure.servicebus.MessageBody;
 import com.microsoft.azure.servicebus.TopicClient;
 import com.microsoft.azure.servicebus.primitives.ServiceBusException;
-import org.junit.Assert;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
@@ -36,9 +37,22 @@ import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.azure.di.EventGridConfig;
+import retrofit2.Response;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LegalTagPublisherImplTest {
@@ -70,61 +84,141 @@ public class LegalTagPublisherImplTest {
 
     @Before
     public void init() throws ServiceBusException, InterruptedException {
-        Mockito.doReturn(CORRELATION_ID).when(headers).getCorrelationId();
-        Mockito.doReturn(USER_EMAIL).when(headers).getUserEmail();
-        Mockito.doReturn(PARTITION_ID).when(headers).getPartitionId();
-        Mockito.doReturn(topicClient).when(topicClientFactory).getClient(Mockito.eq(PARTITION_ID), Mockito.any());
+        doReturn(CORRELATION_ID).when(headers).getCorrelationId();
+        doReturn(USER_EMAIL).when(headers).getUserEmail();
+        doReturn(PARTITION_ID).when(headers).getPartitionId();
+        doReturn(topicClient).when(topicClientFactory).getClient(eq(PARTITION_ID), any());
     }
 
     @Test
-    public void shouldPublishToEventGridWhenFlagIsSet() throws Exception {
-        StatusChangedTags tags = new StatusChangedTags();
+    public void shouldPublishToServiceBus() throws Exception {
+        StatusChangedTags statusChangedTags = new StatusChangedTags();
 
-        ArgumentCaptor<String> partitionNameCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> topicNameArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<List<EventGridEvent>> listEventGridEventArgumentCaptor = ArgumentCaptor.forClass(List.class);
-        Mockito.doNothing().when(this.eventGridTopicStore).publishToEventGridTopic(
-                partitionNameCaptor.capture(), topicNameArgumentCaptor.capture(), listEventGridEventArgumentCaptor.capture()
-        );
-        Mockito.when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
-        Mockito.when(this.eventGridConfig.getTopicName()).thenReturn("legaltagschangedtopic");
+        ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
+        ArgumentCaptor<String> debugLogArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        sut.publish("project-id", headers, tags);
+        sut.publish("project-id", headers, statusChangedTags);
 
-        Mockito.verify(this.eventGridTopicStore, Mockito.times(1))
-                .publishToEventGridTopic(Mockito.any(), Mockito.any(), Mockito.anyList());
+        verify(logger).debug(debugLogArgumentCaptor.capture());
+        verify(topicClient).send(messageArgumentCaptor.capture());
 
-        Assert.assertEquals(1, listEventGridEventArgumentCaptor.getValue().size());
-        Assert.assertEquals(topicNameArgumentCaptor.getValue(), "legaltagschangedtopic");
-        Assert.assertEquals(partitionNameCaptor.getValue(), PARTITION_ID);
-    }
-
-    @Test
-    public void shouldPublishLegalTag() throws Exception {
-        StatusChangedTags tags = new StatusChangedTags();
-        sut.publish("project-id", headers, tags);
-        ArgumentCaptor<Message> msg = ArgumentCaptor.forClass(Message.class);
-        ArgumentCaptor<String> log = ArgumentCaptor.forClass(String.class);
-
-        Mockito.verify(logger).debug(log.capture());
-        Assert.assertEquals("Storage publishes message " + CORRELATION_ID, log.getValue());
-
-        Mockito.verify(topicClient).send(msg.capture());
-        Map<String, Object> properties = msg.getValue().getProperties();
-
-        Assert.assertEquals(PARTITION_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
-        Assert.assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
-        Assert.assertEquals(USER_EMAIL, properties.get(DpsHeaders.USER_EMAIL));
-
-        MessageBody messageBody = msg.getValue().getMessageBody();
+        Map<String, Object> properties = messageArgumentCaptor.getValue().getProperties();
+        MessageBody messageBody = messageArgumentCaptor.getValue().getMessageBody();
         Gson gson = new Gson();
         String messageKey = "message";
         String dataKey = "data";
         JsonObject jsonObjectMessage = gson.fromJson(new String(messageBody.getBinaryData().get(0)), JsonObject.class);
         JsonObject jsonObject = (JsonObject) jsonObjectMessage.get(messageKey);
-        Assert.assertEquals(PARTITION_ID, jsonObject.get(DpsHeaders.DATA_PARTITION_ID).getAsString());
-        Assert.assertEquals(CORRELATION_ID, jsonObject.get(DpsHeaders.CORRELATION_ID).getAsString());
-        Assert.assertEquals(USER_EMAIL, jsonObject.get(DpsHeaders.USER_EMAIL).getAsString());
-        Assert.assertEquals(gson.toJsonTree(tags), jsonObject.get(dataKey));
+
+        assertEquals("Storage publishes message " + CORRELATION_ID, debugLogArgumentCaptor.getValue());
+        assertEquals(PARTITION_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
+        assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
+        assertEquals(USER_EMAIL, properties.get(DpsHeaders.USER_EMAIL));
+        assertEquals(PARTITION_ID, jsonObject.get(DpsHeaders.DATA_PARTITION_ID).getAsString());
+        assertEquals(CORRELATION_ID, jsonObject.get(DpsHeaders.CORRELATION_ID).getAsString());
+        assertEquals(USER_EMAIL, jsonObject.get(DpsHeaders.USER_EMAIL).getAsString());
+        assertEquals(gson.toJsonTree(statusChangedTags), jsonObject.get(dataKey));
     }
+
+    @Test
+    public void shouldLogError_whenPublishToServiceBusFails() throws Exception {
+        StatusChangedTags statusChangedTags = new StatusChangedTags();
+
+        ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
+        ArgumentCaptor<String> debugLogArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Exception> exceptionArgumentCaptor = ArgumentCaptor.forClass(Exception.class);
+        ArgumentCaptor<String> errorLogArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        var serviceBusExceptionMessage = "com.microsoft.azure.servicebus.amqp.AmqpException: The connection was inactive for more than the allowed 300000 milliseconds";
+        ServiceBusException serviceBusException = new ServiceBusException(true, serviceBusExceptionMessage);
+        doThrow(serviceBusException).when(topicClient).send(any());
+
+        sut.publish("project-id", headers, statusChangedTags);
+
+        verify(logger).debug(debugLogArgumentCaptor.capture());
+        verify(topicClient).send(messageArgumentCaptor.capture());
+        verify(logger).error(errorLogArgumentCaptor.capture(), exceptionArgumentCaptor.capture());
+
+        Map<String, Object> properties = messageArgumentCaptor.getValue().getProperties();
+        MessageBody messageBody = messageArgumentCaptor.getValue().getMessageBody();
+        Gson gson = new Gson();
+        String messageKey = "message";
+        String dataKey = "data";
+        JsonObject jsonObjectMessage = gson.fromJson(new String(messageBody.getBinaryData().get(0)), JsonObject.class);
+        JsonObject jsonObject = (JsonObject) jsonObjectMessage.get(messageKey);
+
+        assertEquals("Storage publishes message " + CORRELATION_ID, debugLogArgumentCaptor.getValue());
+        assertEquals(serviceBusExceptionMessage, errorLogArgumentCaptor.getValue());
+        assertEquals(serviceBusException, exceptionArgumentCaptor.getValue());
+        assertEquals(PARTITION_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
+        assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
+        assertEquals(USER_EMAIL, properties.get(DpsHeaders.USER_EMAIL));
+        assertEquals(PARTITION_ID, jsonObject.get(DpsHeaders.DATA_PARTITION_ID).getAsString());
+        assertEquals(CORRELATION_ID, jsonObject.get(DpsHeaders.CORRELATION_ID).getAsString());
+        assertEquals(USER_EMAIL, jsonObject.get(DpsHeaders.USER_EMAIL).getAsString());
+        assertEquals(gson.toJsonTree(statusChangedTags), jsonObject.get(dataKey));
+    }
+
+    @Test
+    public void shouldPublishToEventGrid_whenFlagIsSet() throws ServiceBusException, InterruptedException {
+        StatusChangedTags statusChangedTags = new StatusChangedTags();
+
+        ArgumentCaptor<String> partitionNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> topicNameArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<List<EventGridEvent>> listEventGridEventArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        doNothing().when(this.eventGridTopicStore).publishToEventGridTopic(
+                partitionNameCaptor.capture(), topicNameArgumentCaptor.capture(), listEventGridEventArgumentCaptor.capture()
+        );
+        when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
+        when(this.eventGridConfig.getTopicName()).thenReturn("legaltagschangedtopic");
+
+        sut.publish("project-id", headers, statusChangedTags);
+
+        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(any(), any(), anyList());
+
+        assertEquals(1, listEventGridEventArgumentCaptor.getValue().size());
+        assertEquals("legaltagschangedtopic", topicNameArgumentCaptor.getValue());
+        assertEquals( PARTITION_ID, partitionNameCaptor.getValue());
+    }
+    @Test
+    public void shouldLogError_whenPublishToEventGridFails() {
+        StatusChangedTags statusChangedTags = new StatusChangedTags();
+
+        ArgumentCaptor<String> partitionNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> topicNameArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<List<EventGridEvent>> listEventGridEventArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<Exception> exceptionArgumentCaptor = ArgumentCaptor.forClass(Exception.class);
+        ArgumentCaptor<String> errorLogArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
+        when(this.eventGridConfig.getTopicName()).thenReturn("legaltagschangedtopic");
+
+        var cloudExceptionMessage = "Cloud Exception occurred";
+        MediaType mediaType = null;
+        Response<ResponseBody> errorResponse = Response.error(503, ResponseBody.create("Service Unavailable", mediaType));
+        CloudException cloudException = new CloudException(cloudExceptionMessage, errorResponse);
+        doThrow(cloudException).when(eventGridTopicStore).publishToEventGridTopic(partitionNameCaptor.capture(), topicNameArgumentCaptor.capture(), listEventGridEventArgumentCaptor.capture());
+
+        sut.publish("project-id", headers, statusChangedTags);
+
+        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(any(), any(), anyList());
+        verify(logger).error(errorLogArgumentCaptor.capture(), exceptionArgumentCaptor.capture());
+
+        assertEquals(1, listEventGridEventArgumentCaptor.getValue().size());
+        assertEquals("legaltagschangedtopic", topicNameArgumentCaptor.getValue());
+        assertEquals( PARTITION_ID, partitionNameCaptor.getValue());
+        assertEquals(cloudExceptionMessage, errorLogArgumentCaptor.getValue());
+        assertEquals(cloudException, exceptionArgumentCaptor.getValue());
+    }
+
+    @Test
+    public void shouldNotPublishToEventGrid_whenFlagStatusChangedTagsIsNull() {
+        StatusChangedTags statusChangedTags = null;
+        when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
+
+        sut.publish("project-id", headers, statusChangedTags);
+
+        verify(this.eventGridTopicStore, never()).publishToEventGridTopic(any(), any(), anyList());
+    }
+
 }
