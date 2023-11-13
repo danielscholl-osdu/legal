@@ -28,7 +28,7 @@ public class StorageReaderImpl implements IStorageReader {
     private final String dataPartitionId;
     private final String containerName;
 
-    private static final String fileName = "Legal_COO.json";
+    private static final String LEGAL_CONFIG_FILE_NAME = "Legal_COO.json";
 
     public StorageReaderImpl(String dataPartitionId, String containerName, BlobStore blobStore) {
         this.dataPartitionId = dataPartitionId;
@@ -40,14 +40,15 @@ public class StorageReaderImpl implements IStorageReader {
     public byte[] readAllBytes() {
         try {
             //should return a json format of an array of Country class
-            return blobStore.readFromStorageContainer(dataPartitionId, fileName, containerName).getBytes(StandardCharsets.UTF_8);
-        } catch (AppException ae) {
-            if (ae.getError().getCode() == HttpStatus.SC_NOT_FOUND) {
+            return blobStore.readFromStorageContainer(dataPartitionId, LEGAL_CONFIG_FILE_NAME, containerName)
+                    .getBytes(StandardCharsets.UTF_8);
+        } catch (AppException appException) {
+            if (appException.getError().getCode() == HttpStatus.SC_NOT_FOUND) {
                 // Storage File does not exist. No countries are being overwritten using Storage account.
                 // Continue using the DefaultCountryCode.json
                 return new byte[0];
             }
-            throw ae;
+            throw appException;
         }
     }
 }

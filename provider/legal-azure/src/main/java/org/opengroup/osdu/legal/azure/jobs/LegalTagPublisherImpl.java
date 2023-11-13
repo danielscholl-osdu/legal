@@ -73,8 +73,8 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
         try {
             logger.debug("Storage publishes message " + headers.getCorrelationId());
             topicClientFactory.getClient(headers.getPartitionId(), serviceBusTopic).send(message);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        } catch (Exception exception) {
+            logger.error(exception.getMessage(), exception);
         }
     }
 
@@ -101,8 +101,8 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
             ));
             logger.debug("Legal publishes tag changed event: " + data.get(DpsHeaders.CORRELATION_ID));
             eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), eventGridConfig.getTopicName(), eventsList);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        } catch (Exception exception) {
+            logger.error(exception.getMessage(), exception);
         }
     }
 
