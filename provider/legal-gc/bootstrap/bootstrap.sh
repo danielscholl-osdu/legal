@@ -7,28 +7,30 @@
 
 set -ex
 
-source ./validate-env.sh "DATA_PARTITION_ID"
+source ./validate-env.sh "PARTITION_HOST"
 source ./validate-env.sh "LEGAL_HOST"
 source ./validate-env.sh "ENTITLEMENTS_HOST"
 source ./validate-env.sh "DEFAULT_LEGAL_TAG"
 
-get_token_onprem() {
-    ID_TOKEN="$(curl --location --request POST "${OPENID_PROVIDER_URL}/protocol/openid-connect/token" \
-        --header "Content-Type: application/x-www-form-urlencoded" \
-        --data-urlencode "grant_type=client_credentials" \
-        --data-urlencode "scope=openid" \
-        --data-urlencode "client_id=${OPENID_PROVIDER_CLIENT_ID}" \
-        --data-urlencode "client_secret=${OPENID_PROVIDER_CLIENT_SECRET}" | jq -r ".id_token")"
-    export ID_TOKEN
-}
-
-get_token_gc() {
-    ID_TOKEN=$(gcloud auth print-identity-token)
+get_token() {
+    if [ "${ONPREM_ENABLED}" == "true" ]; then
+        ID_TOKEN="$(curl --location --request POST "${OPENID_PROVIDER_URL}/protocol/openid-connect/token" \
+            --header "Content-Type: application/x-www-form-urlencoded" \
+            --data-urlencode "grant_type=client_credentials" \
+            --data-urlencode "scope=openid" \
+            --data-urlencode "client_id=${OPENID_PROVIDER_CLIENT_ID}" \
+            --data-urlencode "client_secret=${OPENID_PROVIDER_CLIENT_SECRET}" | jq -r ".id_token")"
+    else
+        ID_TOKEN=$(gcloud auth print-identity-token)
+    fi
     export ID_TOKEN
 }
 
 check_entitlements_readiness() {
-    status_code=$(curl --retry 1 --location -globoff --request GET \
+    
+    DATA_PARTITION_ID=$1
+
+    status_code=$(curl --retry 1 --location --globoff --request GET \
         "${ENTITLEMENTS_HOST}/api/entitlements/v2/groups" \
         --write-out "%{http_code}" --silent --output "/dev/null" \
         --header 'Content-Type: application/json' \
@@ -64,6 +66,8 @@ create_legaltag() {
 }
 EOF
 
+    DATA_PARTITION_ID=$1
+
     # FIXME update after default tag logic is defined
     status_code=$(curl --location -g --request POST \
         --url "${LEGAL_HOST}/api/legal/v1/legaltags" \
@@ -84,21 +88,35 @@ EOF
     rm /opt/output.txt
 }
 
+# Get list of partitions 
+status_code=$(curl --location --request GET \
+    --url "${PARTITION_HOST}/api/partition/v1/partitions" \
+    --write-out "%{http_code}" --silent --output "output.txt")
+
+if [ "$status_code" == 200 ]; then
+    partitions=$(cat /opt/output.txt | xargs)           # unquote
+    partitions=${partitions:1:-1}                       # remove []
+    IFS=',' read -ra PARTITIONS <<<"${partitions},"     # append ',' for single partition case
+else
+    echo "$status_code: Partition service is not available"
+    cat /opt/output.txt
+    exit 1
+fi
+
 if [ "${ONPREM_ENABLED}" == "true" ]; then
     source ./validate-env.sh "OPENID_PROVIDER_URL"
     source ./validate-env.sh "OPENID_PROVIDER_CLIENT_ID"
     source ./validate-env.sh "OPENID_PROVIDER_CLIENT_SECRET"
-
-    get_token_onprem
-
-else
-
-    get_token_gc
-
 fi
 
-check_entitlements_readiness
-
-create_legaltag
+# Bootstrapping legal tag for each partition
+for PARTITION in "${PARTITIONS[@]}"; do
+    if [[ "${PARTITION}" == "system" ]]; then
+        continue
+    fi
+    get_token
+    check_entitlements_readiness ${PARTITION}
+    create_legaltag ${PARTITION}
+done
 
 touch /tmp/bootstrap_ready
