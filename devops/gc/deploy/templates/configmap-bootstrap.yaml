@@ -1,4 +1,3 @@
-{{- if .Values.global.dataBootstrapEnabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,9 +6,8 @@ metadata:
   name: {{ printf "%s-bootstrap" .Values.conf.configmap | quote }}
   namespace: {{ .Release.Namespace | quote }}
 data:
-  DATA_PARTITION_ID: {{ .Values.data.dataPartitionId | quote }}
   ENTITLEMENTS_HOST: {{ .Values.data.entitlementsHost | quote }}
   LEGAL_HOST: {{ .Values.data.legalHost | quote }}
+  PARTITION_HOST: {{ .Values.data.partitionHost | quote }}
   DEFAULT_LEGAL_TAG: {{ .Values.data.defaultLegalTag | quote }}
   ONPREM_ENABLED: {{ .Values.global.onPremEnabled | quote }}
-{{- end }}

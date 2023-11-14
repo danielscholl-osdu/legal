@@ -27,45 +27,31 @@
 
 set -ex
 
-update_legal_status_baremetal() {
-
-  DATA_PARTITION_ID=$1
-
-  ID_TOKEN="$(curl --location --silent --globoff --request POST "${OPENID_PROVIDER_URL}/protocol/openid-connect/token" \
-    --header "data-partition-id: ${DATA_PARTITION_ID}" \
-    --header "Content-Type: application/x-www-form-urlencoded" \
-    --data-urlencode "grant_type=client_credentials" \
-    --data-urlencode "scope=openid" \
-    --data-urlencode "client_id=${OPENID_PROVIDER_CLIENT_ID}" \
-    --data-urlencode "client_secret=${OPENID_PROVIDER_CLIENT_SECRET}" | jq -r ".id_token")"
-  export ID_TOKEN
-
-  status_code=$(curl --location --globoff --request GET "${LEGAL_HOST}/api/legal/v1/jobs/updateLegalTagStatus" \
-    --write-out "%{http_code}" --silent --output "output.txt" \
-    --header "data-partition-id: ${DATA_PARTITION_ID}" \
-    --header "Authorization: Bearer ${ID_TOKEN}")
-
-  if [ "$status_code" == 204 ]; then
-    echo "Legal status update completed successfully!"
+get_token() {
+  if [ "${ONPREM_ENABLED}" == "true" ]; then
+    # id token
+    TOKEN="$(curl --location --silent --globoff --request POST "${OPENID_PROVIDER_URL}/protocol/openid-connect/token" \
+      --header "Content-Type: application/x-www-form-urlencoded" \
+      --data-urlencode "grant_type=client_credentials" \
+      --data-urlencode "scope=openid" \
+      --data-urlencode "client_id=${OPENID_PROVIDER_CLIENT_ID}" \
+      --data-urlencode "client_secret=${OPENID_PROVIDER_CLIENT_SECRET}" | jq -r ".id_token")"
+    export TOKEN
   else
-    echo "Legal status update failed!"
-    cat /opt/output.txt | jq
-    exit 1
+    # access token
+    TOKEN="$(gcloud auth print-access-token)"
+    export TOKEN
   fi
-
 }
 
-update_legal_status_gc() {
+update_legal_status() {
 
   DATA_PARTITION_ID=$1
-
-  ACCESS_TOKEN="$(gcloud auth print-access-token)"
-  export ACCESS_TOKEN
 
   status_code=$(curl --location --globoff --request GET "${LEGAL_HOST}/api/legal/v1/jobs/updateLegalTagStatus" \
     --write-out "%{http_code}" --silent --output "output.txt" \
     --header "data-partition-id: ${DATA_PARTITION_ID}" \
-    --header "Authorization: Bearer ${ACCESS_TOKEN}")
+    --header "Authorization: Bearer ${TOKEN}")
 
   if [ "$status_code" == 204 ]; then
     echo "Legal status update completed successfully!"
@@ -78,7 +64,7 @@ update_legal_status_gc() {
 }
 
 # Check variables
-source ./validate-env.sh "DATA_PARTITION_ID"
+source ./validate-env.sh "PARTITION_HOST"
 source ./validate-env.sh "LEGAL_HOST"
 if [[ "${ONPREM_ENABLED}" == "true" ]]; then
   source ./validate-env.sh "OPENID_PROVIDER_URL"
@@ -86,13 +72,33 @@ if [[ "${ONPREM_ENABLED}" == "true" ]]; then
   source ./validate-env.sh "OPENID_PROVIDER_CLIENT_SECRET"
 fi
 
-# Update legal status for all partitions
+# Get list of partitions 
+status_code=$(curl --location --request GET \
+    --url "${PARTITION_HOST}/api/partition/v1/partitions" \
+    --write-out "%{http_code}" --silent --output "output.txt")
 
-if [[ "${ONPREM_ENABLED}" == "true" ]]; then
-  update_legal_status_baremetal "${DATA_PARTITION_ID}"
+if [ "$status_code" == 200 ]; then
+    partitions=$(cat /opt/output.txt | xargs)           # unquote
+    partitions=${partitions:1:-1}                       # remove []
+    IFS=',' read -ra PARTITIONS <<<"${partitions},"     # append ',' for single partition case
 else
-  update_legal_status_gc "${DATA_PARTITION_ID}"
+    echo "$status_code: Partition service is not available"
+    cat /opt/output.txt
+    exit 1
 fi
 
+# Update legal status for all partitions
+for PARTITION in "${PARTITIONS[@]}"; do
+  if [[ "$PARTITION" == "system" ]]; then
+      continue
+  fi
+  get_token
+  update_legal_status "${PARTITION}"
+done
+
+# cleanly exit envoy if present
+set +e
 curl -X POST http://localhost:15000/quitquitquit
+set -e
+
 exit 0

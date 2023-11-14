@@ -4,7 +4,6 @@ metadata:
   name: {{ printf "%s-status-update" .Values.conf.configmap | quote }}
   namespace: {{ .Release.Namespace | quote }}
 data:
-  DATA_PARTITION_ID: {{ .Values.data.dataPartitionId | quote }}
   LEGAL_HOST: {{ .Values.data.legalHost | quote }}
+  PARTITION_HOST: {{ .Values.data.partitionHost | quote }}
   ONPREM_ENABLED: {{ .Values.global.onPremEnabled | quote }}
-
