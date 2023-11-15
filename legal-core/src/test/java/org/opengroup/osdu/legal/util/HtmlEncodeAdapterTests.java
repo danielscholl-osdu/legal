@@ -25,4 +25,10 @@ public class HtmlEncodeAdapterTests {
         assertEquals("hello", result);
     }
 
+    @Test
+    public void should_marshal_success(){
+        String result = sut.marshal("hello");
+        assertEquals("hello", result);
+    }
+
 }

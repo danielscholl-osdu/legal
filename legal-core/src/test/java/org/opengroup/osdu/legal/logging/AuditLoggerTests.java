@@ -12,6 +12,8 @@ import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
@@ -115,9 +117,32 @@ public class AuditLoggerTests {
         verify(log).audit(any());
     }
 
-    @Test
+   @Test
     public void should_writeLegalTagValidateFailEvent(){
         sut.validateLegalTagFail();
         verify(log).audit(any());
+    }
+
+    @Test
+    public void should_writeLegalTag_whenLegalTagsBackup() {
+        sut.legalTagsBackup("tenant");
+        verify(log).audit(any());
+    }
+
+    @Test
+    public void should_writeLegalTag_whenLegalTagRestored() {
+        sut.legalTagRestored("tenant");
+        verify(log).audit(any());
+    }
+
+    @Test
+    public void should_throwIllegalArgumentException_whenUserIsEmpty() {
+        when(requestInfo.getUser()).thenReturn("");
+        try {
+            sut.validateLegalTagSuccess();
+            fail("Expected error");
+        } catch(IllegalArgumentException illegalArgumentException){
+            assertEquals("User not supplied for audit events", illegalArgumentException.getMessage());
+        }
     }
 }

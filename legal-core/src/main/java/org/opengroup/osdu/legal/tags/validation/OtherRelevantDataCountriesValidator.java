@@ -16,11 +16,6 @@ public class OtherRelevantDataCountriesValidator implements ConstraintValidator<
     }
 
     @Override
-    public void initialize(ValidOtherRelevantDataCountries constraintAnnotation) {
-        //needed by interface - we don't use
-    }
-
-    @Override
     public boolean isValid(List<String> countries, ConstraintValidatorContext context) {
         if(countries == null)
             return true;

@@ -1,4 +1,6 @@
 variables:
+  CORE_BUILD_SUBDIR: legal-core
+
   AWS_BUILD_SUBDIR: provider/legal-aws/build-aws
   AWS_TEST_SUBDIR: testing/legal-test-aws
   AWS_CHART_SUBDIR: devops/aws/chart
