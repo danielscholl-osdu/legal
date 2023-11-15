@@ -1,15 +1,5 @@
 package org.opengroup.osdu.legal.tags;
 
-import org.opengroup.osdu.legal.logging.AuditLogger;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
-import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
-import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepositoryFactory;
-import org.opengroup.osdu.legal.tags.util.PersistenceExceptionToAppExceptionMapper;
-import org.opengroup.osdu.legal.tags.dto.*;
-import org.opengroup.osdu.core.common.model.legal.LegalTag;
-import org.opengroup.osdu.core.common.model.http.AppException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,15 +7,36 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.legal.LegalTag;
+import org.opengroup.osdu.legal.logging.AuditLogger;
+import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
+import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
+import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepositoryFactory;
+import org.opengroup.osdu.legal.tags.dto.InvalidTagWithReason;
+import org.opengroup.osdu.legal.tags.dto.InvalidTagsWithReason;
+import org.opengroup.osdu.legal.tags.dto.LegalTagDto;
+import org.opengroup.osdu.legal.tags.dto.LegalTagDtos;
+import org.opengroup.osdu.legal.tags.dto.UpdateLegalTag;
+import org.opengroup.osdu.legal.tags.util.PersistenceExceptionToAppExceptionMapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LegalTagServiceTests {
@@ -172,6 +183,15 @@ public class LegalTagServiceTests {
     }
 
     @Test
+    public void should_ReturnNull_When_ErrorOccurredLegalTagsListIsNull() {
+        sut = createSut(null);
+        when(legalTagRepositoryMock.get(any())).thenReturn(null);
+        LegalTagDto result = sut.get("mykind","tenant1");
+
+        assertEquals(null, result);
+    }
+
+    @Test
     public void should_returnFalse_When_GivenNullNameToDelete() {
         sut = createSut();
 
@@ -185,6 +205,15 @@ public class LegalTagServiceTests {
         sut = createSut();
 
         Boolean result = sut.delete("project1", "name", null, "tenant");
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void should_returnFalse_When_DeletingLegalTagErrorOccurred() {
+        sut = createSut();
+        when(legalTagRepositoryMock.delete(any())).thenReturn(false);
+        Boolean result = sut.delete("project1", "name", DpsHeaders.createFromMap(new HashMap<>()), "tenant");
 
         assertFalse(result);
     }
@@ -227,6 +256,19 @@ public class LegalTagServiceTests {
 
         result = sut.updateStatus("hi", true, null);
         assertNull(result);
+    }
+
+    @Test
+    public void should_throwAppException_whenUpdateStatus_IsGivenNonExistingLegalTag() {
+        sut = createSut();
+        when(legalTagRepositoryMock.get(any())).thenReturn(null);
+
+        try {
+            sut.updateStatus("legaltag2023", true,"tenant1");
+            fail("Expected error");
+        } catch (AppException ex) {
+            assertEquals(404, ex.getError().getCode());
+        }
     }
 
     @Test
@@ -353,6 +395,12 @@ public class LegalTagServiceTests {
     public void should_returnNull_when_givenNullNames() {
         sut = createSut();
         InvalidTagsWithReason result = sut.validate(null, "tenant1");
+        assertEquals(0, result.getInvalidLegalTags().size());
+    }
+    @Test
+    public void should_returnNull_when_givenEmptyNames() {
+        sut = createSut();
+        InvalidTagsWithReason result = sut.validate(new String[] {}, "tenant1");
         assertEquals(0, result.getInvalidLegalTags().size());
     }
 

@@ -69,13 +69,13 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(JsonProcessingException.class)
-	protected ResponseEntity<Object> handleValidationException(JsonProcessingException e) {
+	protected ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException e) {
 		return this.getErrorResponse(
 				new AppException(HttpStatus.BAD_REQUEST.value(), "Bad JSON format", e.getMessage()));
 	}
 
 	@ExceptionHandler(UnrecognizedPropertyException.class)
-	protected ResponseEntity<Object> handleValidationException(UnrecognizedPropertyException e) {
+	protected ResponseEntity<Object> handleUnrecognizedPropertyException(UnrecognizedPropertyException e) {
 		return this.getErrorResponse(
 				new AppException(HttpStatus.BAD_REQUEST.value(), "Unrecognized fields found on request", e.getMessage()));
 	}

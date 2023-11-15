@@ -4,11 +4,14 @@ import com.google.common.collect.Iterables;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class MemoryCacheLegalTagRepositoryTests {
@@ -25,6 +28,32 @@ public class MemoryCacheLegalTagRepositoryTests {
     }
 
     @Test
+    public void should_throwIllegalArgumentException_when_tenantNameIsBlank() {
+
+        try {
+            MemoryCacheLegalTagRepository sut1 = new MemoryCacheLegalTagRepository(wrapped, "");
+            fail("Expected error");
+        } catch(IllegalArgumentException illegalArgumentException){
+            assertEquals("tenantName must be supplied", illegalArgumentException.getMessage());
+        }
+
+    }
+
+    @Test
+    public void should_returnLegalTagCollection_when_givenListLegalTagArgs(){
+        ListLegalTagArgs listLegalTagArgs = new ListLegalTagArgs();
+        listLegalTagArgs.setCursor("0");
+        listLegalTagArgs.setLimit(100);
+        listLegalTagArgs.setIsValid(true);
+        Collection<LegalTag> expectedLegalTagCollection = Arrays.asList(legaltag);
+        when(wrapped.list(listLegalTagArgs)).thenReturn(expectedLegalTagCollection);
+
+        Collection<LegalTag> legalTagCollection = sut.list(listLegalTagArgs);
+
+        assertEquals(expectedLegalTagCollection, legalTagCollection);
+    }
+
+    @Test
     public void should_returnWrappedObjectResult_when_callingCreate(){
         LegalTag c = new LegalTag();
         when(wrapped.create(c)).thenReturn(5L);
@@ -33,7 +62,6 @@ public class MemoryCacheLegalTagRepositoryTests {
 
         assertEquals(5L, result);
     }
-
 
     @Test
     public void should_returnWrappedLegalTag_when_callingGetByKind_andThen_returnCached_WhenCallingItAgain(){

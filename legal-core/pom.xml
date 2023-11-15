@@ -196,7 +196,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.junit.vintage</groupId>
+						<artifactId>junit-vintage-engine</artifactId>
+						<version>5.9.1</version>
+					</dependency>
+				</dependencies>
 				<configuration>
+					<argLine>@{jacocoArgLine} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</argLine>
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<threadCount>1</threadCount>
 				</configuration>
@@ -208,7 +216,16 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
-                <executions>
+				<configuration>
+					<!-- Sets the VM argument line used when unit tests are run. -->
+					<propertyName>jacocoArgLine</propertyName>
+					<excludes>
+						<exclude>org/opengroup/osdu/legal/SwaggerDoc.class</exclude>
+						<exclude>org/opengroup/osdu/legal/middleware/GlobalErrorHandler.class</exclude>
+						<exclude>**/**Config*</exclude>
+					</excludes>
+				</configuration>
+				<executions>
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
