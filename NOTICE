@@ -409,7 +409,7 @@ The following software have components provided under the terms of this license:
 - Byte Buddy (without dependencies) (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy)
 - Byte Buddy Java agent (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy-agent)
 - ClassMate (from http://github.com/cowtowncoder/java-classmate)
-- Cloud Key Management Service (KMS) API (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
+- Cloud Key Management Service (KMS) API v1-rev20231012-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
 - Cloud Storage JSON API v1-rev20231028-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - CloudWatch Metrics for AWS Java SDK (from https://aws.amazon.com/sdkforjava)
 - Cobertura (from http://cobertura.sourceforge.net)
@@ -505,6 +505,7 @@ The following software have components provided under the terms of this license:
 - KeePassJava2 :: Simple (from https://repo1.maven.org/maven2/org/linguafranca/pwdb/KeePassJava2-simple)
 - Kotlin Stdlib (from https://kotlinlang.org/, https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib)
 - Kotlin Stdlib Common (from https://kotlinlang.org/)
+- Kotlin Stdlib Jdk7 (from <https://kotlinlang.org/>, https://kotlinlang.org/)
 - Kotlin Stdlib Jdk8 (from <https://kotlinlang.org/>, https://kotlinlang.org/)
 - Maven Artifact (from https://maven.apache.org/ref/4.0.0-alpha-8/maven-artifact/, https://repo1.maven.org/maven2/org/apache/maven/maven-artifact)
 - Maven Artifact Manager (from https://repo1.maven.org/maven2/org/apache/maven/maven-artifact-manager)
@@ -665,7 +666,6 @@ The following software have components provided under the terms of this license:
 - minio (from https://github.com/minio/minio-java)
 - org.apiguardian:apiguardian-api (from https://github.com/apiguardian-team/apiguardian)
 - org.conscrypt:conscrypt-openjdk-uber (from https://conscrypt.org/)
-- org.jetbrains.kotlin:kotlin-stdlib-jdk7 (from https://kotlinlang.org/)
 - org.opentest4j:opentest4j (from https://github.com/ota4j-team/opentest4j)
 - org.xmlunit:xmlunit-core (from http://www.xmlunit.org/, https://www.xmlunit.org/)
 - perfmark:perfmark-api (from https://github.com/perfmark/perfmark)
@@ -1087,13 +1087,6 @@ Plexus
 The following software have components provided under the terms of this license:
 
 - classworlds (from http://classworlds.codehaus.org/, https://repo1.maven.org/maven2/classworlds/classworlds)
-
-========================================================================
-RSA-MD
-========================================================================
-The following software have components provided under the terms of this license:
-
-- AWS Java SDK for Amazon SQS (from https://aws.amazon.com/sdkforjava)
 
 ========================================================================
 SAX-PD
