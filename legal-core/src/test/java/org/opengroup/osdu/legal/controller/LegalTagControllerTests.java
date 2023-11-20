@@ -1,18 +1,6 @@
 package org.opengroup.osdu.legal.controller;
 
 import com.google.common.collect.Iterables;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.legal.controller.LegalTagController;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
-import org.opengroup.osdu.legal.logging.AuditLogger;
-import org.opengroup.osdu.legal.tags.LegalTagService;
-import org.opengroup.osdu.legal.tags.LegalTestUtils;
-import org.opengroup.osdu.legal.tags.dto.*;
-import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
-import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +8,30 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.http.RequestInfo;
+import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
+import org.opengroup.osdu.legal.logging.AuditLogger;
+import org.opengroup.osdu.legal.tags.LegalTagService;
+import org.opengroup.osdu.legal.tags.LegalTestUtils;
+import org.opengroup.osdu.legal.tags.dto.InvalidTagsWithReason;
+import org.opengroup.osdu.legal.tags.dto.LegalTagDto;
+import org.opengroup.osdu.legal.tags.dto.LegalTagDtos;
+import org.opengroup.osdu.legal.tags.dto.ReadablePropertyValues;
+import org.opengroup.osdu.legal.tags.dto.RequestLegalTags;
+import org.opengroup.osdu.legal.tags.dto.UpdateLegalTag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import java.util.*;
+import javax.validation.ValidationException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -223,6 +233,18 @@ public class LegalTagControllerTests {
 
         assertEquals(2, entity.getLegalTags().size());
         assertEquals("k", Iterables.get(entity.getLegalTags(), 0).getName());
+    }
+
+    @Test(expected = ValidationException.class)
+    public void should_ThrowValidationException_when_listingLegalTags_IfTenantInfoIsNull() {
+
+        when(requestInfo.getTenantInfo()).thenReturn(null);
+        try {
+            ResponseEntity<LegalTagDtos> result = sut.listLegalTags(true);
+        } catch (ValidationException validationException){
+            assertEquals("No tenant supplied", validationException.getMessage());
+            throw validationException;
+        }
     }
 
     @Test

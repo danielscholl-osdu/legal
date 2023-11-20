@@ -1,4 +1,3 @@
-{{- if .Values.global.dataBootstrapEnabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,4 +41,3 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
       serviceAccountName: {{ .Values.data.bootstrapServiceAccountName | quote }}
-{{- end }}

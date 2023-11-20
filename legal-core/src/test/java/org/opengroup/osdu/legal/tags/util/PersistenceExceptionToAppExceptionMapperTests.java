@@ -1,40 +1,37 @@
 package org.opengroup.osdu.legal.tags.util;
 
 import com.google.rpc.Code;
-
-import org.opengroup.osdu.core.common.model.http.AppException;
-import org.opengroup.osdu.core.common.model.legal.PersistenceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.legal.PersistenceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PersistenceExceptionToAppExceptionMapperTests {
+
     @Mock
     private JaxRsDpsLog log;
 
     @InjectMocks
     private PersistenceExceptionToAppExceptionMapper sut;
 
-
     @Test
-    public void should_returnFunctionsValue_When_RunningGivenFunction(){
+    public void shouldReturnFunctionsValue_whenRunningGivenFunction(){
 
         String result = sut.run((String s) -> "hi " + s, "world", "reason");
 
         assertEquals("hi world", result);
     }
 
-
     @Test
-    public void shouldthrowAppException404_When_RunningFunctionThrowsPersistenceExceptionNotFound(){
+    public void shouldThrowAppException404_whenRunningFunction_throwsPersistenceExceptionNotFound(){
 
         try {
             sut.run((String s) -> {throw new PersistenceException(Code.NOT_FOUND_VALUE, "a", null); } ,"world", "reason");
@@ -48,7 +45,7 @@ public class PersistenceExceptionToAppExceptionMapperTests {
     }
 
     @Test
-    public void shouldthrowAppException400_When_RunningFunctionThrowsPersistenceExceptionInvalidArgument(){
+    public void shouldThrowAppException400_whenRunningFunction_throwsPersistenceExceptionInvalidArgument(){
 
         try {
             sut.run((String s) -> {throw new PersistenceException(Code.INVALID_ARGUMENT_VALUE, "a", null); } ,"world", "reason");
@@ -62,7 +59,21 @@ public class PersistenceExceptionToAppExceptionMapperTests {
     }
 
     @Test
-    public void shouldthrowAppException500_When_RunningFunctionThrowsDatastoreExceptAborted(){
+    public void shouldThrowAppException400_whenRunningFunction_throwsPersistenceExceptionAlreadyExists(){
+
+        try {
+            sut.run((String s) -> {throw new PersistenceException(Code.ALREADY_EXISTS_VALUE, "a", null); } ,"world", "reason");
+            fail("Should have thrown exception");
+        }
+        catch(AppException e){
+            assertEquals(400, e.getError().getCode());
+            assertEquals("reason", e.getError().getReason());
+            assertEquals("Already exists.", e.getError().getMessage());
+        }
+    }
+
+    @Test
+    public void shouldThrowAppException500_whenRunningFunction_throwsDatastoreExceptAborted(){
 
         try {
             sut.run((String s) -> { throw new PersistenceException(Code.ABORTED_VALUE, "a", null); },"world", "reason");

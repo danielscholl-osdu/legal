@@ -1,17 +1,16 @@
 package org.opengroup.osdu.legal;
 
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.RequestInfo;
+import org.opengroup.osdu.core.common.model.legal.validation.rules.Rule;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.legal.tags.validation.rules.DefaultRule;
 import org.opengroup.osdu.legal.tags.validation.rules.ExpiredContractRule;
-import org.opengroup.osdu.core.common.model.legal.validation.rules.Rule;
 import org.opengroup.osdu.legal.tags.validation.rules.UnownedDataRule;
-import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.common.model.http.RequestInfo;
-import org.opengroup.osdu.core.common.model.http.AppException;
-
 import org.springframework.stereotype.Component;
 
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +34,10 @@ public class RulesetProvider implements Provider<List<Rule>> {
         List<Rule> ruleset = new ArrayList<>();
 
         TenantInfo tenantInfo = requestInfo.getTenantInfo();
-        if (tenantInfo==null)
+        if (tenantInfo == null)
             throw new RuntimeException("No tenant info");
 
-        switch(requestInfo.getTenantInfo().getComplianceRuleSet()) {
+        switch(tenantInfo.getComplianceRuleSet()) {
             case TenantInfo.ComplianceRuleSets.SHARED:
                 ruleset.add(expiredContractRule);
                 ruleset.add(unownedDataRule);

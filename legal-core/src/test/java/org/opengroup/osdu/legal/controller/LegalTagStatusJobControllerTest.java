@@ -1,29 +1,30 @@
 package org.opengroup.osdu.legal.controller;
 
-import org.junit.Assert;
-import org.mockito.Mockito;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
-import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-
-import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
-import org.opengroup.osdu.legal.controller.LegalTagStatusJobController;
-import org.opengroup.osdu.legal.jobs.LegalTagCompliance;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.opengroup.osdu.legal.jobs.LegalTagStatusJob;
-import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
-import org.opengroup.osdu.legal.logging.AuditLogger;
-import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.http.RequestInfo;
+import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
+import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
+import org.opengroup.osdu.legal.jobs.LegalTagCompliance;
+import org.opengroup.osdu.legal.jobs.LegalTagStatusJob;
+import org.opengroup.osdu.legal.logging.AuditLogger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LegalTagStatusJobControllerTest {
@@ -52,34 +53,58 @@ public class LegalTagStatusJobControllerTest {
     public void setup() {
 
         dpsHeaders.put("data-partition-id", "common");
-        Mockito.when(requestInfo.getHeaders()).thenReturn(dpsHeaders);
+        when(requestInfo.getHeaders()).thenReturn(dpsHeaders);
         TenantInfo tenantInfo = new TenantInfo();
         tenantInfo.setName("tenantName");
         tenantInfo.setProjectId("projectId");
-        Mockito.when(tenantStorageFactory.listTenantInfo()).thenReturn(Collections.singletonList(tenantInfo));
+        when(tenantStorageFactory.listTenantInfo()).thenReturn(Collections.singletonList(tenantInfo));
     }
 
     @Test
-    public void shouldReturn200WhenCheckUpdateStatusSucceeds() throws Exception {
+    public void shouldReturn204_whenCheckUpdateStatus_succeeds() throws Exception {
         StatusChangedTag statusChangedTag = new StatusChangedTag("testTag", LegalTagCompliance.incompliant);
         StatusChangedTags statusChangedTags = new StatusChangedTags();
         statusChangedTags.getStatusChangedTags().add(statusChangedTag);
-        Mockito.when(legalTagStatusJob.run("projectId", dpsHeaders, "tenantName")).thenReturn(statusChangedTags);
+        when(legalTagStatusJob.run("projectId", dpsHeaders, "tenantName")).thenReturn(statusChangedTags);
 
         ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
 
-        Assert.assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
-        Mockito.verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(statusChangedTags.toString()));
+        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
+        verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(statusChangedTags.toString()));
     }
 
     @Test
-    public void shouldReturn500WhenCheckUpdateStatusThrowsAnError() throws Exception {
+    public void shouldReturn500_whenCheckUpdateStatus_throwsAnError() throws Exception {
         Exception exception = new Exception("error occurred");
-        Mockito.when(legalTagStatusJob.run("projectId", dpsHeaders, "tenantName")).thenThrow(exception);
+        when(legalTagStatusJob.run("projectId", dpsHeaders, "tenantName")).thenThrow(exception);
 
         ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
 
-        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        Mockito.verify(log).error("Error running check LegalTag compliance job on tenant common", exception);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+        verify(log).error("Error running check LegalTag compliance job on tenant common", exception);
+    }
+
+    @Test
+    public void shouldReturn500_whenCheckUpdateStatus_ThrowsAnErrorForFirstJobAndSucceedsForNextJob() throws Exception {
+        TenantInfo tenantInfo1 = new TenantInfo();
+        tenantInfo1.setName("tenantName1");
+        tenantInfo1.setProjectId("projectId1");
+        TenantInfo tenantInfo2 = new TenantInfo();
+        tenantInfo2.setName("tenantName2");
+        tenantInfo2.setProjectId("projectId2");
+        StatusChangedTag statusChangedTag = new StatusChangedTag("testTag", LegalTagCompliance.incompliant);
+        StatusChangedTags statusChangedTags = new StatusChangedTags();
+        statusChangedTags.getStatusChangedTags().add(statusChangedTag);
+
+        when(tenantStorageFactory.listTenantInfo()).thenReturn(List.of(tenantInfo1, tenantInfo2));
+        Exception exception = new Exception("error occurred");
+        when(legalTagStatusJob.run("projectId1", dpsHeaders, "tenantName1")).thenThrow(exception);
+        when(legalTagStatusJob.run("projectId2", dpsHeaders, "tenantName2")).thenReturn(statusChangedTags);
+
+
+        ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+        verify(log).error("Error running check LegalTag compliance job on tenant common", exception);
     }
 }
