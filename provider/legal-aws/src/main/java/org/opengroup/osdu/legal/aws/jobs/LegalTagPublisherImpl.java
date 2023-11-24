@@ -1,16 +1,18 @@
-/* Copyright © Amazon Web Services
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License. */
+/**
+* Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+* 
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*      http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package org.opengroup.osdu.legal.aws.jobs;
 
@@ -71,7 +73,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
     public void publish(String projectId, DpsHeaders headers, StatusChangedTags tags) {
         final int BATCH_SIZE = 50;
         // attributes
-        PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder = new PublishRequestBuilder<>();
+        PublishRequestBuilder<AwsStatusChangedTags> publishRequestBuilder = new PublishRequestBuilder<>();
         publishRequestBuilder.setGeneralParametersFromHeaders(headers);
         log.debug("Publishing to topic " + osduLegalTopic);
         for (int i = 0; i < tags.getStatusChangedTags().size(); i += BATCH_SIZE){
@@ -79,8 +81,11 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
             List<AwsStatusChangedTag> awsBatch = batch.stream()
                     .map(t -> new AwsStatusChangedTag(t.getChangedTagName(), t.getChangedTagStatus(), headers.getPartitionId()))
                     .collect(Collectors.toList());
-            PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest(osduLegalTopic, amazonSNSTopic, awsBatch);
+            AwsStatusChangedTags awsBatchTags = new AwsStatusChangedTags(awsBatch);
+            PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest(osduLegalTopic, amazonSNSTopic, awsBatchTags);
             snsClient.publish(publishRequest);
         }
     }
 }
+
+record AwsStatusChangedTags(List<AwsStatusChangedTag> statusChangedTags) { }
