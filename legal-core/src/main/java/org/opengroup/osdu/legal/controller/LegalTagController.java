@@ -122,6 +122,18 @@ public class LegalTagController implements LegalTagApi {
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<LegalTagDtos> searchLegalTag(String searchQuery, boolean valid) {
+
+        if (requestInfo.getTenantInfo() == null) {
+            throw new ValidationException("No tenant supplied");
+        }
+        LegalTagDtos output = legalTagService.searchLegalTag(searchQuery, true, requestInfo.getTenantInfo());
+        return new ResponseEntity<>(output, HttpStatus.OK);
+
+    }
+
+
     private String createNotFoundBody() {
         final Map<String, String> body = new HashMap<>();
         body.put("error", "Not found.");

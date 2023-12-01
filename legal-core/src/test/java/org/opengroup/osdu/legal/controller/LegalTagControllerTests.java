@@ -293,4 +293,23 @@ public class LegalTagControllerTests {
 
         verify(auditLogger).readLegalPropertiesSuccess(any());
     }
+
+    @Test
+    public void should_return200AndLegalTags_when_matchFound() {
+        LegalTagDto tag = LegalTestUtils.createValidLegalTagDto("k");
+
+        List<LegalTagDto> tags = Arrays.asList(tag, tag);
+        LegalTagDtos output = new LegalTagDtos();
+        output.setLegalTags(tags);
+        //when(legalTagService.list(anyBoolean(), any())).thenReturn(output);
+        when(legalTagService.searchLegalTag(any(), anyBoolean(), any())).thenReturn(output);
+
+        ResponseEntity<LegalTagDtos> result = sut.searchLegalTag("{\"query\": \"AgreementPartyType: PurchaseOrganisation\"}", true);
+
+        assertEquals(200, result.getStatusCodeValue());
+        LegalTagDtos entity = (LegalTagDtos) result.getBody();
+
+        assertEquals(1, entity.getLegalTags().size());
+        assertEquals("k", Iterables.get(entity.getLegalTags(), 0).getName());
+    }
 }
