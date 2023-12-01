@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @RequestMapping(path = "/")
 @Validated
@@ -169,4 +170,22 @@ public interface LegalTagApi {
     @PreAuthorize("@authorizationFilter.hasPermission('" + ServiceConfig.LEGAL_USER + "', '" + ServiceConfig.LEGAL_EDITOR + "', '" + ServiceConfig.LEGAL_ADMIN + "')")
     @GetMapping("/legaltags:properties")
     ResponseEntity<ReadablePropertyValues> getLegalTagProperties();
+
+    @Operation(summary = "${legalTagApi.searchLegalTag.summary}", description = "${legalTagApi.searchLegalTag.description}",
+            security = {@SecurityRequirement(name = "Authorization")}, tags = {"legaltag"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved LegalTags successfully.", content = {@Content(schema = @Schema(implementation = LegalTagDtos.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {@Content(schema = @Schema(implementation = AppError.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema(implementation = AppError.class))}),
+            @ApiResponse(responseCode = "403", description = "User not authorized to perform the action.", content = {@Content(schema = @Schema(implementation = AppError.class))}),
+            @ApiResponse(responseCode = "404", description = "Requested LegalTag to update was not found.", content = {@Content(schema = @Schema(implementation = AppError.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema(implementation = AppError.class))}),
+            @ApiResponse(responseCode = "502", description = "Bad Gateway", content = {@Content(schema = @Schema(implementation = AppError.class))}),
+            @ApiResponse(responseCode = "503", description = "Service Unavailable", content = {@Content(schema = @Schema(implementation = AppError.class))})
+    })
+    @PreAuthorize("@authorizationFilter.hasPermission('" + ServiceConfig.LEGAL_USER + "', '" + ServiceConfig.LEGAL_EDITOR + "', '" + ServiceConfig.LEGAL_ADMIN + "')")
+    @PostMapping("/legaltags:query")
+    ResponseEntity<LegalTagDtos> searchLegalTag(@Valid @NotNull @RequestBody String searchQuery, @Parameter(description = "If true returns only valid LegalTags, if false returns only invalid LegalTags.  Default value is true.")
+    @RequestParam(name = "valid", required = false, defaultValue = "true") boolean valid);
+
 }
