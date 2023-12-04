@@ -16,7 +16,6 @@
         <json-smart.version>2.4.7</json-smart.version>
         <jackson-databind.version>2.14.0</jackson-databind.version>
         <jackson.version>2.14.0</jackson.version>
-        <org-json-version>20231013</org-json-version>
     </properties>
 
     <licenses>
@@ -167,12 +166,6 @@
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>1.9.4</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.json/json -->
-            <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-                <version>${org-json-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
