@@ -27,8 +27,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <aws.version>1.12.261</aws.version>
-        <deployment.environment>dev</deployment.environment>
         <version.number>0.25.0-SNAPSHOT</version.number>
     </properties>
 
@@ -37,39 +35,12 @@
         <dependency>
             <groupId>org.opengroup.osdu.core.aws</groupId>
             <artifactId>os-core-lib-aws</artifactId>
-            <version>0.25.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opengroup.osdu</groupId>
-            <artifactId>os-core-common</artifactId>
+            <version>0.25.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opengroup.osdu.legal</groupId>
             <artifactId>legal-core</artifactId>
             <version>${version.number}</version>
-        </dependency>
-
-        <!-- AWS-managed packages -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-bom</artifactId>
-            <version>${aws.version}</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>${aws.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-core</artifactId>
-            <version>${aws.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>${aws.version}</version>
         </dependency>
 
         <!-- Third party Apache 2.0 license packages -->
@@ -211,9 +182,6 @@
                     <value>dev</value>
                 </property>
             </activation>
-            <properties>
-                <aws.version>1.11.1018</aws.version>
-            </properties>
         </profile>
         <profile>
             <id>aws-uat</id>
@@ -223,9 +191,6 @@
                     <value>uat</value>
                 </property>
             </activation>
-            <properties>
-                <aws.version>1.11.1018</aws.version>
-            </properties>
         </profile>
         <profile>
             <id>aws-prod</id>
@@ -235,9 +200,6 @@
                     <value>prod</value>
                 </property>
             </activation>
-            <properties>
-                <aws.version>1.11.1018</aws.version>
-            </properties>
         </profile>
     </profiles>
 
