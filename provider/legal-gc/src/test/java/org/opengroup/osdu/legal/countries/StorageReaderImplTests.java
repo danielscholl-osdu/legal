@@ -18,18 +18,15 @@
 package org.opengroup.osdu.legal.countries;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
-import org.opengroup.osdu.core.gcp.obm.driver.ObmDriverRuntimeException;
 import org.opengroup.osdu.core.gcp.obm.model.Blob;
 import org.opengroup.osdu.core.gcp.obm.model.Bucket;
 import org.opengroup.osdu.core.gcp.obm.persistence.ObmDestination;
@@ -38,7 +35,7 @@ import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.opengroup.osdu.legal.countries.StorageReaderImpl.BUCKET_NAME;
+import static org.junit.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,48 +43,31 @@ public class StorageReaderImplTests {
 
   private static final String TENANT_1 = "tenant1";
   private static final String FILE_NAME = "Legal_COO.json";
-  private static final String BUCKET_FULL_NAME = "tenant1-legal-service-configuration";
+  private static final String BUCKET_FULL_NAME = "tenant1-tenant1-legal-config";
 
-  @Mock
-  private TenantInfo tenantInfo;
+  @Mock private TenantInfo tenantInfo;
 
-  @Mock
-  private Driver storage;
+  @Mock private Driver storage;
 
-  @Mock
-  private PartitionPropertyNames partitionPropertyNames;
+  @Mock private PartitionPropertyNames partitionPropertyNames;
 
-  @Mock
-  private PartitionPropertyResolver partitionPropertyResolver;
+  @Mock private PartitionPropertyResolver partitionPropertyResolver;
 
-  @InjectMocks
-  private StorageReaderImpl sut;
-
-  private String bucketName;
+  @InjectMocks private StorageReaderImpl sut;
 
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
-    bucketName = "legal-service-configuration";
-  }
-
-  @Test(expected = AppException.class)
-  public void should_throw_Exception_when_bucketDoesNotExist() {
-    when(tenantInfo.getName()).thenReturn(TENANT_1);
-    when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
-
-    sut.readAllBytes();
   }
 
   @Test
   public void should_returnAllBytes_when_bucketExistsAndFileExist() {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
     when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
-    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(
-        new Bucket(TENANT_1));
-    when(storage.getBlob(BUCKET_FULL_NAME, FILE_NAME,
-        getDestination())).thenReturn(
-        Blob.builder().build());
+    when(tenantInfo.getProjectId()).thenReturn(TENANT_1);
+    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new Bucket(TENANT_1));
+    when(storage.getBlob(BUCKET_FULL_NAME, FILE_NAME, getDestination()))
+        .thenReturn(Blob.builder().build());
     byte[] expectedBytes = "test".getBytes();
     when(storage.getBlobContent(BUCKET_FULL_NAME, FILE_NAME, getDestination()))
         .thenReturn(expectedBytes);
@@ -97,41 +77,27 @@ public class StorageReaderImplTests {
   }
 
   @Test
-  public void should_returnFullBucketName_when_IsFullBucketName_is_true() {
+  public void should_returnEmptyArray_when_bucketNotExists() {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
-    when(tenantInfo.getProjectId()).thenReturn("projectId1");
-    String bucketName = tenantInfo.getProjectId() + "-" + tenantInfo.getName() + "-" + BUCKET_NAME;
-    StorageReaderImpl storageReader =
-        new StorageReaderImpl(
-            tenantInfo, null, storage, true, partitionPropertyResolver, partitionPropertyNames);
-    String resultBucketName = storageReader.getTenantBucketName();
-    assertEquals(bucketName, resultBucketName);
+    when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
+    when(tenantInfo.getProjectId()).thenReturn(TENANT_1);
+
+    byte[] bytes = sut.readAllBytes();
+    assertTrue(bytes.length == 0);
   }
 
   @Test
-  public void should_returnBucketName_when_IsFullBucketName_is_false() {
+  public void should_returnEmptyArray_when_FileBucketNull() {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
-    String bucketName = tenantInfo.getName() + "-" + BUCKET_NAME;
-    StorageReaderImpl storageReader =
-        new StorageReaderImpl(
-            tenantInfo, null, storage, false, partitionPropertyResolver, partitionPropertyNames);
-    String resultBucketName = storageReader.getTenantBucketName();
-    assertEquals(bucketName, resultBucketName);
-  }
+    when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
+    when(tenantInfo.getProjectId()).thenReturn(TENANT_1);
+    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new Bucket(TENANT_1));
+    when(storage.getBlob(BUCKET_FULL_NAME, FILE_NAME, getDestination()))
+        .thenReturn(Blob.builder().build());
+    when(storage.getBlobContent(BUCKET_FULL_NAME, FILE_NAME, getDestination())).thenReturn(null);
 
-  @Test
-  @Ignore
-  public void should_returnBucketName_when_IsFullBucketName_is_null() {
-    when(tenantInfo.getName()).thenReturn(TENANT_1);
-    when(tenantInfo.getProjectId()).thenReturn("projectId1");
-    String bucketName = tenantInfo.getName() + "-" + BUCKET_NAME;
-    TenantInfo tenantInfo1 = new TenantInfo();
-    StorageReaderImpl storageReader =
-        new StorageReaderImpl(
-            tenantInfo1, null, null, false, partitionPropertyResolver, partitionPropertyNames);
-
-    String resultBucketName = storageReader.getTenantBucketName();
-    assertEquals(bucketName, resultBucketName);
+    byte[] bytes = sut.readAllBytes();
+    assertTrue(bytes.length == 0);
   }
 
   @Test
@@ -140,10 +106,9 @@ public class StorageReaderImplTests {
     when(partitionPropertyResolver.getOptionalPropertyValue(
             partitionPropertyNames.getLegalBucketName(), tenantInfo.getDataPartitionId()))
         .thenReturn(Optional.of("partition-bucket-name"));
-    TenantInfo tenantInfo1 = new TenantInfo();
     StorageReaderImpl storageReader =
         new StorageReaderImpl(
-            tenantInfo1, null, null, false, partitionPropertyResolver, partitionPropertyNames);
+            tenantInfo, storage, partitionPropertyResolver, partitionPropertyNames);
 
     String resultBucketName = storageReader.getTenantBucketName();
     assertEquals("partition-bucket-name", resultBucketName);

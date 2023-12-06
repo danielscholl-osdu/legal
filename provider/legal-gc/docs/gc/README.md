@@ -21,9 +21,9 @@ Define the following environment variables.
 
 Must have:
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `SPRING_PROFILES_ACTIVE` | ex `gcp` | Spring profile that activate default configuration for Google Cloud environment | false | - |
+| name                     | value    | description                                                                     | sensitive? | source |
+|--------------------------|----------|---------------------------------------------------------------------------------|------------|--------|
+| `SPRING_PROFILES_ACTIVE` | ex `gcp` | Spring profile that activate default configuration for Google Cloud environment | false      | -      |
 
 Defined in default application property file but possible to override:
 
@@ -32,22 +32,21 @@ Defined in default application property file but possible to override:
 | `LOG_PREFIX`                             | `legal`                                  | Logging prefix                                                                                                                                                      | no         | -                                                            |
 | `AUTHORIZE_API`                          | `http://entitlements/entitlements/v1`    | Entitlements API endpoint                                                                                                                                           | no         | output of infrastructure deployment                          | |
 | `PARTITION_API`                          | ex `http://partition/api/partition/v1`   | Partition service endpoint                                                                                                                                          | no         | -                                                            |
-| `ENABLE_FULL_BUCKET_NAME`                | ex `true`                                | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration` | no         | -                                                            |
 | `SERVICE_TOKEN_PROVIDER`                 | `GCP`                                    | Service account token provider, `GCP` means use Google service account                                                                                              | no         | -                                                            |
 | `PARTITION_AUTH_ENABLED`                 | `true`                                   | Enable auth token provisioning for requests to Partition service                                                                                                    | no         | -                                                            |
 | `GOOGLE_APPLICATION_CREDENTIALS`         | ex `/path/to/directory/service-key.json` | Service account credentials, serves to gain access to cloud resources and to request tokens                                                                         | yes        | <https://console.cloud.google.com/iam-admin/serviceaccounts> |
-| `PARTITION_PROPERTIES_LEGAL_BUCKET_NAME` | ex `legal.bucket.name`                   | Name of partition property for legal bucket name value                                                                                                      | yes        | -                                                            |
+| `PARTITION_PROPERTIES_LEGAL_BUCKET_NAME` | ex `legal.bucket.name`                   | Name of partition property for legal bucket name value                                                                                                              | yes        | -                                                            |
 
 These variables define service behavior, and are used to switch between `baremetal` or `gc` environments, their overriding and usage in mixed mode was not tested.
 Usage of spring profiles is preferred.
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `PARTITION_AUTH_ENABLED` | ex `true` or `false` | Disable or enable auth token provisioning for requests to Partition service | no | - |
-| `OQMDRIVER` | `rabbitmq` or `pubsub` | Oqm driver mode that defines which message broker will be used | no | - |
-| `OSMDRIVER` | `datastore`| Osm driver mode that defines which KV storage will be used | no | - |
-| `OBMDRIVER` | `gcs` | Obm driver mode that defines which object storage will be used | no | - |
-| `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID` |Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no | - |
+| name                     | value                  | description                                                                                                               | sensitive? | source |
+|--------------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------|------------|--------|
+| `PARTITION_AUTH_ENABLED` | ex `true` or `false`   | Disable or enable auth token provisioning for requests to Partition service                                               | no         | -      |
+| `OQMDRIVER`              | `rabbitmq` or `pubsub` | Oqm driver mode that defines which message broker will be used                                                            | no         | -      |
+| `OSMDRIVER`              | `datastore`            | Osm driver mode that defines which KV storage will be used                                                                | no         | -      |
+| `OBMDRIVER`              | `gcs`                  | Obm driver mode that defines which object storage will be used                                                            | no         | -      |
+| `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID`      | Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no         | -      |
 
 ### Running Locally
 
@@ -99,9 +98,9 @@ These buckets must be defined in tenants’ “data” Google Cloud projects tha
   <tr>
    <td>&lt;PartitionInfo.name>-legal-service-configuration
 
-  **OR** (if $ENABLE_FULL_BUCKET_NAME == true)
+<strong>OR</strong>
 <p>
-&lt;PartitionInfo.projectId>-&lt;PartitionInfo.name>-legal-service-configuration
+&lt;PartitionInfo.projectId>-&lt;PartitionInfo.name>-legal-config
    </td>
    <td>CreateBucket, CRUDObject
    </td>
@@ -113,8 +112,8 @@ These buckets must be defined in tenants’ “data” Google Cloud projects tha
 TBD
 
 | Required roles |
-| ---    |
-| - |
+|----------------|
+| -              |
 
 ### Running E2E Tests
 
@@ -130,7 +129,6 @@ You will need to have the following environment variables defined.
 | `HOST_URL`                | `http://localhsot:8080/api/legal/v1/`        | -                                                                                                                                                                                                                              | yes        | -                                                            |
 | `MY_TENANT`               | `osdu`                                       | OSDU tenant used for testing                                                                                                                                                                                                   | yes        | -                                                            |
 | `SKIP_HTTP_TESTS`         | ex `true`                                    | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes        | -                                                            |
-| `ENABLE_FULL_BUCKET_NAME` | ex `true`                                    | Full bucket name                                                                                                                                                                                                               | no         | -                                                            |
 | `PARTITION_API`           | ex `http://localhost:8080/api/partition/v1 ` | Partition service host                                                                                                                                                                                                         | no         | --                                                           |
 
 **Entitlements configuration for integration accounts**
@@ -147,3 +145,20 @@ Execute following command to build code and run all the integration tests:
 $ (cd testing/legal-test-core/ && mvn clean install)
 $ (cd testing/legal-test-gc/ && mvn clean test)
 ```
+
+## License
+
+Copyright © Google LLC
+Copyright © EPAM Systems
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
