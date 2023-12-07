@@ -19,8 +19,6 @@ package org.opengroup.osdu.legal.countries;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
-import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
@@ -42,13 +40,15 @@ public class StorageReaderImpl implements IStorageReader {
   private TenantInfo tenantInfo;
   private Driver storage;
 
-  protected static final String BUCKET_NAME = "legal-service-configuration";
+  protected static final String BUCKET_NAME = "legal-config";
   private static final String FILE_NAME = "Legal_COO.json";
-  private boolean isFullBucketName = false;
 
-  public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion, Driver storage, boolean enableFullBucketName, PartitionPropertyResolver partitionPropertyResolver, PartitionPropertyNames partitionPropertyNames) {
+  public StorageReaderImpl(
+      TenantInfo tenantInfo,
+      Driver storage,
+      PartitionPropertyResolver partitionPropertyResolver,
+      PartitionPropertyNames partitionPropertyNames) {
     this.tenantInfo = tenantInfo;
-    this.isFullBucketName = enableFullBucketName;
     this.storage = storage;
     this.partitionPropertyResolver = partitionPropertyResolver;
     this.partitionPropertyNames = partitionPropertyNames;
@@ -58,27 +58,22 @@ public class StorageReaderImpl implements IStorageReader {
   public byte[] readAllBytes() {
     byte[] content = null;
     try {
-      if (Objects.isNull(storage.getBucket(getTenantBucketName(), getDestination()))) {
-        log.error("Bucket %s is not existing.".formatted(getTenantBucketName()));
-        throw new AppException(
-            HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal error.", "Internal error.");
+      String tenantBucketName = getTenantBucketName();
+      ObmDestination destination = getDestination();
+      if (Objects.isNull(storage.getBucket(tenantBucketName, destination))) {
+        log.warn("Bucket %s is not existing.".formatted(tenantBucketName));
+        return new byte[0];
       }
-      if (Objects.isNull(storage.getBlob(getTenantBucketName(), FILE_NAME, getDestination()))) {
-        log.error(
-            "File %s in bucket %s is not existing.".formatted(FILE_NAME, getTenantBucketName()));
-        throw new AppException(
-            HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal error.", "Internal error.");
+      Blob blob = storage.getBlob(tenantBucketName, FILE_NAME, destination);
+      if (Objects.isNull(blob)) {
+        log.warn("File %s in bucket %s is not existing.".formatted(FILE_NAME, tenantBucketName));
       } else {
-        Blob blob = storage.getBlob(getTenantBucketName(), FILE_NAME, getDestination());
-        if (Objects.nonNull(blob)) {
-          content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
-        }
+        content = storage.getBlobContent(tenantBucketName, FILE_NAME, destination);
       }
     } catch (ObmDriverRuntimeException e) {
       log.error(e.getMessage(), e);
-      throw e;
     }
-    return content;
+    return content == null ? new byte[0] : content;
   }
 
   protected String getTenantBucketName() {
@@ -86,16 +81,12 @@ public class StorageReaderImpl implements IStorageReader {
         .getOptionalPropertyValue(
             partitionPropertyNames.getLegalBucketName(), tenantInfo.getDataPartitionId())
         .orElseGet(
-            () -> {
-              if (Objects.nonNull(isFullBucketName) && isFullBucketName) {
-                return this.tenantInfo.getProjectId()
+            () ->
+                this.tenantInfo.getProjectId()
                     + "-"
                     + this.tenantInfo.getName()
                     + "-"
-                    + BUCKET_NAME;
-              }
-              return this.tenantInfo.getName() + "-" + BUCKET_NAME;
-            });
+                    + BUCKET_NAME);
   }
 
   private ObmDestination getDestination() {

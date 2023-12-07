@@ -17,7 +17,6 @@
 
 package org.opengroup.osdu.legal.countries;
 
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
@@ -28,7 +27,8 @@ import org.opengroup.osdu.core.obm.core.model.Blob;
 import org.opengroup.osdu.core.obm.core.persistence.ObmDestination;
 import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
-import org.springframework.http.MediaType;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -40,15 +40,16 @@ public class StorageReaderImpl implements IStorageReader {
   private TenantInfo tenantInfo;
   private Driver storage;
 
-  protected static final String BUCKET_NAME = "legal-service-configuration";
+  protected static final String BUCKET_NAME = "legal-config";
   private static final String FILE_NAME = "Legal_COO.json";
   private boolean isFullBucketName = false;
 
-  public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion, Driver storage,
-      boolean enableFullBucketName, PartitionPropertyResolver partitionPropertyResolver,
+  public StorageReaderImpl(
+      TenantInfo tenantInfo,
+      Driver storage,
+      PartitionPropertyResolver partitionPropertyResolver,
       PartitionPropertyNames partitionPropertyNames) {
     this.tenantInfo = tenantInfo;
-    this.isFullBucketName = enableFullBucketName;
     this.storage = storage;
     this.partitionPropertyResolver = partitionPropertyResolver;
     this.partitionPropertyNames = partitionPropertyNames;
@@ -58,29 +59,24 @@ public class StorageReaderImpl implements IStorageReader {
   public byte[] readAllBytes() {
     byte[] content = null;
     try {
-      if (storage.getBucket(getTenantBucketName(), getDestination()) == null) {
-        storage.createBucket(getTenantBucketName(), getDestination());
+      String tenantBucketName = getTenantBucketName();
+      ObmDestination destination = getDestination();
+
+      if (Objects.isNull(storage.getBucket(getTenantBucketName(), getDestination()))) {
+        log.warn("Bucket %s is not existing.".formatted(tenantBucketName));
+        return new byte[0];
       }
-      if (Objects.isNull(storage.getBlob(getTenantBucketName(), FILE_NAME, getDestination()))) {
-        Blob emptyBlob = Blob.builder()
-            .bucket(getTenantBucketName())
-            .name(FILE_NAME)
-            .contentType(MediaType.APPLICATION_JSON.toString())
-            .build();
-        storage.createBlob(emptyBlob, new byte[0], getDestination());
-        content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
-        return content;
+
+      Blob blob = storage.getBlob(tenantBucketName, FILE_NAME, destination);
+      if (Objects.isNull(blob)) {
+        log.warn("File %s in bucket %s is not existing.".formatted(FILE_NAME, tenantBucketName));
       } else {
-        Blob blob = storage.getBlob(getTenantBucketName(), FILE_NAME, getDestination());
-        if (Objects.nonNull(blob)) {
-          content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
-        }
+        content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
       }
     } catch (ObmDriverRuntimeException e) {
       log.error(e.getMessage(), e);
-      throw e;
     }
-    return content;
+    return content == null ? new byte[0] : content;
   }
 
   protected String getTenantBucketName() {
@@ -88,16 +84,12 @@ public class StorageReaderImpl implements IStorageReader {
         .getOptionalPropertyValue(
             partitionPropertyNames.getLegalBucketName(), tenantInfo.getDataPartitionId())
         .orElseGet(
-            () -> {
-              if (Objects.nonNull(isFullBucketName) && isFullBucketName) {
-                return this.tenantInfo.getProjectId()
+            () ->
+                this.tenantInfo.getProjectId()
                     + "-"
                     + this.tenantInfo.getName()
                     + "-"
-                    + BUCKET_NAME;
-              }
-              return this.tenantInfo.getName() + "-" + BUCKET_NAME;
-            });
+                    + BUCKET_NAME);
   }
 
   private ObmDestination getDestination() {

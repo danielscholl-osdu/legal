@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
-import org.opengroup.osdu.legal.config.GcpAppServiceConfig;
 import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReaderFactory;
@@ -30,7 +29,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StorageReaderFactoryImpl implements IStorageReaderFactory {
 
-  private final GcpAppServiceConfig config;
   private final Driver storage;
 
   private final PartitionPropertyResolver partitionPropertyResolver;
@@ -40,11 +38,6 @@ public class StorageReaderFactoryImpl implements IStorageReaderFactory {
   @Override
   public IStorageReader getReader(TenantInfo tenant, String projectRegion) {
     return new StorageReaderImpl(
-        tenant,
-        projectRegion,
-        storage,
-        config.isEnableFullBucketName(),
-        partitionPropertyResolver,
-        partitionPropertyNames);
+        tenant, storage, partitionPropertyResolver, partitionPropertyNames);
   }
 }

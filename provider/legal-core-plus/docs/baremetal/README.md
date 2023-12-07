@@ -46,7 +46,6 @@ Defined in default application property file but possible to override:
 | `LOG_PREFIX`                             | `legal`                                      | Logging prefix                                                                                                                                                      | no         | -                                   |
 | `AUTHORIZE_API`                          | `http://entitlements/entitlements/v1`        | Entitlements API endpoint                                                                                                                                           | no         | output of infrastructure deployment | |
 | `PARTITION_API`                          | ex `http://partition/api/partition/v1`       | Partition service endpoint                                                                                                                                          | no         | -                                   |
-| `ENABLE_FULL_BUCKET_NAME`                | ex `true`                                    | Full bucket name, if `true` then bucket name will be `<project id>-<tenant name>-legal-service-configuration` otherwise `<tenant name>-legal-service-configuration` | no         | -                                   |
 | `PARTITION_AUTH_ENABLED`                 | `false`                                      | Disable auth token provisioning for requests to Partition service                                                                                                   | no         | -                                   |
 | `PARTITION_PROPERTIES_LEGAL_BUCKET_NAME` | ex `legal.bucket.name`                       | Name of partition property for legal bucket name value                                                                                                              | yes        | -                                   |
 
@@ -316,7 +315,7 @@ These buckets must be defined in tenants’ dedicated object store servers. OBM 
   <tr>
    <td>&lt;PartitionInfo.name>-legal-service-configuration
 
-<strong>OR</strong> (if $ENABLE_FULL_BUCKET_NAME == true)
+<strong>OR</strong>
 <p>
 &lt;PartitionInfo.projectId>-&lt;PartitionInfo.name>-legal-service-configuration
    </td>
@@ -336,7 +335,6 @@ You will need to have the following environment variables defined.
 | `HOST_URL`                           | `http://localhsot:8080/api/legal/v1/`            | -                                                                                                                                                                                                                              | yes                                     | -      |
 | `MY_TENANT`                          | `osdu`                                           | OSDU tenant used for testing                                                                                                                                                                                                   | yes                                     | -      |
 | `SKIP_HTTP_TESTS`                    | ex `true`                                        | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes                                     | -      |
-| `ENABLE_FULL_BUCKET_NAME`            | ex `true`                                        | Full bucket name                                                                                                                                                                                                               | no                                      | -      |
 | `BAREMETAL_PROJECT_ID`               | ex `osdu-anthos`                                 | project id used to specify bucket name if `ENABLE_FULL_BUCKET_NAME`=true                                                                                                                                                       | no                                      | -      |
 | `TEST_OPENID_PROVIDER_CLIENT_ID`     | `********`                                       | Client Id for `$INTEGRATION_TESTER`                                                                                                                                                                                            | yes                                     | --     |
 | `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********`                                       |                                                                                                                                                                                                                                | Client secret for `$INTEGRATION_TESTER` | --     |
@@ -361,3 +359,20 @@ Execute following command to build code and run all the integration tests:
 $ (cd testing/legal-test-core/ && mvn clean install)
 $ (cd testing/legal-test-baremetal/ && mvn clean test)
 ```
+
+## License
+
+Copyright © Google LLC
+Copyright © EPAM Systems
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
