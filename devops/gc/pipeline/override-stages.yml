@@ -57,11 +57,3 @@ gc-containerize-cronjob-gcr:
   variables:
     IMAGE_NAME: "$GC_LEGALSTATUS_IMAGE_NAME"
     BUILD_PATH: "devops/$GC_VENDOR/bootstrap_legalstatus_update/Dockerfile"
-
-gc-containerize-bootstrap-gitlab:
-  variables:
-    GC_ENABLE_BOOTSTRAP: "true"
-
-gc-containerize-bootstrap-gcr:
-  variables:
-    GC_ENABLE_BOOTSTRAP: "true"
