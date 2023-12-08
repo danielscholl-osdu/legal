@@ -5,7 +5,6 @@
 global:
   domain: ""
   onPremEnabled: false
-  dataBootstrapEnabled: false
   limitsEnabled: true
 
 data:
@@ -22,7 +21,6 @@ data:
   requestsMemory: "325Mi"
   limitsCpu: "1"
   limitsMemory: "1G"
-  bootstrapImage: ""
   legalStatusUpdateImage: ""
   bootstrapServiceAccountName: ""
   serviceAccountName: "legal"
@@ -43,5 +41,3 @@ istio:
   proxyCPULimit: "500m"
   proxyMemory: "50Mi"
   proxyMemoryLimit: "512Mi"
-  bootstrapProxyCPU: "5m"
-  bootstrapProxyCPULimit: "100m"

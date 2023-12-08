@@ -98,7 +98,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 |------|-------------|------|---------|---------|
 **global.domain** | your domain for the external endpoint, ex `example.com` | string | - | yes
 **global.onPremEnabled** | whether on-prem is enabled | boolean | false | yes
-**global.dataBootstrapEnabled** | whether bootstrap is enabled | boolean | false | yes
 **global.limitsEnabled** | whether CPU and memory limits are enabled | boolean | true | yes
 
 ### Configmap variables
@@ -121,8 +120,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **data.requestsMemory** | amount of requests memory| string | 550Mi | yes
 **data.limitsCpu** | CPU limit | string | 1 | only if `global.limitsEnabled` is true
 **data.limitsMemory** | memory limit | string | 1G | only if `global.limitsEnabled` is true
-**data.bootstrapImage** | name of the bootstrap image | string | - | yes
-**data.bootstrapServiceAccountName** | name of the bootstrap service account | string | - | yes
+**data.bootstrapServiceAccountName** | name of the service account used in cronjob | string | - | yes
 **data.serviceAccountName** | name of your service account | string | legal | yes
 **data.imagePullPolicy** | when to pull the image | string | IfNotPresent | yes
 **data.image** | path to the image in a registry | string | - | yes
@@ -136,7 +134,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **conf.minioSecretName** | Secret name for minio service | string | legal-minio-secret | yes
 **conf.postgresSecretName** | Secret name for postgres service | string | legal-postgres-secret | yes
 **conf.rabbitmqSecretName** | Secret name for rabbitmq service | string | rabbitmq-secret | yes
-**conf.bootstrapSecretName** | Secret name for bootstrap | string | datafier-secret | yes
+**conf.bootstrapSecretName** | Secret name for cronjob | string | datafier-secret | yes
 
 ### Istio variables
 
@@ -146,8 +144,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **istio.proxyCPULimit** | CPU limit for Envoy sidecars | string | `500m` | yes
 **istio.proxyMemory** | memory request for Envoy sidecars | string | `100Mi` | yes
 **istio.proxyMemoryLimit** | memory limit for Envoy sidecars | string | `512Mi` | yes
-**istio.bootstrapProxyCPU** | CPU request for Envoy sidecars | string | `10m` | yes
-**istio.bootstrapProxyCPULimit** | CPU limit for Envoy sidecars | string | `100m` | yes
 
 ### Install the helm chart
 
