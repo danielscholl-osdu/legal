@@ -11,7 +11,7 @@
 	<artifactId>legal-ibm</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<os-core-lib-ibm.version>0.26.0-rc6</os-core-lib-ibm.version>
+		<os-core-lib-ibm.version>0.25.1</os-core-lib-ibm.version>
 	</properties>
 
 	<dependencies>
