@@ -107,7 +107,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **data.logLevel** | logging level | string | ERROR | yes
 **data.springProfilesActive** | active spring profile | string | gcp | yes
 **data.acceptHttp** | accept Http traffic | string | true | yes
-**data.dataPartitionId** | data partition id | string | - | yes
 **data.entitlementsHost** | Entitlements host URL | string | <http://entitlements> | yes
 **data.defaultLegalTag** | Default legal tag | string | default-data-tag| yes
 **data.legalHost** | Legal host URL | string | <http://legal> | yes

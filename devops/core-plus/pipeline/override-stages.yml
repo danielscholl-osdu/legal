@@ -118,11 +118,11 @@ gc-baremetal-deploy:
       --history-max=3
       --set global.onPremEnabled=true
       --set global.domain=$GC_DOMAIN
+      --set global.dataPartitionId=$GC_TENANT
       --set data.serviceAccountName=$GC_SERVICE
       --set data.bootstrapServiceAccountName=$GC_BOOTSTRAP_SA
       --set data.logLevel=INFO
       --set data.springProfilesActive=$GC_SPRING_PROFILES_ACTIVE
-      --set data.dataPartitionId=$GC_TENANT
     - !reference [.gc_verify_deploy, script]
     - !reference [.gc_verify_bootstrap, script]
   rules:
