@@ -10,7 +10,7 @@ COPY tmp/os-obm-minio-*.jar plugins/osm-minio.jar
 COPY tmp/os-osm-postgres-*.jar plugins/osm-postgres.jar
 
 # Copy the jar to the production image from the builder stage.
-COPY provider/legal-${PROVIDER_NAME}/target/legal-${PROVIDER_NAME}-*-spring-boot.jar legal-${PROVIDER_NAME}.jar
+COPY legal-${PROVIDER_NAME}/target/legal-${PROVIDER_NAME}-*-spring-boot.jar legal-${PROVIDER_NAME}.jar
 # Add a non-root user
 RUN groupadd -g 10001 -r nonroot \
   && useradd -g 10001 -r -u 10001 nonroot
