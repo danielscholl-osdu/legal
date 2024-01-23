@@ -16,13 +16,6 @@ variables:
   MONGODB_AWS_EKS_DEPLOYMENT_NAME: os-legal
   MONGODB_AWS_DEPLOY_TARGET: TF
 
-  GCP_BUILD_SUBDIR: provider/legal-gcp
-  GCP_INT_TEST_SUBDIR: testing/legal-test-gcp
-  GCP_APPLICATION_NAME: os-legal
-  GCP_ENVIRONMENT: testing
-  GCP_PROJECT: opendes-evt
-  GCP_TENANT_NAME: opendes-evt
-
   IBM_BUILD_SUBDIR: provider/legal-ibm
   IBM_INT_TEST_SUBDIR: testing/legal-test-ibm
 
@@ -75,6 +68,9 @@ include:
     file: "cloud-providers/gc-global.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/core-global.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
     file: "publishing/pages.yml"
 
   - local: "devops/gc/pipeline/override-stages.yml"
@@ -83,7 +79,7 @@ include:
 
 .maven:
   image: maven:3.8.3-openjdk-17-slim
-  tags: ['osdu-medium']
+  tags: ["osdu-medium"]
   variables:
     MAVEN_REPO_PATH: "$CI_PROJECT_DIR/.m2/repository"
     MAVEN_CLI_OPTS: "--batch-mode --settings=$CI_PROJECT_DIR/.mvn/community-maven.settings.xml"
@@ -145,7 +141,6 @@ include:
               sys.stdout.write(dir + '\0')
       EOF
     - xargs -0rn 1 echo < $ALL_MAVEN_BUILD_DIRS_Z
-
     # This creates a script for running maven, capturing output to a file.
     # - First argument is the directory to build from
     # - Second argument is the name to use for the logfile
@@ -203,10 +198,10 @@ download_plugins:
 
   only:
     variables:
-      - $PROTECTED == '1'
-      
+      - $CORE == '1'
+
 gemnasium-maven-dependency_scanning:
- variables:
+  variables:
     DS_JAVA_VERSION: 17
 
 azure_containerize:
@@ -223,7 +218,7 @@ aws-test-java:
 #   image: $CI_REGISTRY/osdu/platform/deployment-and-operations/base-containers-aws/aws-maven/aws-maven:v2.0
 
 fossa-analyze:
- image: $CI_REGISTRY/divido/fossa-with-cache:v0.9-jdk17
- 
+  image: $CI_REGISTRY/divido/fossa-with-cache:v0.9-jdk17
+
 fossa-check-notice:
- image: $CI_REGISTRY/divido/fossa-with-cache:v0.9-jdk17
+  image: $CI_REGISTRY/divido/fossa-with-cache:v0.9-jdk17

@@ -35,7 +35,7 @@
 
     <modules>
         <module>legal-core</module>
-        <module>provider/legal-core-plus</module>
+        <module>legal-core-plus</module>
         <module>provider/legal-gc</module>
         <module>provider/legal-byoc</module>
         <module>provider/legal-azure</module>
