@@ -24,4 +24,4 @@ spec:
               allowPrivilegeEscalation: false
               runAsNonRoot: true
           restartPolicy: OnFailure
-          serviceAccountName: {{ .Values.data.bootstrapServiceAccountName | quote }}
+          serviceAccountName: {{ .Values.data.cronJobServiceAccountName | quote }}
