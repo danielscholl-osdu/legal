@@ -20,7 +20,7 @@ data:
   limitsCpu: "1"
   limitsMemory: "1G"
   legalStatusUpdateImage: ""
-  bootstrapServiceAccountName: ""
+  cronJobServiceAccountName: ""
   serviceAccountName: "legal"
   imagePullPolicy: "IfNotPresent"
   image: ""
