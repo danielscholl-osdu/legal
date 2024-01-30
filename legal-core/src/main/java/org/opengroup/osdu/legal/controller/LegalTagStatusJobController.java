@@ -44,6 +44,7 @@ public class LegalTagStatusJobController implements LegalTagStatusJobApi {
 
         boolean allPassed = true;
         for (TenantInfo tenantInfo : tenantsInfo) {
+            convertedHeaders.put(DpsHeaders.DATA_PARTITION_ID, tenantInfo.getDataPartitionId());
             boolean result = runJob(convertedHeaders, tenantInfo, legalTagStatusJob);
             if (allPassed) {
                 allPassed = result;
