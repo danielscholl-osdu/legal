@@ -68,7 +68,7 @@ phases:
       - if [ "$GIT_SECRETS_SCAN_RESULT" = "FAILED" ]; then echo "Secrets detected!" && exit 1; fi
 
       - echo "Building primary service assemblies..."
-      - mvn -ntp -B test install -pl .,legal-core,provider/legal-aws -Ddeployment.environment=prod  
+      - mvn -ntp -B test install -pl .,legal-core,provider/legal-aws -Ddeployment.environment=prod
       - mvn sonar:sonar -pl .,provider/legal-aws -Dsonar.login=${SONAR_USERNAME} -Dsonar.password=${SONAR_PASSWORD} -Dsonar.branch.name=${BRANCH_NAME}
 
       - echo "Building integration testing assemblies and gathering artifacts..."

@@ -57,6 +57,7 @@ public class LegalTagStatusJobControllerTest {
         TenantInfo tenantInfo = new TenantInfo();
         tenantInfo.setName("tenantName");
         tenantInfo.setProjectId("projectId");
+        tenantInfo.setDataPartitionId("common");
         when(tenantStorageFactory.listTenantInfo()).thenReturn(Collections.singletonList(tenantInfo));
     }
 
@@ -89,9 +90,11 @@ public class LegalTagStatusJobControllerTest {
         TenantInfo tenantInfo1 = new TenantInfo();
         tenantInfo1.setName("tenantName1");
         tenantInfo1.setProjectId("projectId1");
+        tenantInfo1.setDataPartitionId("common");
         TenantInfo tenantInfo2 = new TenantInfo();
         tenantInfo2.setName("tenantName2");
         tenantInfo2.setProjectId("projectId2");
+        tenantInfo2.setDataPartitionId("common");
         StatusChangedTag statusChangedTag = new StatusChangedTag("testTag", LegalTagCompliance.incompliant);
         StatusChangedTags statusChangedTags = new StatusChangedTags();
         statusChangedTags.getStatusChangedTags().add(statusChangedTag);
