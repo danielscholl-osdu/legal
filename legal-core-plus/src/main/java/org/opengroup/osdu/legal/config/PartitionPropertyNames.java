@@ -25,5 +25,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "partition.properties")
 public class PartitionPropertyNames {
-  private String legalBucketName;
+  private String legalBucketName = "legal.bucket.name";
 }
