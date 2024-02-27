@@ -52,7 +52,6 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 	private IEntitlementsFactory factory;
 
 	@Inject
-	@Lazy
 	private JaxRsDpsLog jaxRsDpsLog;
 
 	@Inject
@@ -60,13 +59,7 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 
 	@Override
 	public AuthorizationResponse authorizeAny(DpsHeaders headers, String... roles) {
-		AuthorizationResponse authorizationResponse = null;
-		try {
-			authorizationResponse = authorizeAny(headers, getGroups(headers), roles);
-		} catch (Exception e) {
-			handleEntitlementsException(e, headers);
-		}
-		return authorizationResponse;
+		return authorizeAny(headers, getGroups(headers), roles);
 	}
 
 	protected String getGroupCacheKey(DpsHeaders headers) {
@@ -105,30 +98,21 @@ public class AWSAuthorizationServiceImpl implements IAuthorizationService {
 
 	@Override
 	public AuthorizationResponse authorizeAny(String tenantName, DpsHeaders headers, String... roles) {
-		AuthorizationResponse authorizationResponse = null;
-		try {
-			Groups groups = getGroups(headers);
-			List<GroupInfo> allGroups = new ArrayList<>(groups.getGroups());
-			groups.setGroups(groups.getGroups().stream().filter(groupInfo -> groupInfo.getEmail()
-					.contains(String.format(TENANT_GROUP_FORMAT, tenantName))).collect(Collectors.toList()));
+		Groups groups = getGroups(headers);
+		List<GroupInfo> allGroups = new ArrayList<>(groups.getGroups());
+		groups.setGroups(allGroups.stream().filter(groupInfo -> groupInfo.getEmail()
+				.contains(String.format(TENANT_GROUP_FORMAT, tenantName))).toList());
 
-			authorizationResponse = authorizeAny(headers, groups, roles);
-			groups.setGroups(allGroups);
-		} catch (Exception e) {
-			handleEntitlementsException(e, headers);
-		}
+		AuthorizationResponse authorizationResponse = authorizeAny(headers, groups, roles);
+		groups.setGroups(allGroups);
 		return authorizationResponse;
-	}
-
-	private void handleEntitlementsException(Exception e, DpsHeaders headers) {
-		throw new AppException(500, ERROR_REASON, ERROR_MSG, HeadersUtil.toLogMsg(headers, null), e);
 	}
 
 	AuthorizationResponse authorizeAny(DpsHeaders headers, Groups groups, String... roles) {
 		String userEmail = null;
 		List<String> logMessages = new ArrayList<>();
-		Long curTimeStamp = System.currentTimeMillis();
-		Long latency = System.currentTimeMillis() - curTimeStamp;
+		long curTimeStamp = System.currentTimeMillis();
+		long latency = System.currentTimeMillis() - curTimeStamp;
 
 		logMessages.add(String.format("entitlements-api latency: %s", latency));
 		logMessages.add(String.format("groups: %s", getEmailFromGroups(groups)));

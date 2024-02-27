@@ -17,14 +17,17 @@
 
 package org.opengroup.osdu.legal.aws.entitlements;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsService;
+import org.opengroup.osdu.core.common.logging.DefaultLogger;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.entitlements.*;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -37,13 +40,12 @@ import com.lambdaworks.redis.RedisException;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 
+@ExtendWith(MockitoExtension.class)
 class AWSAuthorizationServiceImplTest {
 
     private static final String MEMBER_EMAIL = "tester@gmail.com";
@@ -61,8 +63,7 @@ class AWSAuthorizationServiceImplTest {
     @Mock
     private IEntitlementsService entitlementService;
 
-    @Mock
-    private JaxRsDpsLog logger;
+    private final JaxRsDpsLog logger = new JaxRsDpsLog(new DefaultLogger(), new DpsHeaders());
 
     @Mock
     private DpsHeaders dpsHeaders;
@@ -78,12 +79,10 @@ class AWSAuthorizationServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         setDefaultHeaders();
 
         headers = DpsHeaders.createFromMap(headerMap);
 
-        when(entitlementFactory.create(any())).thenReturn(entitlementService);
         ReflectionTestUtils.setField(entitlementsAndCacheService, "jaxRsDpsLog", logger);
     }
 
@@ -94,6 +93,7 @@ class AWSAuthorizationServiceImplTest {
 
     @Test
     void should_returnMemberEmail_when_authorizationIsSuccessful() throws Exception {
+        when(entitlementFactory.create(any())).thenReturn(entitlementService);
 
         GroupInfo g1 = new GroupInfo();
         g1.setEmail(rolesEmails[0]);
@@ -121,40 +121,29 @@ class AWSAuthorizationServiceImplTest {
     }
 
     @Test
-    void should_throwAppException_when_getGroupsThrowsException() throws Exception {
-        // Set up the method under test to throw an exception
-        when(entitlementsAndCacheService.getGroups(headers)).thenThrow(new RuntimeException());
-
-        // Assert that an AppException is thrown, which implies that handleEntitlementsException was called
-        assertThrows(AppException.class, () -> entitlementsAndCacheService.authorizeAny(headers, rolesNames));
-    }
-
-    @Test
     void should_returnRedisException_when_getGroupsThrowsRedisException() throws Exception {
+        when(entitlementFactory.create(any())).thenReturn(entitlementService);
         when(cache.get(any())).thenReturn(null);
         when(entitlementService.getGroups()).thenThrow(new RedisException("test exception"));
-        doNothing().when(logger).error(anyString(), any(Exception.class));
-        entitlementsAndCacheService.getGroups(dpsHeaders);
-
-        verify(logger).error(contains("Error putting key"), any(RedisException.class));
-
+        assertDoesNotThrow(() -> entitlementsAndCacheService.getGroups(dpsHeaders));
     }
 
     @Test
     void should_returnEntitlementsException_when_getGroupsThrowsEntitlementsException() throws Exception {
+        when(entitlementFactory.create(any())).thenReturn(entitlementService);
+
         HttpResponse response = new HttpResponse();
-        response.setResponseCode(500);
+        int uniqueError = 599;
+        response.setResponseCode(uniqueError);
         EntitlementsException exception = new EntitlementsException("Service error", response);
 
         when(cache.get(any())).thenReturn(null);
         when(entitlementService.getGroups()).thenThrow(exception);
-        doNothing().when(logger).error(anyString());
         AppException thrownException = assertThrows(AppException.class, () -> entitlementsAndCacheService.getGroups(dpsHeaders));
 
-        verify(logger).error(contains("Error requesting entitlements service"));
-        assertEquals(500, thrownException.getError().getCode());
-        assertEquals(ERROR_REASON, thrownException.getError().getReason());
-        assertEquals(ERROR_MSG, thrownException.getError().getMessage());
+        Assertions.assertEquals(uniqueError, thrownException.getError().getCode());
+        Assertions.assertEquals(ERROR_REASON, thrownException.getError().getReason());
+        Assertions.assertEquals(ERROR_MSG, thrownException.getError().getMessage());
     }
 
     @Test
@@ -162,20 +151,20 @@ class AWSAuthorizationServiceImplTest {
         Groups groups = new Groups();
         when(cache.get(any())).thenReturn(groups);
         entitlementsAndCacheService.getGroups(dpsHeaders);
-        assertNotNull(groups);
+        Assertions.assertNotNull(groups);
     }
 
     @Test
-    void should_throwRedisException_when_cacheGetKeyThrowsRedisException() throws Exception {
+    void should_throwRedisException_when_cacheGetKeyThrowsRedisException() {
+        when(entitlementFactory.create(any())).thenReturn(entitlementService);
         when(cache.get(any())).thenThrow(new RedisException("test exception"));
-        doNothing().when(logger).error(anyString(), any(Exception.class));
-        entitlementsAndCacheService.getGroups(dpsHeaders);
-
-        verify(logger).error(contains("Error getting key"), any(RedisException.class));
+        assertDoesNotThrow(() -> entitlementsAndCacheService.getGroups(dpsHeaders));
     }
 
     @Test 
     void should_returnAuthorizationResponse_when_AuthorizeAnyGetsCalledWithTenantName() throws Exception{
+        when(entitlementFactory.create(any())).thenReturn(entitlementService);
+
         String tenantName = rolesEmails[0].split("@")[1];
         GroupInfo g1 = new GroupInfo();
         g1.setEmail(rolesEmails[0]);
@@ -199,16 +188,6 @@ class AWSAuthorizationServiceImplTest {
         AuthorizationResponse response = AuthorizationResponse.builder().groups(groups).user(MEMBER_EMAIL).build();
 
 
-        assertEquals(response, entitlementsAndCacheService.authorizeAny(tenantName, headers, rolesNames));
+        Assertions.assertEquals(response, entitlementsAndCacheService.authorizeAny(tenantName, headers, rolesNames));
     }
-
-    @Test
-    void should_throwAppException_when_AuthorizeAnyGetsCalledWithTenantNameAndThrowsException() throws Exception {
-        String tenantName = rolesEmails[0].split("@")[1];
-        // Set up the method under test to throw an exception
-        when(entitlementsAndCacheService.getGroups(headers)).thenThrow(new RuntimeException());
-        // Assert that an AppException is thrown, which implies that handleEntitlementsException was called
-        assertThrows(AppException.class, () -> entitlementsAndCacheService.authorizeAny(tenantName, headers, rolesNames));
-    }
-
 }
