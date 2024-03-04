@@ -41,7 +41,7 @@ public class LegalTagStatusJob {
     @Autowired
     private IFeatureFlag aboutToExpireLegalTagFeatureFlag;
 
-    @Value("${LEGALTAG_EXPIRATION}")
+    @Value("${LEGALTAG_EXPIRATION:}")
     private String legalTagExpiration;
 
     private String aboutToExpireFeatureFlagName = "featureFlag.aboutToExpireLegalTag.enabled";

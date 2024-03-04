@@ -9,9 +9,10 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
 import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
 import org.opengroup.osdu.legal.provider.interfaces.IAboutToExpireLegalTagPublisher;
+import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
