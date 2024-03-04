@@ -74,7 +74,7 @@ public class LegalTagStatusJobControllerTest {
         ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
 
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
-        verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(statusChangedTags.toString()));
+        verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(legalTagJobResult.toString()));
     }
 
     @Test

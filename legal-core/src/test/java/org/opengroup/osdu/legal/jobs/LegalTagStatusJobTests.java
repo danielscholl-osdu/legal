@@ -13,6 +13,7 @@ import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
+import org.opengroup.osdu.core.common.feature.IFeatureFlag;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +35,7 @@ import static org.mockito.Mockito.*;
 import static junit.framework.TestCase.fail;
 
 @RunWith(MockitoJUnitRunner.class)
+@SpringBootTest(classes = {IFeatureFlag.class})
 public class LegalTagStatusJobTests {
     @Mock
     private LegalTagConstraintValidator validator;
@@ -46,6 +49,8 @@ public class LegalTagStatusJobTests {
     private IAboutToExpireLegalTagPublisher aboutToExpireLegalTagPublisherMock;
     @Mock
     private JaxRsDpsLog log;
+    @Mock
+    private IFeatureFlag aboutToExpireLegalTagFeatureFlag;
 
     @InjectMocks
     LegalTagStatusJob sut;
@@ -58,6 +63,8 @@ public class LegalTagStatusJobTests {
         headers.put(DpsHeaders.DATA_PARTITION_ID, "SIS-INTERNAL-HQ");
         headers.put(DpsHeaders.CORRELATION_ID, "12345-12345");
         headers.put(DpsHeaders.USER_EMAIL, "nonexistent@nonexisent.domain");
+        // aboutToExpireFeatureFlag
+        when(aboutToExpireLegalTagFeatureFlag.isFeatureEnabled(any())).thenReturn(true);
         ReflectionTestUtils.setField(sut, "legalTagExpiration", "1d");
     }
 

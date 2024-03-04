@@ -10,11 +10,14 @@ import org.opengroup.osdu.legal.tags.LegalTagConstraintValidator;
 import org.opengroup.osdu.legal.tags.LegalTagService;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.Properties;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Value;
 import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.feature.IFeatureFlag;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,8 +38,13 @@ public class LegalTagStatusJob {
     @Inject
     private JaxRsDpsLog log;
 
+    @Autowired
+    private IFeatureFlag aboutToExpireLegalTagFeatureFlag;
+
     @Value("${LEGALTAG_EXPIRATION}")
     private String legalTagExpiration;
+
+    private String aboutToExpireFeatureFlagName = "featureFlag.aboutToExpireLegalTag.enabled";
 
     public LegalTagJobResult run(String projectId, DpsHeaders headers, String tenantName) throws Exception {
         LegalTagJobResult legalTagJobResult = new LegalTagJobResult(new StatusChangedTags(), new AboutToExpireLegalTags());
@@ -45,7 +53,9 @@ public class LegalTagStatusJob {
         legalTagJobResult = checkAndUpdateLegalTagStatus(false, tenantName, legalTagJobResult);
 
         publishLegalTagStatusUpdateEvents(!legalTagJobResult.statusChangedTags.getStatusChangedTags().isEmpty(), projectId, headers, legalTagJobResult.statusChangedTags);
-        publisAboutToExpireLegalTagEvents(!legalTagJobResult.aboutToExpireLegalTags.getAboutToExpireLegalTags().isEmpty(), projectId, headers, legalTagJobResult.aboutToExpireLegalTags);
+        if (isAboutToExpireFeatureFlagEnabled()) {
+            publisAboutToExpireLegalTagEvents(!legalTagJobResult.aboutToExpireLegalTags.getAboutToExpireLegalTags().isEmpty(), projectId, headers, legalTagJobResult.aboutToExpireLegalTags);
+        }
 
         return legalTagJobResult;
     }
@@ -56,7 +66,7 @@ public class LegalTagStatusJob {
             String errors = validator.getErrors(tag);
             Boolean hasErrors = errors != null;
 
-            if (isCurrentlyValid) {
+            if (isAboutToExpireFeatureFlagEnabled() && isCurrentlyValid) {
                 checkAboutToExpireLegalTag(tag, tenantName, legalTagJobResult.aboutToExpireLegalTags, hasErrors);
             }
 
@@ -122,5 +132,9 @@ public class LegalTagStatusJob {
         if (hasTags) {
             aboutToExpireLegalTagPublisher.publish(projectId, headers, aboutToExpireLegalTags);
         }
+    }
+
+    private Boolean isAboutToExpireFeatureFlagEnabled() {
+        return aboutToExpireLegalTagFeatureFlag.isFeatureEnabled(aboutToExpireFeatureFlagName);
     }
 }
