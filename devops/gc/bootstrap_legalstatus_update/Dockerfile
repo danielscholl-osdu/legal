@@ -1,4 +1,4 @@
-FROM google/cloud-sdk:slim
+FROM google/cloud-sdk:465.0.0-slim
 
 WORKDIR /opt
 
