@@ -86,9 +86,9 @@ public class LegalTagStatusJob {
         Date expirationDate = properties.getExpirationDate();
         Date today = new Date();
         Date aboutToExpireDate = getAboutToExpireDate(expirationDate);
-        Boolean isAboutToExpire = aboutToExpireDate.before(today);
+        Boolean isNotAboutToExpire = aboutToExpireDate.after(today);
 
-        if (isAboutToExpire) {
+        if (!isNotAboutToExpire) {
             log.info(String.format("Found legal tag about to expire: %s", tag.getName()));
             aboutToExpireLegalTags.getAboutToExpireLegalTags().add(tag.getName());
         }
