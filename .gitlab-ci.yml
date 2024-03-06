@@ -1,6 +1,5 @@
 variables:
   CORE_BUILD_SUBDIR: legal-core
-  CORE_COVERAGE_THRESHOLD: 80
 
   AWS_BUILD_SUBDIR: provider/legal-aws/build-aws
   AWS_TEST_SUBDIR: testing/legal-test-aws
@@ -84,7 +83,7 @@ include:
   variables:
     MAVEN_REPO_PATH: "$CI_PROJECT_DIR/.m2/repository"
     MAVEN_CLI_OPTS: "--batch-mode --settings=$CI_PROJECT_DIR/.mvn/community-maven.settings.xml"
-
+    CORE_COVERAGE_THRESHOLD: 80
   cache:
     paths:
       - $MAVEN_REPO_PATH
