@@ -147,9 +147,9 @@ public class LegalTagStatusJobTests {
         ReflectionTestUtils.setField(sut, "legalTagExpiration", "3d");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
-        LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 2);
+        LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 1);
         validLegalTags.add(aboutToExpireLegalTag1);
-        LegalTag aboutToExpireLegalTag2 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag2", true, 3);
+        LegalTag aboutToExpireLegalTag2 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag2", true, 2);
         validLegalTags.add(aboutToExpireLegalTag2);
         LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 10);
         validLegalTags.add(longTermLegalTag);
@@ -167,9 +167,9 @@ public class LegalTagStatusJobTests {
         ReflectionTestUtils.setField(sut, "legalTagExpiration", "2w");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
-        LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 13);
+        LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 12);
         validLegalTags.add(aboutToExpireLegalTag1);
-        LegalTag aboutToExpireLegalTag2 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag2", true, 14);
+        LegalTag aboutToExpireLegalTag2 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag2", true, 13);
         validLegalTags.add(aboutToExpireLegalTag2);
         LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 20);
         validLegalTags.add(longTermLegalTag);
