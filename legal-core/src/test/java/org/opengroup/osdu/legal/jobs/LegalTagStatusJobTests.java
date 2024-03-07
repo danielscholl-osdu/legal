@@ -1,6 +1,7 @@
 package org.opengroup.osdu.legal.jobs;
 
 import org.junit.Ignore;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.logging.AuditLogger;
@@ -214,6 +215,44 @@ public class LegalTagStatusJobTests {
 
         assertEquals(1, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
         assertEquals("aboutToExpireLegalTag", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0));
+    }
+    @Test
+    public void should_throwException_when_legalTagBadExpireDate() throws Exception {
+        ReflectionTestUtils.setField(sut, "legalTagExpiration", "XXXy");
+
+        Collection<LegalTag> validLegalTags = new ArrayList<>();
+        LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 354);
+        validLegalTags.add(aboutToExpireLegalTag);
+        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 367);
+        validLegalTags.add(longTermLegalTag);
+
+        try {
+            sut = createSut(validLegalTags);
+            LegalTagJobResult result = sut.run("project1", headers, "tenant");
+            fail("Should throw an exception");
+        } catch (AppException e) {
+            assertEquals("Invalid legalTagExpiration value: XXXy", e.getMessage());
+            assertEquals(500, e.getError().getCode());
+        }
+    }
+    @Test
+    public void should_throwException_when_legalTagBadFormat() throws Exception {
+        ReflectionTestUtils.setField(sut, "legalTagExpiration", "XXX");
+
+        Collection<LegalTag> validLegalTags = new ArrayList<>();
+        LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 354);
+        validLegalTags.add(aboutToExpireLegalTag);
+        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 367);
+        validLegalTags.add(longTermLegalTag);
+
+        try {
+            sut = createSut(validLegalTags);
+            LegalTagJobResult result = sut.run("project1", headers, "tenant");
+            fail("Should throw an exception");
+        } catch (AppException e) {
+            assertEquals("Invalid legalTagExpiration value: XXX", e.getMessage());
+            assertEquals(500, e.getError().getCode());
+        }
     }
 
     @Test
