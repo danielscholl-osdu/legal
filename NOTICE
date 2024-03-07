@@ -193,6 +193,7 @@ The following software have components provided under the terms of this license:
 - Jackson-dataformat-XML (from http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding, https://github.com/FasterXML/jackson-dataformat-xml)
 - Jackson-dataformat-YAML (from https://github.com/FasterXML/jackson, https://github.com/FasterXML/jackson-dataformats-text)
 - Jackson-module-parameter-names (from https://repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names)
+- Jakarta Dependency Injection (from https://github.com/eclipse-ee4j/injection-api)
 - Jakarta Validation API (from https://beanvalidation.org)
 - Java Architecture for XML Binding (from http://jaxb.java.net/, https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api)
 - Java Native Access (from https://github.com/java-native-access/jna, https://github.com/twall/jna)
