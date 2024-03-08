@@ -1,4 +1,4 @@
-package org.opengroup.osdu.legal.aws.jobs;
+package org.opengroup.osdu.legal.azure.jobs;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.legal.provider.interfaces.IAboutToExpireLegalTagPublisher;
