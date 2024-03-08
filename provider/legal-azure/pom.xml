@@ -145,7 +145,7 @@
         </dependency>
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
-            <artifactId>core-lib-azure-spring6</artifactId>
+            <artifactId>core-lib-azure</artifactId>
             <version>${osdu.corelibazure.version}</version>
         </dependency>
         <dependency>
