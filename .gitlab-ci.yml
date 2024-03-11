@@ -220,6 +220,7 @@ azure_test:
 azure_code_coverage:
   variables:
     AZURE_SKIP_COVERAGE: "true"
+    AZURE_COVERAGE_THRESHOLD: 80
 
 aws-test-java:
   image: $CI_REGISTRY/osdu/platform/deployment-and-operations/base-containers-aws/aws-maven/aws-maven:v2.0
