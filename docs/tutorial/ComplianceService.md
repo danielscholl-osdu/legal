@@ -508,6 +508,33 @@ After subscribing to the topic, you will receive notifications daily. These noti
             } ]
     }
 ```
+</details>
+
+## The LegalTag About to Expire notification<a name="The-LegalTag-AboutToExpire-notification"></a>
+After subscribing to the topic, you will receive notifications daily.
+These notifications will list all LegalTags that will expire soon.
+The definition of "soon" is configurable by the deployer.
+
+This topic has the form
+
+    projects/{googleProjectId}/topics/about-to-expire-legal-tag	
+
+Note: this feature is also behind a feature flag, meaning the deployer
+must specifically enable the feature.
+
+<details><summary>Details</summary>
+
+```
+    {
+        "aboutToExpireLegalTags": [ 
+            {
+                "dataPartitionId":"osdu",
+                "tagName":"osdu-public-usa-dataset-osduonaws-test-about-to-expire",
+                "expirationDate":"Mar 15, 2024"
+            }
+        ]
+    }
+```
 
 </details>
     
