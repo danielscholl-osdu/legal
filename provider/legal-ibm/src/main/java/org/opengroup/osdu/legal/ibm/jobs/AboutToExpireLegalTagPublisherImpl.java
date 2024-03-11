@@ -1,4 +1,4 @@
-package org.opengroup.osdu.legal.byoc.jobs;
+package org.opengroup.osdu.legal.ibm.jobs;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.legal.provider.interfaces.IAboutToExpireLegalTagPublisher;
