@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class AboutToExpireLegalTags {
-    private List<String> aboutToExpireLegalTags = new ArrayList<>();
+    private List<AboutToExpireLegalTag> aboutToExpireLegalTags = new ArrayList<>();
 }

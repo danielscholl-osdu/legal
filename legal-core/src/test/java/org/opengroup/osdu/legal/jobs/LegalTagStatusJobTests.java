@@ -14,7 +14,7 @@ import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
-import org.opengroup.osdu.core.common.feature.IFeatureFlag;
+import org.opengroup.osdu.legal.FeatureFlagController;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +35,6 @@ import static org.mockito.Mockito.*;
 import static junit.framework.TestCase.fail;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = {IFeatureFlag.class})
 public class LegalTagStatusJobTests {
     @Mock
     private LegalTagConstraintValidator validator;
@@ -51,7 +49,7 @@ public class LegalTagStatusJobTests {
     @Mock
     private JaxRsDpsLog log;
     @Mock
-    private IFeatureFlag aboutToExpireLegalTagFeatureFlag;
+    private FeatureFlagController featureFlagControllerMock;
 
     @InjectMocks
     LegalTagStatusJob sut;
@@ -65,7 +63,7 @@ public class LegalTagStatusJobTests {
         headers.put(DpsHeaders.CORRELATION_ID, "12345-12345");
         headers.put(DpsHeaders.USER_EMAIL, "nonexistent@nonexisent.domain");
         // aboutToExpireFeatureFlag
-        when(aboutToExpireLegalTagFeatureFlag.isFeatureEnabled(any())).thenReturn(true);
+        when(featureFlagControllerMock.isAboutToExpireFeatureFlagEnabled()).thenReturn(true);
         ReflectionTestUtils.setField(sut, "legalTagExpiration", "1d");
     }
 
@@ -159,8 +157,8 @@ public class LegalTagStatusJobTests {
         LegalTagJobResult result = sut.run("project1", headers, "tenant");
 
         assertEquals(2, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag1", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0));
-        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(1));
+        assertEquals("aboutToExpireLegalTag1", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
+        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(1).getTagName());
     }
 
     @Test
@@ -179,8 +177,8 @@ public class LegalTagStatusJobTests {
         LegalTagJobResult result = sut.run("project1", headers, "tenant");
 
         assertEquals(2, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag1", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0));
-        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(1));
+        assertEquals("aboutToExpireLegalTag1", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
+        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(1).getTagName());
     }
 
     @Test
@@ -197,7 +195,7 @@ public class LegalTagStatusJobTests {
         LegalTagJobResult result = sut.run("project1", headers, "tenant");
 
         assertEquals(1, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0));
+        assertEquals("aboutToExpireLegalTag", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
     }
 
     @Test
@@ -214,7 +212,7 @@ public class LegalTagStatusJobTests {
         LegalTagJobResult result = sut.run("project1", headers, "tenant");
 
         assertEquals(1, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0));
+        assertEquals("aboutToExpireLegalTag", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
     }
     @Test
     public void should_throwException_when_legalTagBadExpireDate() throws Exception {

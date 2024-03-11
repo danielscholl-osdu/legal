@@ -12,10 +12,10 @@ import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
+import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTag;
 import org.opengroup.osdu.core.common.model.http.AppException;
-import org.opengroup.osdu.core.common.feature.IFeatureFlag;
+import org.opengroup.osdu.legal.FeatureFlagController;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -37,14 +37,11 @@ public class LegalTagStatusJob {
     private IAboutToExpireLegalTagPublisher aboutToExpireLegalTagPublisher;
     @Inject
     private JaxRsDpsLog log;
-
-    @Autowired
-    private IFeatureFlag aboutToExpireLegalTagFeatureFlag;
+    @Inject
+    private FeatureFlagController featureFlagController;
 
     @Value("${LEGALTAG_EXPIRATION:}")
     private String legalTagExpiration;
-
-    private String aboutToExpireFeatureFlagName = "featureFlag.aboutToExpireLegalTag.enabled";
 
     public LegalTagJobResult run(String projectId, DpsHeaders headers, String tenantName) throws Exception {
         LegalTagJobResult legalTagJobResult = new LegalTagJobResult(new StatusChangedTags(), new AboutToExpireLegalTags());
@@ -53,8 +50,8 @@ public class LegalTagStatusJob {
         legalTagJobResult = checkAndUpdateLegalTagStatus(false, tenantName, legalTagJobResult);
 
         publishLegalTagStatusUpdateEvents(!legalTagJobResult.statusChangedTags.getStatusChangedTags().isEmpty(), projectId, headers, legalTagJobResult.statusChangedTags);
-        if (isAboutToExpireFeatureFlagEnabled()) {
-            publisAboutToExpireLegalTagEvents(!legalTagJobResult.aboutToExpireLegalTags.getAboutToExpireLegalTags().isEmpty(), projectId, headers, legalTagJobResult.aboutToExpireLegalTags);
+        if (featureFlagController.isAboutToExpireFeatureFlagEnabled()) {
+            publishAboutToExpireLegalTagEvents(!legalTagJobResult.aboutToExpireLegalTags.getAboutToExpireLegalTags().isEmpty(), projectId, headers, legalTagJobResult.aboutToExpireLegalTags);
         }
 
         return legalTagJobResult;
@@ -66,8 +63,8 @@ public class LegalTagStatusJob {
             String errors = validator.getErrors(tag);
             Boolean hasErrors = errors != null;
 
-            if (isAboutToExpireFeatureFlagEnabled() && isCurrentlyValid) {
-                checkAboutToExpireLegalTag(tag, tenantName, legalTagJobResult.aboutToExpireLegalTags, hasErrors);
+            if (featureFlagController.isAboutToExpireFeatureFlagEnabled() && isCurrentlyValid) {
+                checkAboutToExpireLegalTag(tag, legalTagJobResult.aboutToExpireLegalTags);
             }
 
             if (isCurrentlyValid.equals(hasErrors)) {
@@ -81,7 +78,7 @@ public class LegalTagStatusJob {
         return legalTagJobResult;
     }
 
-    private void checkAboutToExpireLegalTag(LegalTag tag, String tenantName, AboutToExpireLegalTags aboutToExpireLegalTags, Boolean hasErrors) {
+    private void checkAboutToExpireLegalTag(LegalTag tag, AboutToExpireLegalTags aboutToExpireLegalTags) {
         Properties properties = tag.getProperties();
         Date expirationDate = properties.getExpirationDate();
         Date today = new Date();
@@ -90,7 +87,7 @@ public class LegalTagStatusJob {
 
         if (!isNotAboutToExpire) {
             log.info(String.format("Found legal tag about to expire: %s", tag.getName()));
-            aboutToExpireLegalTags.getAboutToExpireLegalTags().add(tag.getName());
+            aboutToExpireLegalTags.getAboutToExpireLegalTags().add(new AboutToExpireLegalTag(tag.getName(), expirationDate));
         }
     }
 
@@ -128,13 +125,9 @@ public class LegalTagStatusJob {
         }
     }
 
-    private void publisAboutToExpireLegalTagEvents(boolean hasTags, String projectId, DpsHeaders headers, AboutToExpireLegalTags aboutToExpireLegalTags) throws Exception {
+    private void publishAboutToExpireLegalTagEvents(boolean hasTags, String projectId, DpsHeaders headers, AboutToExpireLegalTags aboutToExpireLegalTags) throws Exception {
         if (hasTags) {
             aboutToExpireLegalTagPublisher.publish(projectId, headers, aboutToExpireLegalTags);
         }
-    }
-
-    private Boolean isAboutToExpireFeatureFlagEnabled() {
-        return aboutToExpireLegalTagFeatureFlag.isFeatureEnabled(aboutToExpireFeatureFlagName);
     }
 }

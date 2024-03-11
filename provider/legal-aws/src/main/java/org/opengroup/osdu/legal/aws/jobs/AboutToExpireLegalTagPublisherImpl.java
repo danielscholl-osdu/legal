@@ -9,6 +9,7 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
 import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
 import org.opengroup.osdu.legal.provider.interfaces.IAboutToExpireLegalTagPublisher;
+import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTag;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -61,9 +62,9 @@ public class AboutToExpireLegalTagPublisherImpl implements IAboutToExpireLegalTa
         publishRequestBuilder.setGeneralParametersFromHeaders(headers);
         log.debug("Publishing to topic " + osduAboutToExpireLegalTagTopic);
         for (int i = 0; i < aboutToExpireLegalTags.getAboutToExpireLegalTags().size(); i += BATCH_SIZE){
-            List<String> batch = aboutToExpireLegalTags.getAboutToExpireLegalTags().subList(i, Math.min(aboutToExpireLegalTags.getAboutToExpireLegalTags().size(), i + BATCH_SIZE));
-            List<AwsAboutToExpireTag> awsBatch = batch.stream()
-                    .map(name -> new AwsAboutToExpireTag(name, headers.getPartitionId()))
+            List<AboutToExpireLegalTag> batch = aboutToExpireLegalTags.getAboutToExpireLegalTags().subList(i, Math.min(aboutToExpireLegalTags.getAboutToExpireLegalTags().size(), i + BATCH_SIZE));
+            List<AwsAboutToExpireLegalTag> awsBatch = batch.stream()
+                    .map(aboutToExpireLegalTag -> new AwsAboutToExpireLegalTag(aboutToExpireLegalTag.getTagName(), headers.getPartitionId(), aboutToExpireLegalTag.getExpirationDate()))
                     .collect(Collectors.toList());
             AwsAboutToExpireLegalTags awsBatchTags = new AwsAboutToExpireLegalTags(awsBatch);
             PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest(osduAboutToExpireLegalTagTopic, amazonSNSTopic, awsBatchTags);
@@ -72,4 +73,4 @@ public class AboutToExpireLegalTagPublisherImpl implements IAboutToExpireLegalTa
     }
 }
 
-record AwsAboutToExpireLegalTags(List<AwsAboutToExpireTag> aboutToExpireLegalTags) { }
+record AwsAboutToExpireLegalTags(List<AwsAboutToExpireLegalTag> aboutToExpireLegalTags) { }
