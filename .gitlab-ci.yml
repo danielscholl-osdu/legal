@@ -1,7 +1,7 @@
 variables:
   CORE_BUILD_SUBDIR: legal-core
   AZURE_COVERAGE_THRESHOLD: 80
-  AZURE_SKIP_COVERAGE: true
+  AZURE_SKIP_COVERAGE: "true"
 
   AWS_BUILD_SUBDIR: provider/legal-aws/build-aws
   AWS_TEST_SUBDIR: testing/legal-test-aws
@@ -219,7 +219,7 @@ azure_test:
 
 azure_code_coverage:
   variables:
-    AZURE_SKIP_COVERAGE: true
+    AZURE_SKIP_COVERAGE: "true"
 
 aws-test-java:
   image: $CI_REGISTRY/osdu/platform/deployment-and-operations/base-containers-aws/aws-maven/aws-maven:v2.0
