@@ -14,6 +14,7 @@
 
 package org.opengroup.osdu.legal.azure.security;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,7 +72,11 @@ public class WhoamiControllerTest {
     @Test
     public void testWhoamiResponseNullContext() {
         sut = new WhoamiController(null);
-        String response = sut.whoami();
-        assertEquals("user: " + userName + "<BR>roles: " + roles + "<BR>details: " + details + "<BR>", response);
+        try {
+            sut.whoami();
+            Assert.fail("Auth is null");
+        } catch (java.lang.NullPointerException e) {
+            Assert.assertNotNull(e);
+        }
     }
 }
