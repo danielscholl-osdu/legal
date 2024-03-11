@@ -1,7 +1,7 @@
 package org.opengroup.osdu.legal.aws.jobs;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTag;
 
-import java.util.Date;
+import java.sql.Date;
 import lombok.Data;
 
 @Data
