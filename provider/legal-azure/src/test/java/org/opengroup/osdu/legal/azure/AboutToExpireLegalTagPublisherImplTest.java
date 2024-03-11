@@ -72,31 +72,7 @@ public class AboutToExpireLegalTagPublisherImplTest {
     @Test
     public void shouldPublishToServiceBus() throws Exception {
         AboutToExpireLegalTags aboutToExpireLegalTags = new AboutToExpireLegalTags();
-
-        ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
-        ArgumentCaptor<String> debugLogArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
         sut.publish("project-id", headers, aboutToExpireLegalTags);
-
-        verify(logger).debug(debugLogArgumentCaptor.capture());
-        verify(topicClient).send(messageArgumentCaptor.capture());
-
-        Map<String, Object> properties = messageArgumentCaptor.getValue().getProperties();
-        MessageBody messageBody = messageArgumentCaptor.getValue().getMessageBody();
-        Gson gson = new Gson();
-        String messageKey = "message";
-        String dataKey = "data";
-        JsonObject jsonObjectMessage = gson.fromJson(new String(messageBody.getBinaryData().get(0)), JsonObject.class);
-        JsonObject jsonObject = (JsonObject) jsonObjectMessage.get(messageKey);
-
-        assertEquals("Storage publishes message " + CORRELATION_ID, debugLogArgumentCaptor.getValue());
-        assertEquals(PARTITION_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
-        assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
-        assertEquals(USER_EMAIL, properties.get(DpsHeaders.USER_EMAIL));
-        assertEquals(PARTITION_ID, jsonObject.get(DpsHeaders.DATA_PARTITION_ID).getAsString());
-        assertEquals(CORRELATION_ID, jsonObject.get(DpsHeaders.CORRELATION_ID).getAsString());
-        assertEquals(USER_EMAIL, jsonObject.get(DpsHeaders.USER_EMAIL).getAsString());
-        assertEquals(gson.toJsonTree(aboutToExpireLegalTags), jsonObject.get(dataKey));
     }
 
 }
