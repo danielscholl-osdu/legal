@@ -67,4 +67,11 @@ public class WhoamiControllerTest {
         String response = sut.whoami();
         assertEquals("user: " + userName + "<BR>roles: " + roles + "<BR>details: " + details + "<BR>", response);
     }
+
+    @Test
+    public void testWhoamiResponseNullContext() {
+        sut = new WhoamiController(null);
+        String response = sut.whoami();
+        assertEquals("user: " + userName + "<BR>roles: " + roles + "<BR>details: " + details + "<BR>", response);
+    }
 }
