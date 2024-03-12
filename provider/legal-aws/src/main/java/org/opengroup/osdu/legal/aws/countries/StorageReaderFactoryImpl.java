@@ -20,7 +20,7 @@ import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReaderFactory;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class StorageReaderFactoryImpl implements IStorageReaderFactory {

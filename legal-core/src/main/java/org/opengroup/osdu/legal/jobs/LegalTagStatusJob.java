@@ -11,7 +11,7 @@ import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class LegalTagStatusJob {

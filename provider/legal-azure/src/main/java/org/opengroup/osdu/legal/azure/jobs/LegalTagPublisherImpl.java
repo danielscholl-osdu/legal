@@ -29,8 +29,8 @@ import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.Map;

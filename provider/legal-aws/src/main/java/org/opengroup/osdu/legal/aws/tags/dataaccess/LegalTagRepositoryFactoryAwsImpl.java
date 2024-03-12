@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 
 @ConditionalOnProperty(prefix = "repository", name = "implementation",havingValue = "dynamodb",

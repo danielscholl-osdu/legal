@@ -3,7 +3,7 @@ package org.opengroup.osdu.legal.util;
 import org.apache.commons.text.StringEscapeUtils;
 import com.google.common.base.Strings;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class HtmlEncodeAdapter extends XmlAdapter<String, String> {
 

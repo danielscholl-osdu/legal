@@ -20,7 +20,7 @@ import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepositoryFactory;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Repository
 public class LegalTagRepositoryFactoryImpl implements ILegalTagRepositoryFactory {

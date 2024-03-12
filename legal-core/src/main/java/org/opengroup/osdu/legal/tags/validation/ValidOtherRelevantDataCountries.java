@@ -1,8 +1,8 @@
 package org.opengroup.osdu.legal.tags.validation;
 
-import javax.validation.Constraint;
+import jakarta.validation.Constraint;
 import java.lang.annotation.*;
-import javax.validation.Payload;
+import jakarta.validation.Payload;
 
 @Target({ ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)

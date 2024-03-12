@@ -14,8 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.Valid;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.validation.Valid;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /*
  * Read only version of LegalTag model that are sent to the user
