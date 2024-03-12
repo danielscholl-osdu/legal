@@ -25,7 +25,7 @@ import org.opengroup.osdu.legal.tags.dto.UpdateLegalTag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;

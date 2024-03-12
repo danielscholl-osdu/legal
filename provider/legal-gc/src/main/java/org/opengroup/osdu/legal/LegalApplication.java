@@ -23,18 +23,18 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
-@ComponentScan({"org.opengroup.osdu"})
+@ComponentScan(value = {"org.opengroup.osdu"})
 @PropertySource("classpath:swagger.properties")
 @SpringBootApplication
 public class LegalApplication extends SpringBootServletInitializer {
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(LegalApplication.class);
-	}
+  @Override
+  protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    return application.sources(LegalApplication.class);
+  }
 
-	public static void main(String[] args) {
-		SpringApplication.run(LegalApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(LegalApplication.class, args);
+  }
 
 }

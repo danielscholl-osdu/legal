@@ -31,8 +31,8 @@ import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import java.util.List;
 import java.util.stream.Collectors;

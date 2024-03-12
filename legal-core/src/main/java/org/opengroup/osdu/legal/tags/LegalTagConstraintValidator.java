@@ -1,5 +1,16 @@
 package org.opengroup.osdu.legal.tags;
 
+import jakarta.inject.Inject;
+import jakarta.validation.Configuration;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import java.security.AccessController;
+import java.util.Set;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.legal.RulesetProvider;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
@@ -11,14 +22,9 @@ import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.springframework.stereotype.Service;
 import org.hibernate.validator.internal.util.privilegedactions.NewInstance;
 
-import javax.validation.*;
-import javax.inject.Inject;
-
-import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class LegalTagConstraintValidator implements ConstraintValidatorFactory {

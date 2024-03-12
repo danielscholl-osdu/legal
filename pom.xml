@@ -8,14 +8,15 @@
         <maven.compiler.source>17</maven.compiler.source>
         <docker.image.prefix>opendes</docker.image.prefix>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <os-core-common.version>0.25.0</os-core-common.version>
+        <os-core-common.version>0.26.0-rc2</os-core-common.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <resilience4jVersion>1.7.0</resilience4jVersion>
         <openapi.version>1.6.14</openapi.version>
-        <log4j.version>2.17.1</log4j.version>
         <json-smart.version>2.5.0</json-smart.version>
-        <jackson-databind.version>2.14.0</jackson-databind.version>
-        <jackson.version>2.14.0</jackson.version>
+        <jackson.version>2.16.1</jackson.version>
+        <spring-framework-version>6.1.4</spring-framework-version>
+        <spring-boot.version>3.2.3</spring-boot.version>
+        <spring-security.version>6.2.2</spring-security.version>
     </properties>
 
     <licenses>
@@ -37,7 +38,6 @@
         <module>legal-core</module>
         <module>legal-core-plus</module>
         <module>provider/legal-gc</module>
-        <module>provider/legal-byoc</module>
         <module>provider/legal-azure</module>
         <module>provider/legal-aws</module>
         <module>provider/legal-ibm</module>
@@ -62,54 +62,41 @@
     </distributionManagement>
 
     <dependencyManagement>
-		<dependencies>
-	        <dependency>
-	            <groupId>com.google.code.gson</groupId>
-	            <artifactId>gson</artifactId>
-	            <version>2.10.1</version>
-	        </dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>2.7.17</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>2.7.17</version>
-			</dependency>
-			<dependency>
-			    <groupId>org.springframework.security</groupId>
-			    <artifactId>spring-security-config</artifactId>
-			    <version>5.7.11</version>
-			</dependency>
+        <dependencies>
             <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-crypto</artifactId>
-                <version>5.7.11</version>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.10.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring-framework-version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-web</artifactId>
-                <version>5.7.11</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-core</artifactId>
-                <version>5.7.11</version>
+                <artifactId>spring-security-bom</artifactId>
+                <version>${spring-security.version}</version>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.opengroup.osdu</groupId>
-                <artifactId>os-core-common</artifactId>
+                <artifactId>os-core-common-spring6</artifactId>
                 <version>${os-core-common.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.opengroup.osdu</groupId>
-                <artifactId>os-core-common</artifactId>
+                <artifactId>os-core-common-spring6</artifactId>
                 <version>${os-core-common.version}</version>
                 <exclusions>
                     <exclusion>
@@ -133,34 +120,15 @@
                 <version>${snakeyaml.version}</version>
             </dependency>
             <dependency>
-	            <groupId>org.apache.logging.log4j</groupId>
-	            <artifactId>log4j-api</artifactId>
-	            <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
-	            <groupId>org.apache.logging.log4j</groupId>
-	            <artifactId>log4j-to-slf4j</artifactId>
-	            <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>net.minidev</groupId>
                 <artifactId>json-smart</artifactId>
                 <version>${json-smart.version}</version>
             </dependency>
-	        <dependency>
-	            <groupId>com.fasterxml.jackson.core</groupId>
-	            <artifactId>jackson-core</artifactId>
-	            <version>${jackson.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.fasterxml.jackson.core</groupId>
-	            <artifactId>jackson-annotations</artifactId>
-	            <version>${jackson.version}</version>
-	        </dependency>
             <dependency>
-	            <groupId>com.fasterxml.jackson.core</groupId>
-	            <artifactId>jackson-databind</artifactId>
-	            <version>${jackson-databind.version}</version>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>commons-beanutils</groupId>
@@ -169,13 +137,13 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-	
+
 		<dependencies>
 		    <!--Swagger-->
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${openapi.version}</version>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version>
         </dependency>
 		</dependencies>
 
@@ -204,7 +172,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>2.7.4</version>
+                    <version>3.2.2</version>
                     <executions>
                         <execution>
                             <id>build-info</id>

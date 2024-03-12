@@ -14,8 +14,8 @@
 
 package org.opengroup.osdu.legal.azure.countries;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;

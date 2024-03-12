@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class PersistenceExceptionToAppExceptionMapper {

@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import java.sql.Date;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.Properties;

@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Hidden
 @RestController
@@ -21,9 +21,9 @@ public class GlobalErrorHandler implements ErrorController {
   public ResponseEntity<Object> handleError(final HttpServletRequest request,
                                                   final HttpServletResponse response) {
 
-    Object exception = request.getAttribute("javax.servlet.error.exception");
-    Object statusCode = request.getAttribute("javax.servlet.error.status_code");
-    Object servletMessage = request.getAttribute("javax.servlet.error.message");
+    Object exception = request.getAttribute("jakarta.servlet.error.exception");
+    Object statusCode = request.getAttribute("jakarta.servlet.error.status_code");
+    Object servletMessage = request.getAttribute("jakarta.servlet.error.message");
     if(exception instanceof AppException){
       AppException  appException = (AppException)exception;
       String message = appException.getError().getMessage();

@@ -32,43 +32,10 @@
   <name>legal-core-plus</name>
   <description>Legal service for Hybrid Cloud</description>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>2.7.17</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>2.7.17</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>2.13.4</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>2.13.4.2</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>2.13.4</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-loader</artifactId>
-      <version>2.7.15</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -90,14 +57,20 @@
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-plus-common-lib</artifactId>
       <version>0.24.0-rc2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.opengroup.osdu</groupId>
+          <artifactId>os-core-common</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
       <scope>provided</scope>
     </dependency>
-        <dependency>
+     <dependency>
     		<groupId>org.mortbay.jetty</groupId>
     		<artifactId>jetty</artifactId>
     		<version>6.1.23</version>
@@ -107,11 +80,11 @@
       <artifactId>google-cloud-datastore</artifactId>
       <version>2.13.5</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/javax.inject/javax.inject -->
+
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <version>1</version>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <version>2.0.1</version>
     </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
@@ -224,7 +197,12 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
     </dependency>
-
+   <!-- Fix for NoClassDefFoundError: kotlin/reflect/KParameter -->
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+      <version>1.9.22</version>
+    </dependency>
     <!-- Mapper\Driver core dependencies -->
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
@@ -248,7 +226,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>2.7.4</version>
+        <version>3.2.2</version>
         <executions>
           <execution>
             <goals>
@@ -257,7 +235,7 @@
             <configuration>
               <classifier>spring-boot</classifier>
               <mainClass>
-                org.springframework.boot.loader.PropertiesLauncher
+                org.springframework.boot.loader.launch.PropertiesLauncher
               </mainClass>
             </configuration>
           </execution>

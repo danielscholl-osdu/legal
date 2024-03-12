@@ -5,7 +5,7 @@ import org.opengroup.osdu.legal.tags.LegalTagConstraintValidator;
 import org.opengroup.osdu.core.common.model.legal.validation.rules.Rule;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 
-import javax.validation.*;
+import jakarta.validation.*;
 
 import java.util.*;
 

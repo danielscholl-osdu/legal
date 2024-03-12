@@ -1,7 +1,7 @@
 package org.opengroup.osdu.legal.logging;
 
 import java.util.List;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;

@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Repository
 @Log

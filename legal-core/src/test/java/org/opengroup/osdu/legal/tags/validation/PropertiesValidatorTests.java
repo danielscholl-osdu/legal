@@ -8,7 +8,7 @@ import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import java.sql.Date;
 import java.time.LocalDate;
