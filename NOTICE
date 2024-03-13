@@ -16,7 +16,6 @@ Apache-1.1
 The following software have components provided under the terms of this license:
 
 - Apache Commons CLI (from https://commons.apache.org/proper/commons-cli/, https://repo1.maven.org/maven2/commons-cli/commons-cli)
-- Apache Log4j JUL Adapter (from https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-jul)
 - Apache Maven Invoker (from https://repo1.maven.org/maven2/org/apache/maven/shared/maven-invoker)
 - Apache Maven Reporting API (from https://repo1.maven.org/maven2/org/apache/maven/reporting/maven-reporting-api)
 - Apache Maven Reporting Implementation (from https://repo1.maven.org/maven2/org/apache/maven/reporting/maven-reporting-impl)
@@ -113,8 +112,8 @@ The following software have components provided under the terms of this license:
 - Byte Buddy (without dependencies) (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy)
 - Byte Buddy Java agent (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy-agent)
 - ClassMate (from http://github.com/cowtowncoder/java-classmate)
-- Cloud Key Management Service (KMS) API v1-rev20240131-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
-- Cloud Storage JSON API v1-rev20240209-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
+- Cloud Key Management Service (KMS) API v1-rev20240219-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
+- Cloud Storage JSON API v1-rev20240307-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - Cobertura (from http://cobertura.sourceforge.net)
 - Cobertura Limited Runtime (from http://cobertura.sourceforge.net)
 - Collections (from https://repo1.maven.org/maven2/commons-collections/commons-collections)
@@ -433,6 +432,7 @@ The following software have components provided under the terms of this license:
 - Hamcrest (from http://hamcrest.org/JavaHamcrest/)
 - Hamcrest Core (from http://hamcrest.org/, http://hamcrest.org/JavaHamcrest/, https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core)
 - JSch (from http://www.jcraft.com/jsch/)
+- Jackson module: Afterburner (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-modules-base)
 - Jakarta Activation API (from https://github.com/eclipse-ee4j/jaf, https://github.com/jakartaee/jaf-api, https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
 - Jakarta Messaging API (from https://projects.eclipse.org/projects/ee4j.jms)
@@ -452,13 +452,6 @@ The following software have components provided under the terms of this license:
 - Spring Core (from http://www.springframework.org, https://github.com/spring-projects/spring-framework, https://repo1.maven.org/maven2/org/springframework/spring-core)
 - ThreeTen backport (from https://github.com/ThreeTen/threetenbp, https://www.threeten.org/threetenbp)
 - jaxen (from http://jaxen.codehaus.org/, https://repo1.maven.org/maven2/jaxen/jaxen)
-
-========================================================================
-BSL-1.0
-========================================================================
-The following software have components provided under the terms of this license:
-
-- Jackson-core (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-core)
 
 ========================================================================
 Beerware
@@ -696,9 +689,6 @@ The following software have components provided under the terms of this license:
 - AWS Java SDK for AWS Lambda (from https://aws.amazon.com/sdkforjava)
 - Animal Sniffer Annotations (from https://repo1.maven.org/maven2/org/codehaus/mojo/animal-sniffer-annotations)
 - Apache HttpClient Cache (from http://hc.apache.org/httpcomponents-client, http://hc.apache.org/httpcomponents-client-ga)
-- Apache Log4j API (from https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-api)
-- Apache Log4j SLF4J Binding (from https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-slf4j-impl)
-- Apache Log4j to SLF4J Adapter (from https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-to-slf4j)
 - Azure Java Client Authentication Library for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
 - Azure Java Client Runtime for ARM (from https://github.com/Azure/autorest-clientruntime-for-java)
 - Azure Java Client Runtime for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
@@ -749,6 +739,7 @@ The following software have components provided under the terms of this license:
 - adal4j (from https://github.com/AzureAD/azure-activedirectory-library-for-java)
 - micrometer-commons (from https://github.com/micrometer-metrics/micrometer)
 - micrometer-core (from https://github.com/micrometer-metrics/micrometer)
+- mockito-inline (from http://mockito.org, https://github.com/mockito/mockito)
 - mockito-junit-jupiter (from https://github.com/mockito/mockito)
 - msal4j (from https://github.com/AzureAD/microsoft-authentication-library-for-java)
 - msal4j-persistence-extension (from https://github.com/AzureAD/microsoft-authentication-extensions-for-java)
