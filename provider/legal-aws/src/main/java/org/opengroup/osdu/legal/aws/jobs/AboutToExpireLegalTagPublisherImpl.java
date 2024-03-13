@@ -15,8 +15,8 @@ import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
