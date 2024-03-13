@@ -8,7 +8,7 @@ import org.opengroup.osdu.legal.MockRule;
 import org.opengroup.osdu.legal.MockValidationValidator;
 import org.opengroup.osdu.legal.tags.validation.rules.UnownedDataRule;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import java.time.LocalDate;
 import java.util.*;

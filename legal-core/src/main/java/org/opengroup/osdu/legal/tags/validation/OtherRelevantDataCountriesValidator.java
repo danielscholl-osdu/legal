@@ -3,8 +3,8 @@ package org.opengroup.osdu.legal.tags.validation;
 import com.google.common.base.Strings;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 
 public class OtherRelevantDataCountriesValidator implements ConstraintValidator<ValidOtherRelevantDataCountries, List<String>> {

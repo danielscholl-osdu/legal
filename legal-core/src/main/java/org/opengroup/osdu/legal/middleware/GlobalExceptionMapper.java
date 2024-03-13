@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javassist.NotFoundException;
-import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -38,6 +38,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
@@ -133,7 +134,7 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 	@NonNull
 	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(@NonNull HttpRequestMethodNotSupportedException e,
 																		 @NonNull HttpHeaders headers,
-																		 @NonNull HttpStatus status,
+																		 @NonNull HttpStatusCode status,
         															 @NonNull WebRequest request) {
 	  return this.getErrorResponse(
 				new AppException(HttpStatus.METHOD_NOT_ALLOWED.value(), "Method not found.",
@@ -144,7 +145,7 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
   @NonNull
   protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException e,
                                                                 @NonNull HttpHeaders headers,
-                                                                @NonNull HttpStatus status,
+                                                                @NonNull HttpStatusCode status,
                                                                 @NonNull WebRequest request) {
     return this.getErrorResponse(
         new AppException(HttpStatus.BAD_REQUEST.value(), "Validation failed.",

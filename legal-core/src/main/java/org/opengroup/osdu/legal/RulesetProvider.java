@@ -9,8 +9,8 @@ import org.opengroup.osdu.legal.tags.validation.rules.ExpiredContractRule;
 import org.opengroup.osdu.legal.tags.validation.rules.UnownedDataRule;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 

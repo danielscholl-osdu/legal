@@ -5,7 +5,7 @@ import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

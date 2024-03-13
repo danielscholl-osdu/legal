@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Calendar;
 import java.util.Date;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Component
 public class LegalTagStatusJob {
