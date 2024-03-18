@@ -115,16 +115,16 @@ public class LegalTagStatusJob {
             cal.setTime(expirationDate);
 
             try {
-                if (expiration.contains("d")) {
+                if (expiration.endsWith("d")) {
                     int numberOfDays = Integer.parseInt(expiration.replace("d", ""));
                     cal.add(Calendar.DAY_OF_YEAR, - numberOfDays);
-                } else if (expiration.contains("w")) {
+                } else if (expiration.endsWith("w")) {
                     int numberOfWeeks = Integer.parseInt(expiration.replace("w", ""));
                     cal.add(Calendar.DAY_OF_YEAR, - 7 * numberOfWeeks);
-                } else if (expiration.contains("m")) {
+                } else if (expiration.endsWith("m")) {
                     int numberOfMonths = Integer.parseInt(expiration.replace("m", ""));
                     cal.add(Calendar.MONTH, - numberOfMonths);                
-                } else if (expiration.contains("y")) {
+                } else if (expiration.endsWith("y")) {
                     int numberOfYears = Integer.parseInt(expiration.replace("y", ""));
                     cal.add(Calendar.YEAR, - numberOfYears);
                 } else {
