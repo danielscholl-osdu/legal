@@ -27,6 +27,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Calendar;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -50,11 +54,17 @@ public class LegalTagStatusJobTests {
     private JaxRsDpsLog log;
     @Mock
     private FeatureFlagController featureFlagControllerMock;
+    @Mock
+    private Clock clock;
 
     @InjectMocks
     LegalTagStatusJob sut;
 
+    private Clock fixedClock;
+
     private DpsHeaders headers = new DpsHeaders();
+
+    private final static LocalDate LOCAL_DATE = LocalDate.of(2022, 01, 01);
 
     @Before
     public void setup() {
@@ -64,7 +74,11 @@ public class LegalTagStatusJobTests {
         headers.put(DpsHeaders.USER_EMAIL, "nonexistent@nonexisent.domain");
         // aboutToExpireFeatureFlag
         when(featureFlagControllerMock.isAboutToExpireFeatureFlagEnabled()).thenReturn(true);
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "1d");
+        ReflectionTestUtils.setField(sut, "expirationAlerts", "1m,2w,1d");
+        // mock LocalDate.now()
+        fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+        doReturn(fixedClock.instant()).when(clock).instant();
+        doReturn(fixedClock.getZone()).when(clock).getZone();
     }
 
     @Test
@@ -142,137 +156,98 @@ public class LegalTagStatusJobTests {
     }
 
     @Test
-    public void should_returnAboutToExpireLegalTagName_when_legalTagAboutToExpireIn3Days() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "3d");
+    public void should_returnAboutToExpireLegalTagName_when_legalTagAboutToExpireIn1Year1Month2Weeks1Day() throws Exception {
+        ReflectionTestUtils.setField(sut, "expirationAlerts", "1y,1m,2w,1d");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
-        LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 2);
+        LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 365);
         validLegalTags.add(aboutToExpireLegalTag1);
-        LegalTag aboutToExpireLegalTag2 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag2", true, 3);
+        LegalTag aboutToExpireLegalTag2 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag2", true, 31);
         validLegalTags.add(aboutToExpireLegalTag2);
-        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 10);
-        validLegalTags.add(longTermLegalTag);
+        LegalTag aboutToExpireLegalTag3 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag3", true, 14);
+        validLegalTags.add(aboutToExpireLegalTag3);
+        LegalTag aboutToExpireLegalTag4 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag4", true, 1);
+        validLegalTags.add(aboutToExpireLegalTag4);
+
+        LegalTag anotherLegalTag1 = createValidLegalTagWithIsValidStatus("anotherLegalTag1", true, 2);
+        validLegalTags.add(anotherLegalTag1);
+        LegalTag anotherLegalTag2 = createValidLegalTagWithIsValidStatus("anotherLegalTag2", true, 30);
+        validLegalTags.add(anotherLegalTag2);
+        LegalTag anotherLegalTag3 = createValidLegalTagWithIsValidStatus("anotherLegalTag3", true, 100);
+        validLegalTags.add(anotherLegalTag3);
 
         sut = createSut(validLegalTags);
         LegalTagJobResult result = sut.run("project1", headers, "tenant");
 
-        assertEquals(2, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
+        assertEquals(4, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
         assertEquals("aboutToExpireLegalTag1", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
         assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(1).getTagName());
+        assertEquals("aboutToExpireLegalTag3", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(2).getTagName());
+        assertEquals("aboutToExpireLegalTag4", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(3).getTagName());
     }
 
     @Test
     public void should_returnAboutToExpireLegalTagName_when_legalTagAboutToExpireIn2Weeks() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "2w");
+        ReflectionTestUtils.setField(sut, "expirationAlerts", "2w");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 13);
         validLegalTags.add(aboutToExpireLegalTag1);
         LegalTag aboutToExpireLegalTag2 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag2", true, 14);
         validLegalTags.add(aboutToExpireLegalTag2);
-        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 20);
-        validLegalTags.add(longTermLegalTag);
 
-        sut = createSut(validLegalTags);
-        LegalTagJobResult result = sut.run("project1", headers, "tenant");
-
-        assertEquals(2, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag1", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
-        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(1).getTagName());
-    }
-
-    @Test
-    public void should_returnAboutToExpireLegalTagName_when_legalTagAboutToExpireIn3Months() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "3m");
-
-        Collection<LegalTag> validLegalTags = new ArrayList<>();
-        LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 80);
-        validLegalTags.add(aboutToExpireLegalTag);
-        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 100);
-        validLegalTags.add(longTermLegalTag);
+        LegalTag anotherLegalTag = createValidLegalTagWithIsValidStatus("anotherLegalTag", true, 20);
+        validLegalTags.add(anotherLegalTag);
 
         sut = createSut(validLegalTags);
         LegalTagJobResult result = sut.run("project1", headers, "tenant");
 
         assertEquals(1, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
+        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
     }
 
     @Test
-    public void should_returnAboutToExpireLegalTagName_when_legalTagAboutToExpireIn1Year() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "1y");
+    public void should_throwException_when_wrongExpirationTime() throws Exception {
+        ReflectionTestUtils.setField(sut, "expirationAlerts", "2d,XXXy");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 354);
         validLegalTags.add(aboutToExpireLegalTag);
-        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 367);
-        validLegalTags.add(longTermLegalTag);
-
-        sut = createSut(validLegalTags);
-        LegalTagJobResult result = sut.run("project1", headers, "tenant");
-
-        assertEquals(1, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
-    }
-    @Test
-    public void should_throwException_when_legalTagBadExpireDate() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "XXXy");
-
-        Collection<LegalTag> validLegalTags = new ArrayList<>();
-        LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 354);
-        validLegalTags.add(aboutToExpireLegalTag);
-        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 367);
-        validLegalTags.add(longTermLegalTag);
 
         try {
             sut = createSut(validLegalTags);
             LegalTagJobResult result = sut.run("project1", headers, "tenant");
             fail("Should throw an exception");
         } catch (AppException e) {
-            assertEquals("Invalid legalTagExpiration value: XXXy", e.getMessage());
+            assertEquals("Invalid legal tag about to expire time value: XXXy", e.getMessage());
             assertEquals(500, e.getError().getCode());
         }
     }
+
     @Test
-    public void should_throwException_when_legalTagBadFormat() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "XXX");
+    public void should_throwException_when_wrongExpirationFormat() throws Exception {
+        ReflectionTestUtils.setField(sut, "expirationAlerts", "XXX");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 354);
         validLegalTags.add(aboutToExpireLegalTag);
-        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("longTermLegalTag", true, 367);
-        validLegalTags.add(longTermLegalTag);
 
         try {
             sut = createSut(validLegalTags);
             LegalTagJobResult result = sut.run("project1", headers, "tenant");
             fail("Should throw an exception");
         } catch (AppException e) {
-            assertEquals("Invalid legalTagExpiration value: XXX", e.getMessage());
+            assertEquals("Invalid legal tag about to expire time value: XXX", e.getMessage());
             assertEquals(500, e.getError().getCode());
-        }
-    }
-
-    @Test
-    public void should_returnAboutToExpireLegalTagName_when_invalidTimeToExpire() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "asd");
-
-        Collection<LegalTag> validLegalTags = new ArrayList<>();
-        sut = createSut(validLegalTags);
-
-        try {
-            sut.run("project1", headers, "tenant");
-        } catch (Exception e) {
-            fail(String.format("Should not throw this exception: '%s'", e.getMessage()));
         }
     }
 
     @Test
     public void should_sendLegalTagNameToPubSub_when_legalTagAboutToExpire() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "2w");
+        ReflectionTestUtils.setField(sut, "expirationAlerts", "2w");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
-        LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 13);
+        LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 14);
         validLegalTags.add(aboutToExpireLegalTag);
 
         sut = createSut(validLegalTags);
@@ -284,10 +259,10 @@ public class LegalTagStatusJobTests {
 
     @Test
     public void should_notSendLegalTagNameToPubSub_when_legalTagNotAboutToExpire() throws Exception {
-        ReflectionTestUtils.setField(sut, "legalTagExpiration", "2w");
+        ReflectionTestUtils.setField(sut, "expirationAlerts", "2w");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
-        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 20);
+        LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 20);
         validLegalTags.add(longTermLegalTag);
 
         sut = createSut(validLegalTags);
@@ -303,7 +278,7 @@ public class LegalTagStatusJobTests {
         legalTag.setIsValid(isValid);
         if (daysToExpire > 0) {
             Calendar cal = Calendar.getInstance();
-            cal.setTime(new java.util.Date(System.currentTimeMillis()));
+            cal.setTime(java.util.Date.from(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant()));
             cal.add(Calendar.DAY_OF_YEAR, + daysToExpire);
             Properties properties = new Properties();
             properties.setExpirationDate(new java.sql.Date(cal.getTimeInMillis()));

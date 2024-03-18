@@ -544,6 +544,13 @@ If it has become incompliant, you must make sure associated data is no longer al
 
 If it is marked compliant, data that was not allowed for consumption can now be consumed through your services.
 
+Time to expire should be configurable on deployment level. We should be able to provide list of all time periods before LegalTag expires. This will be achieved by introducing new environment variable `legaltag.expirationAlerts`. Format is comma separated values which consists of number and letter suffix, for example: 3d,2w,1m
+Where suffix letter should represent this time periods:
+
+* #d - # number of days
+* #w - # number of weeks
+* #m - # number of months
+
 [Back to table of contents](#TOC)
 
 ## Version info endpoint

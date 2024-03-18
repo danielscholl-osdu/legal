@@ -17,15 +17,24 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.legal.FeatureFlagController;
 
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 import jakarta.inject.Inject;
 
 @Component
+@ConfigurationProperties("legaltag")
 public class LegalTagStatusJob {
     @Inject
     private LegalTagConstraintValidator validator;
@@ -40,8 +49,10 @@ public class LegalTagStatusJob {
     @Inject
     private FeatureFlagController featureFlagController;
 
-    @Value("${LEGALTAG_EXPIRATION:}")
-    private String legalTagExpiration;
+    @Autowired
+    private Clock clock;
+
+    private String expirationAlerts;
 
     public LegalTagJobResult run(String projectId, DpsHeaders headers, String tenantName) throws Exception {
         LegalTagJobResult legalTagJobResult = new LegalTagJobResult(new StatusChangedTags(), new AboutToExpireLegalTags());
@@ -81,42 +92,54 @@ public class LegalTagStatusJob {
     private void checkAboutToExpireLegalTag(LegalTag tag, AboutToExpireLegalTags aboutToExpireLegalTags) {
         Properties properties = tag.getProperties();
         Date expirationDate = properties.getExpirationDate();
-        Date today = new Date();
-        Date aboutToExpireDate = getAboutToExpireDate(expirationDate);
-        Boolean isNotAboutToExpire = aboutToExpireDate.after(today);
+        List<LocalDate> aboutToExpireDates = getAboutToExpireDates(expirationDate);
+        LocalDate today = LocalDate.now(clock);
 
-        if (!isNotAboutToExpire) {
-            log.info(String.format("Found legal tag about to expire: %s", tag.getName()));
-            aboutToExpireLegalTags.getAboutToExpireLegalTags().add(new AboutToExpireLegalTag(tag.getName(), properties.getExpirationDate()));
+        for (LocalDate aboutToExpireDate : aboutToExpireDates) {
+            // when cron runs less frequent than once per a day it could not match when legal tag be about to expire!
+            Boolean isAboutToExpire = aboutToExpireDate.equals(today);
+            if (isAboutToExpire) {
+                log.info(String.format("Found legal tag about to expire: %s at %s", tag.getName(), expirationDate));
+                aboutToExpireLegalTags.getAboutToExpireLegalTags().add(new AboutToExpireLegalTag(tag.getName(), properties.getExpirationDate()));
+                return;
+            }
         }
     }
 
-    private Date getAboutToExpireDate(Date expirationDate) throws AppException {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(expirationDate);
+    private List<LocalDate> getAboutToExpireDates(Date expirationDate) throws AppException {
+        ArrayList aboutToExpireDates = new ArrayList<>();
 
-        try {
-            if (legalTagExpiration.contains("d")) {
-                int numberOfDays = Integer.parseInt(legalTagExpiration.replace("d", ""));
-                cal.add(Calendar.DAY_OF_YEAR, - numberOfDays);
-            } else if (legalTagExpiration.contains("w")) {
-                int numberOfWeeks = Integer.parseInt(legalTagExpiration.replace("w", ""));
-                cal.add(Calendar.DAY_OF_YEAR, - 7 * numberOfWeeks);
-            } else if (legalTagExpiration.contains("m")) {
-                int numberOfMonths = Integer.parseInt(legalTagExpiration.replace("m", ""));
-                cal.add(Calendar.MONTH, - numberOfMonths);                
-            } else if (legalTagExpiration.contains("y")) {
-                int numberOfYears = Integer.parseInt(legalTagExpiration.replace("y", ""));
-                cal.add(Calendar.YEAR, - numberOfYears);
-            } else {
-                throw new AppException(500, "Server error", String.format("Invalid legalTagExpiration value: %s", legalTagExpiration));
+        List<String> expirationAlertsList = Arrays.asList(expirationAlerts.split(","));
+        for (String expiration : expirationAlertsList) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(expirationDate);
+
+            try {
+                if (expiration.contains("d")) {
+                    int numberOfDays = Integer.parseInt(expiration.replace("d", ""));
+                    cal.add(Calendar.DAY_OF_YEAR, - numberOfDays);
+                } else if (expiration.contains("w")) {
+                    int numberOfWeeks = Integer.parseInt(expiration.replace("w", ""));
+                    cal.add(Calendar.DAY_OF_YEAR, - 7 * numberOfWeeks);
+                } else if (expiration.contains("m")) {
+                    int numberOfMonths = Integer.parseInt(expiration.replace("m", ""));
+                    cal.add(Calendar.MONTH, - numberOfMonths);                
+                } else if (expiration.contains("y")) {
+                    int numberOfYears = Integer.parseInt(expiration.replace("y", ""));
+                    cal.add(Calendar.YEAR, - numberOfYears);
+                } else {
+                    log.error(String.format("Invalid legal tag about to expire time value: %s", expiration));
+                    throw new AppException(500, "Server error", String.format("Invalid legal tag about to expire time value: %s", expiration));
+                }
+            } catch (NumberFormatException e) {
+                log.error(String.format("Invalid legal tag about to expire time value: %s", expiration));
+                throw new AppException(500, "Server error", String.format("Invalid legal tag about to expire time value: %s", expiration));
             }
-        } catch (NumberFormatException e) {
-            log.error(String.format("Invalid legalTagExpiration value: %s", legalTagExpiration));
-            throw new AppException(500, "Server error", String.format("Invalid legalTagExpiration value: %s", legalTagExpiration));
+            
+            aboutToExpireDates.add(cal.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         }
 
-        return cal.getTime();
+        return aboutToExpireDates;
     }
 
     private void publishLegalTagStatusUpdateEvents(boolean hasStatusChanges, String projectId, DpsHeaders headers, StatusChangedTags statusChangedTags) throws Exception {
