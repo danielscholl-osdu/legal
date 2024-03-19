@@ -4,6 +4,7 @@ metadata:
   name: {{ printf "%s-legalstatus-update" .Values.conf.appName | quote }}
   namespace: {{ .Release.Namespace | quote }}
 spec:
+  # when cron runs less frequent than once per a day it could not match when legal tag be about to expire!
   schedule: "@daily"
   jobTemplate:
     spec:

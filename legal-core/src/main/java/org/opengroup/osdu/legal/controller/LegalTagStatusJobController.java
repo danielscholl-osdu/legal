@@ -3,7 +3,6 @@ package org.opengroup.osdu.legal.controller;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
-import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.legal.api.LegalTagStatusJobApi;
@@ -12,6 +11,7 @@ import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 
 import jakarta.inject.Inject;
 import java.util.Collection;
@@ -58,7 +58,7 @@ public class LegalTagStatusJobController implements LegalTagStatusJobApi {
     private boolean runJob(DpsHeaders convertedHeaders, TenantInfo tenantInfo, LegalTagStatusJob legalTagStatusJob) {
         boolean success = true;
         try {
-            StatusChangedTags result = legalTagStatusJob.run(tenantInfo.getProjectId(), convertedHeaders, tenantInfo.getName());
+            LegalTagJobResult result = legalTagStatusJob.run(tenantInfo.getProjectId(), convertedHeaders, tenantInfo.getName());
             auditLogger.legalTagJobRanSuccess(singletonList(result.toString()));
         } catch (Exception e) {
             success = false;

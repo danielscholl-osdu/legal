@@ -22,6 +22,7 @@ variables:
   AZURE_SERVICE: legal
   AZURE_BUILD_SUBDIR: provider/legal-azure
   AZURE_TEST_SUBDIR: testing/legal-test-azure
+  AZURE_COVERAGE_THRESHOLD: 80
   SERVICE_JAVA_VERSION: "17"
 
   IBM_HELM_CONFIG_PATH: devops/ibm/ibm-legal-config
@@ -83,11 +84,9 @@ include:
   variables:
     MAVEN_REPO_PATH: "$CI_PROJECT_DIR/.m2/repository"
     MAVEN_CLI_OPTS: "--batch-mode --settings=$CI_PROJECT_DIR/.mvn/community-maven.settings.xml"
-
   cache:
     paths:
       - $MAVEN_REPO_PATH
-
   artifacts:
     paths:
       - ./**/target/*.jar
@@ -204,12 +203,20 @@ gemnasium-maven-dependency_scanning:
   variables:
     DS_JAVA_VERSION: 17
 
+azure_deploy:
+  variables:
+    AZURE_COVERAGE_THRESHOLD: 80
+
 azure_containerize:
   variables:
     AZURE_CONTAINERIZE_REPOSITORY: "-b jdk-17 https://gitlab-ci-token:${CI_JOB_TOKEN}@community.opengroup.org/osdu/platform/deployment-and-operations/base-containers-azure/service-base-image"
 
 azure_test:
   image: community.opengroup.org:5555/osdu/platform/deployment-and-operations/base-containers-azure/azure-maven17:v0.0.1
+
+azure_code_coverage:
+  variables:
+    AZURE_COVERAGE_THRESHOLD: 80
 
 aws-test-java:
   image: $CI_REGISTRY/osdu/platform/deployment-and-operations/base-containers-aws/aws-maven/aws-maven:v2.0

@@ -23,6 +23,7 @@ import org.opengroup.osdu.core.aws.mongodb.config.MongoProperties;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.legal.aws.cache.GroupCache;
 import org.opengroup.osdu.legal.aws.jobs.LegalTagPublisherImpl;
+import org.opengroup.osdu.legal.aws.jobs.AboutToExpireLegalTagPublisherImpl;
 import org.opengroup.osdu.legal.aws.tags.dataaccess.mongodb.config.MultiClusteredConfigReaderLegal;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,11 @@ public class LegalTestConfig {
     @Bean
     public LegalTagPublisherImpl legalTagPublisherImpl() {
         return Mockito.mock(LegalTagPublisherImpl.class);
+    }
+
+    @Bean
+    public AboutToExpireLegalTagPublisherImpl aboutToExpireLegalTagPublisherImpl() {
+        return Mockito.mock(AboutToExpireLegalTagPublisherImpl.class);
     }
 
     @Bean

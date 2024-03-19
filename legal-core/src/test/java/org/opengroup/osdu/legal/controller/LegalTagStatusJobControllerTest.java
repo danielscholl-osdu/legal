@@ -18,6 +18,8 @@ import org.opengroup.osdu.legal.jobs.LegalTagStatusJob;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
+import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,12 +68,13 @@ public class LegalTagStatusJobControllerTest {
         StatusChangedTag statusChangedTag = new StatusChangedTag("testTag", LegalTagCompliance.incompliant);
         StatusChangedTags statusChangedTags = new StatusChangedTags();
         statusChangedTags.getStatusChangedTags().add(statusChangedTag);
-        when(legalTagStatusJob.run("projectId", dpsHeaders, "tenantName")).thenReturn(statusChangedTags);
+        LegalTagJobResult legalTagJobResult = new LegalTagJobResult(statusChangedTags, new AboutToExpireLegalTags());
+        when(legalTagStatusJob.run("projectId", dpsHeaders, "tenantName")).thenReturn(legalTagJobResult);
 
         ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
 
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
-        verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(statusChangedTags.toString()));
+        verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(legalTagJobResult.toString()));
     }
 
     @Test
@@ -98,11 +101,12 @@ public class LegalTagStatusJobControllerTest {
         StatusChangedTag statusChangedTag = new StatusChangedTag("testTag", LegalTagCompliance.incompliant);
         StatusChangedTags statusChangedTags = new StatusChangedTags();
         statusChangedTags.getStatusChangedTags().add(statusChangedTag);
+        LegalTagJobResult legalTagJobResult = new LegalTagJobResult(statusChangedTags, new AboutToExpireLegalTags());
 
         when(tenantStorageFactory.listTenantInfo()).thenReturn(List.of(tenantInfo1, tenantInfo2));
         Exception exception = new Exception("error occurred");
         when(legalTagStatusJob.run("projectId1", dpsHeaders, "tenantName1")).thenThrow(exception);
-        when(legalTagStatusJob.run("projectId2", dpsHeaders, "tenantName2")).thenReturn(statusChangedTags);
+        when(legalTagStatusJob.run("projectId2", dpsHeaders, "tenantName2")).thenReturn(legalTagJobResult);
 
 
         ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
