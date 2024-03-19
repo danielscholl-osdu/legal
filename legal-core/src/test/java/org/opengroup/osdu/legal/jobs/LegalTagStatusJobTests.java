@@ -15,6 +15,7 @@ import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 import org.opengroup.osdu.legal.FeatureFlagController;
+import org.opengroup.osdu.legal.config.LegalTagConfig;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,6 +56,8 @@ public class LegalTagStatusJobTests {
     private FeatureFlagController featureFlagControllerMock;
     @Mock
     private Clock clock;
+    @Mock
+    private LegalTagConfig configMock;
 
     @InjectMocks
     LegalTagStatusJob sut;
@@ -74,7 +76,7 @@ public class LegalTagStatusJobTests {
         headers.put(DpsHeaders.USER_EMAIL, "nonexistent@nonexisent.domain");
         // aboutToExpireFeatureFlag
         when(featureFlagControllerMock.isAboutToExpireFeatureFlagEnabled()).thenReturn(true);
-        ReflectionTestUtils.setField(sut, "expirationAlerts", "1m,2w,1d");
+        when(configMock.getExpirationAlerts()).thenReturn("1m,2w,1d");
         // mock LocalDate.now()
         fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
         doReturn(fixedClock.instant()).when(clock).instant();
@@ -157,7 +159,7 @@ public class LegalTagStatusJobTests {
 
     @Test
     public void should_returnAboutToExpireLegalTagName_when_legalTagAboutToExpireIn1Year1Month2Weeks1Day() throws Exception {
-        ReflectionTestUtils.setField(sut, "expirationAlerts", "1y,1m,2w,1d");
+        when(configMock.getExpirationAlerts()).thenReturn("1y,1m,2w,1d");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 365);
@@ -188,7 +190,7 @@ public class LegalTagStatusJobTests {
 
     @Test
     public void should_returnAboutToExpireLegalTagName_when_legalTagAboutToExpireIn2Weeks() throws Exception {
-        ReflectionTestUtils.setField(sut, "expirationAlerts", "2w");
+        when(configMock.getExpirationAlerts()).thenReturn("2w");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag aboutToExpireLegalTag1 = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag1", true, 13);
@@ -208,7 +210,7 @@ public class LegalTagStatusJobTests {
 
     @Test
     public void should_throwException_when_wrongExpirationTime() throws Exception {
-        ReflectionTestUtils.setField(sut, "expirationAlerts", "2d,XXXy");
+        when(configMock.getExpirationAlerts()).thenReturn("2d,XXXy");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 354);
@@ -226,7 +228,7 @@ public class LegalTagStatusJobTests {
 
     @Test
     public void should_throwException_when_wrongExpirationFormat() throws Exception {
-        ReflectionTestUtils.setField(sut, "expirationAlerts", "XXX");
+        when(configMock.getExpirationAlerts()).thenReturn("XXX");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 354);
@@ -244,7 +246,7 @@ public class LegalTagStatusJobTests {
 
     @Test
     public void should_sendLegalTagNameToPubSub_when_legalTagAboutToExpire() throws Exception {
-        ReflectionTestUtils.setField(sut, "expirationAlerts", "2w");
+        when(configMock.getExpirationAlerts()).thenReturn("2w");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag aboutToExpireLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 14);
@@ -259,7 +261,7 @@ public class LegalTagStatusJobTests {
 
     @Test
     public void should_notSendLegalTagNameToPubSub_when_legalTagNotAboutToExpire() throws Exception {
-        ReflectionTestUtils.setField(sut, "expirationAlerts", "2w");
+        when(configMock.getExpirationAlerts()).thenReturn("2w");
 
         Collection<LegalTag> validLegalTags = new ArrayList<>();
         LegalTag longTermLegalTag = createValidLegalTagWithIsValidStatus("aboutToExpireLegalTag", true, 20);

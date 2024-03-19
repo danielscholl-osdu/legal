@@ -15,11 +15,11 @@ import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTag;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.legal.FeatureFlagController;
+import org.opengroup.osdu.legal.config.LegalTagConfig;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -34,7 +34,6 @@ import java.time.ZoneId;
 import jakarta.inject.Inject;
 
 @Component
-@ConfigurationProperties("legaltag")
 public class LegalTagStatusJob {
     @Inject
     private LegalTagConstraintValidator validator;
@@ -52,7 +51,8 @@ public class LegalTagStatusJob {
     @Autowired
     private Clock clock;
 
-    private String expirationAlerts;
+    @Autowired
+    private LegalTagConfig config;
 
     public LegalTagJobResult run(String projectId, DpsHeaders headers, String tenantName) throws Exception {
         LegalTagJobResult legalTagJobResult = new LegalTagJobResult(new StatusChangedTags(), new AboutToExpireLegalTags());
@@ -109,7 +109,7 @@ public class LegalTagStatusJob {
     private List<LocalDate> getAboutToExpireDates(Date expirationDate) throws AppException {
         ArrayList aboutToExpireDates = new ArrayList<>();
 
-        List<String> expirationAlertsList = Arrays.asList(expirationAlerts.split(","));
+        List<String> expirationAlertsList = Arrays.asList(config.getExpirationAlerts().split(","));
         for (String expiration : expirationAlertsList) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(expirationDate);
