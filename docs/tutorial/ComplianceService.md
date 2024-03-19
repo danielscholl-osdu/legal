@@ -510,6 +510,12 @@ After subscribing to the topic, you will receive notifications daily. These noti
 ```
 </details>
 
+The above shows an example message sent to subscribers. It shows you receive an array of items. Each item has the LegalTag name that has changed and whether it has changed to be compliant or incompliant.  
+
+If it has become incompliant, you must make sure associated data is no longer allowed to be consumed.
+
+If it is marked compliant, data that was not allowed for consumption can now be consumed through your services.
+
 ## The LegalTag About to Expire notification<a name="The-LegalTag-AboutToExpire-notification"></a>
 After subscribing to the topic, you will receive notifications daily.
 These notifications will list all LegalTags that will expire soon.
@@ -537,12 +543,6 @@ must specifically enable the feature.
 ```
 
 </details>
-    
-The above shows an example message sent to subscribers. It shows you receive an array of items. Each item has the LegalTag name that has changed and whether it has changed to be compliant or incompliant.  
-
-If it has become incompliant, you must make sure associated data is no longer allowed to be consumed.
-
-If it is marked compliant, data that was not allowed for consumption can now be consumed through your services.
 
 Time to expire should be configurable on deployment level. We should be able to provide list of all time periods before LegalTag expires. This will be achieved by introducing new environment variable `legaltag.expirationAlerts`. Format is comma separated values which consists of number and letter suffix, for example: 3d,2w,1m
 Where suffix letter should represent this time periods:
