@@ -10,7 +10,6 @@ global:
 data:
   # configmaps
   logLevel: "ERROR"
-  springProfilesActive: "gcp"
   acceptHttp: "true"
   entitlementsHost: "http://entitlements"
   defaultLegalTag: "default-data-tag"
