@@ -113,7 +113,7 @@ The following software have components provided under the terms of this license:
 - Byte Buddy Java agent (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy-agent)
 - ClassMate (from http://github.com/cowtowncoder/java-classmate)
 - Cloud Key Management Service (KMS) API v1-rev20240219-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
-- Cloud Storage JSON API v1-rev20240307-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
+- Cloud Storage JSON API v1-rev20240319-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - Cobertura (from http://cobertura.sourceforge.net)
 - Cobertura Limited Runtime (from http://cobertura.sourceforge.net)
 - Collections (from https://repo1.maven.org/maven2/commons-collections/commons-collections)
@@ -587,7 +587,6 @@ GPL-2.0-only
 The following software have components provided under the terms of this license:
 
 - Cobertura (from http://cobertura.sourceforge.net)
-- Jakarta Messaging API (from https://projects.eclipse.org/projects/ee4j.jms)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 
 ========================================================================
@@ -612,13 +611,6 @@ The following software have components provided under the terms of this license:
 - JavaBeans Activation Framework (from <http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp>, http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp, https://repo1.maven.org/maven2/com/sun/activation/javax.activation)
 - javax.annotation API (from http://jcp.org/en/jsr/detail?id=250)
 - tomcat-embed-core (from http://tomcat.apache.org/)
-
-========================================================================
-GPL-3.0-only
-========================================================================
-The following software have components provided under the terms of this license:
-
-- Jakarta Messaging API (from https://projects.eclipse.org/projects/ee4j.jms)
 
 ========================================================================
 GPL-3.0-or-later
@@ -844,10 +836,6 @@ unknown
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- AspectJ Weaver (from http://www.aspectj.org, https://www.eclipse.org/aspectj/)
-- JUnit Jupiter API (from http://junit.org/junit5/, https://junit.org/junit5/)
-- JUnit Jupiter Engine (from http://junit.org/junit5/, https://junit.org/junit5/)
-- JUnit Jupiter Params (from http://junit.org/junit5/, https://junit.org/junit5/)
 - System Rules (from http://stefanbirkner.github.com/system-rules/, http://stefanbirkner.github.io/system-rules/)
 - xml-apis (from https://repo1.maven.org/maven2/xml-apis/xml-apis)
 
