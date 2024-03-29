@@ -85,6 +85,13 @@ public abstract class AcceptanceBaseTest {
 		return response;
 	}
 
+	protected ClientResponse send(String requestBody, String query, String tenant) throws Exception {
+		Map<String, String> headers = legalTagUtils.getHeaders();
+		headers.put(DATA_PARTITION_ID, tenant);
+		return legalTagUtils.send(this.getApi(), this.getHttpMethod(), legalTagUtils.accessToken(), requestBody,
+				query, headers);
+	}
+
   protected ClientResponse validateAccess(int expectedResponse) throws Exception {
     Map<String, String> headers = new HashMap<>();
     headers.put(DATA_PARTITION_ID, LegalTagUtils.getMyDataPartition());
