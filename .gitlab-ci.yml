@@ -71,12 +71,11 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/core-global.yml"
 
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "publishing/pages.yml"
-
   - local: "devops/gc/pipeline/override-stages.yml"
 
   - local: "devops/core-plus/pipeline/override-stages.yml"
+
+  - local: "/publish.yml"
 
 .maven:
   image: maven:3.8.3-openjdk-17-slim

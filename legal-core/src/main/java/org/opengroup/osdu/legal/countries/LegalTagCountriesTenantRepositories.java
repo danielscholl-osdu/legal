@@ -41,7 +41,7 @@ public class LegalTagCountriesTenantRepositories {
     }
 
     private AppException invalidTenantGivenException(String tenantName){
-        log.warning(String.format("Requested tenantname does not exist in list of tenants %s", tenantName));
+        log.warning(String.format("Requested tenantname '%s' does not exist in list of tenants", tenantName));
         return new AppException(403, "Forbidden", String.format("You do not have access to the %s, value given %s",
                 DpsHeaders.DATA_PARTITION_ID, tenantName));
     }

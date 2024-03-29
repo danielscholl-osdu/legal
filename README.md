@@ -1,4 +1,6 @@
-# os-legal
+# OSDU Legal Service
+
+Official documentation is located at [https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/](https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/)
 
 ## os-legal-azure
 

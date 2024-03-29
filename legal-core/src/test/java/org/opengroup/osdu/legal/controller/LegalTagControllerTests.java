@@ -12,16 +12,12 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.legal.FeatureFlagController;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.legal.tags.LegalTagService;
 import org.opengroup.osdu.legal.tags.LegalTestUtils;
-import org.opengroup.osdu.legal.tags.dto.InvalidTagsWithReason;
-import org.opengroup.osdu.legal.tags.dto.LegalTagDto;
-import org.opengroup.osdu.legal.tags.dto.LegalTagDtos;
-import org.opengroup.osdu.legal.tags.dto.ReadablePropertyValues;
-import org.opengroup.osdu.legal.tags.dto.RequestLegalTags;
-import org.opengroup.osdu.legal.tags.dto.UpdateLegalTag;
+import org.opengroup.osdu.legal.tags.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -32,9 +28,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
@@ -64,6 +64,9 @@ public class LegalTagControllerTests {
 
     @Mock
     private DpsHeaders dpsHeaders;
+
+    @Mock
+    private FeatureFlagController featureFlagControllerMock;
 
     @InjectMocks
     private LegalTagController sut;
@@ -293,4 +296,44 @@ public class LegalTagControllerTests {
 
         verify(auditLogger).readLegalPropertiesSuccess(any());
     }
+
+    @Test
+    public void should_return200AndLegalTags_when_matchFound() {
+        LegalTagDto tag = LegalTestUtils.createValidLegalTagDto("k");
+
+        List<LegalTagDto> tags = Arrays.asList(tag, tag, tag);
+        LegalTagDtos output = new LegalTagDtos();
+        output.setLegalTags(tags);
+        
+        // isLegalQueryApi Feature Flag Enabled?
+        when(featureFlagControllerMock.isLegalTagQueryApiFlagEnabled()).thenReturn(true);
+       
+
+        when(legalTagService.queryLegalTag(any(), anyBoolean(), any())).thenReturn(output);
+
+        QueryLegalTag searchQuery = new QueryLegalTag();
+
+        searchQuery.setQueryList(Collections.singletonList("[AgreementPartyType= PurchaseOrganisation]"));
+
+        ResponseEntity<LegalTagDtos> result = sut.queryLegalTag(searchQuery, true);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        LegalTagDtos entity = (LegalTagDtos) result.getBody();
+
+        assertEquals(3, entity.getLegalTags().size(), 0);
+    }
+
+    @Test
+    public void should_return405_legal_query_api_disabled() {
+        // isLegalQueryApi Feature Flag Enabled?
+        when(featureFlagControllerMock.isLegalTagQueryApiFlagEnabled()).thenReturn(false);
+
+        QueryLegalTag searchQuery = new QueryLegalTag();
+        searchQuery.setQueryList(Collections.singletonList("[AgreementPartyType= PurchaseOrganisation]"));
+
+        ResponseEntity<LegalTagDtos> result = sut.queryLegalTag(searchQuery, true);
+
+        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, result.getStatusCode());
+    }
+
 }

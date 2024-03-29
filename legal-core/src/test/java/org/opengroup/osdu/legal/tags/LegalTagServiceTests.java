@@ -1,5 +1,6 @@
 package org.opengroup.osdu.legal.tags;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,27 +12,26 @@ import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
+import org.opengroup.osdu.core.common.model.legal.Properties;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.legal.FeatureFlagController;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepositoryFactory;
-import org.opengroup.osdu.legal.tags.dto.InvalidTagWithReason;
-import org.opengroup.osdu.legal.tags.dto.InvalidTagsWithReason;
-import org.opengroup.osdu.legal.tags.dto.LegalTagDto;
-import org.opengroup.osdu.legal.tags.dto.LegalTagDtos;
-import org.opengroup.osdu.legal.tags.dto.UpdateLegalTag;
+import org.opengroup.osdu.legal.tags.dto.*;
 import org.opengroup.osdu.legal.tags.util.PersistenceExceptionToAppExceptionMapper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -53,9 +53,12 @@ public class LegalTagServiceTests {
     private ILegalTagPublisher messagePublisherMock;
     @Mock
     private JaxRsDpsLog log;
+    @Mock
+    private FeatureFlagController featureFlagControllerMock;
 
     @InjectMocks
     private LegalTagService sut;
+
 
     @Before
     public void setup() {
@@ -91,7 +94,7 @@ public class LegalTagServiceTests {
         LegalTagDto legalTagDto = LegalTestUtils.createValidLegalTagDto("account-1");
         LegalTagService testService = createSut(output);
 
-        testService.create(legalTagDto,"tenant2");
+        testService.create(legalTagDto, "tenant2");
 
         verify(auditLogger).createdLegalTagSuccess(any());
     }
@@ -101,7 +104,7 @@ public class LegalTagServiceTests {
         sut = createSut();
         LegalTagDto legalTagDto = LegalTestUtils.createValidLegalTagDto("1");
 
-        legalTagDto = sut.create(legalTagDto,"tenant");
+        legalTagDto = sut.create(legalTagDto, "tenant");
         LegalTag legalTag = LegalTagDto.convertFrom(legalTagDto);
         assertEquals(-1306694706L, (long) legalTag.getId());
     }
@@ -112,7 +115,7 @@ public class LegalTagServiceTests {
         sut = createSut(legalTag);
 
         LegalTagDto legalTagDto = LegalTagDto.convertTo(legalTag);
-        legalTagDto = sut.create(legalTagDto,"tenant1");
+        legalTagDto = sut.create(legalTagDto, "tenant1");
 
         assertEquals("tenant1-mylegaltag", legalTagDto.getName());
         assertEquals((Long) LegalTag.getDefaultId("tenant1-mylegaltag"), LegalTagDto.convertFrom(legalTagDto).getId());
@@ -135,7 +138,7 @@ public class LegalTagServiceTests {
         LegalTagDto legalTagDto = LegalTestUtils.createValidLegalTagDto("mylegaltag");
         legalTagDto.setName("Tenant1-" + legalTagDto.getName());
 
-        legalTagDto = sut.create(legalTagDto,"tenant1");
+        legalTagDto = sut.create(legalTagDto, "tenant1");
 
         assertEquals("tenant1-Tenant1-mylegaltag", legalTagDto.getName());
         //verify isvalidthrows was called
@@ -149,7 +152,7 @@ public class LegalTagServiceTests {
         sut = createSut(legalTag);
 
         LegalTagDto dto = LegalTagDto.convertTo(legalTag);
-        dto = sut.create(dto,"tenant2");
+        dto = sut.create(dto, "tenant2");
 
         assertEquals("tenant2-mylegaltag", dto.getName());
         assertEquals((Long) LegalTag.getDefaultId("tenant2-mylegaltag"), LegalTagDto.convertFrom(dto).getId());
@@ -177,7 +180,7 @@ public class LegalTagServiceTests {
     public void should_ReturnNull_When_GivenNameThatDoesNotExist() {
         sut = createSut(null);
 
-        LegalTagDto result = sut.get("mykind","tenant1");
+        LegalTagDto result = sut.get("mykind", "tenant1");
 
         assertEquals(null, result);
     }
@@ -186,7 +189,7 @@ public class LegalTagServiceTests {
     public void should_ReturnNull_When_ErrorOccurredLegalTagsListIsNull() {
         sut = createSut(null);
         when(legalTagRepositoryMock.get(any())).thenReturn(null);
-        LegalTagDto result = sut.get("mykind","tenant1");
+        LegalTagDto result = sut.get("mykind", "tenant1");
 
         assertEquals(null, result);
     }
@@ -251,7 +254,7 @@ public class LegalTagServiceTests {
     public void should_returnNull_when_updateStatusIsGivenNullLegalTagOrHeaders() {
         sut = createSut();
 
-        LegalTagDto result = sut.updateStatus(null, true,"tenant1");
+        LegalTagDto result = sut.updateStatus(null, true, "tenant1");
         assertNull(result);
 
         result = sut.updateStatus("hi", true, null);
@@ -264,7 +267,7 @@ public class LegalTagServiceTests {
         when(legalTagRepositoryMock.get(any())).thenReturn(null);
 
         try {
-            sut.updateStatus("legaltag2023", true,"tenant1");
+            sut.updateStatus("legaltag2023", true, "tenant1");
             fail("Expected error");
         } catch (AppException ex) {
             assertEquals(404, ex.getError().getCode());
@@ -361,7 +364,7 @@ public class LegalTagServiceTests {
         sut = createSut();
 
         String[] input = new String[]{"abc", "123"};
-        LegalTagDtos result = sut.getBatch(input,"tenant2");
+        LegalTagDtos result = sut.getBatch(input, "tenant2");
         assertEquals(2, result.getLegalTags().size());
         verify(auditLogger).readLegalTagSuccess(any());
     }
@@ -397,10 +400,11 @@ public class LegalTagServiceTests {
         InvalidTagsWithReason result = sut.validate(null, "tenant1");
         assertEquals(0, result.getInvalidLegalTags().size());
     }
+
     @Test
     public void should_returnNull_when_givenEmptyNames() {
         sut = createSut();
-        InvalidTagsWithReason result = sut.validate(new String[] {}, "tenant1");
+        InvalidTagsWithReason result = sut.validate(new String[]{}, "tenant1");
         assertEquals(0, result.getInvalidLegalTags().size());
     }
 
@@ -508,6 +512,208 @@ public class LegalTagServiceTests {
         result = sut.get("tenant1-mykind", "tenant1");
 
         assertEquals("kind2", result.getName());
+    }
+
+    @Test
+    public void should_returnMatchedLegalTags() {
+        sut = createSutWithExtensionProperties_test1();
+
+        Collection<LegalTag> legalTagDtos = sut.listLegalTag(true, "tenant1");
+
+        assertFalse("collection size > 0", legalTagDtos.isEmpty());
+
+    }
+
+    @Test
+    public void test_attribute_match() {
+        // attributes expiration, countryOfOrigin, any
+        LegalTag output = new LegalTag();
+        output.setName("opendes-osdu-testing-1");
+        output.setDescription("legal tag description test");
+        Properties properties = new Properties();
+        properties.setCountryOfOrigin(Collections.singletonList("US"));
+        properties.setContractId("123450");
+        properties.setContractId("123450");
+        properties.setExpirationDate(Date.valueOf("2023-11-20"));
+        output.setProperties(properties);
+        output.setIsValid(true);
+        sut = createSut(output);
+        Boolean found = sut.checkAttributeForMatch("expirationDate", "2023-11-20", output);
+        assert(found.equals(true));
+        Boolean found2 = sut.checkAttributeForMatch("any", "test", output);
+        assert(found2.equals(true));
+        Boolean found3 = sut.checkAttributeForMatch("countryOfOrigin", "US", output);
+        assert(found3.equals(true));
+        Boolean found4 = sut.checkAttributeForMatch("dataType", "US", output);
+        assert(found4.equals(false));
+
+        HashMap<String, Object> extensionPropertiesMap = new HashMap<>();
+        extensionPropertiesMap.put("TestBoolean", false);
+        properties.setExtensionProperties(extensionPropertiesMap);
+    }
+
+    public void test_properties(String testQuery, Boolean expectFound) {
+        sut = createSutWithExtensionProperties_test1();
+
+        QueryLegalTag searchLegalTag = new QueryLegalTag();
+        searchLegalTag.setQueryList(Collections.singletonList(testQuery));
+
+        LegalTagDtos resultDto = sut.queryLegalTag(searchLegalTag, true, "tenant1");
+        if (expectFound) {
+            assertFalse(String.format("expected collection isNotEmpty, Query: %s", testQuery), resultDto.getLegalTags().isEmpty());
+        } else {
+            assertTrue(String.format("expected collection isEmpty, Query: %s", testQuery), resultDto.getLegalTags().isEmpty());
+        }
+
+    }
+
+    public void test_properties(String testQuery, Boolean expectFound, String operator) {
+        sut = createSutWithExtensionProperties_test1();
+
+        QueryLegalTag searchLegalTag = new QueryLegalTag();
+        searchLegalTag.setQueryList(Collections.singletonList(testQuery));
+        searchLegalTag.setOperatorList(Collections.singletonList(operator));
+
+        LegalTagDtos resultDto = sut.queryLegalTag(searchLegalTag, true, "tenant1");
+        if (expectFound) {
+            assertFalse(String.format("expected collection isNotEmpty, Query: %s", testQuery), resultDto.getLegalTags().isEmpty());
+        } else {
+            assertTrue(String.format("expected collection isEmpty, Query: %s", testQuery), resultDto.getLegalTags().isEmpty());
+        }
+
+    }
+
+    public void test_properties_exceptions(String testQuery, String message) {
+
+        Exception e = assertThrows(AppException.class, ()->{
+            test_properties(testQuery, true);
+        });
+        String m = e.getMessage();
+        assertEquals(m, message);
+    }
+
+    public void test_properties_exceptions(String testQuery, String message, String operator) {
+
+        Exception e = assertThrows(AppException.class, ()->{
+            test_properties(testQuery, true, operator);
+        });
+        String m = e.getMessage();
+        assertEquals(m, message);
+    }
+
+    @Test
+    public void test_legaltag_exceptions_whenExceptionThrown_thenAssertionSucceeds() {
+        // test exceptions
+        test_properties_exceptions("[foo=]", "Error parsing attribute query, expected attribute=string");
+        test_properties_exceptions("[any=]", "Error parsing attribute query, expected attribute=string");
+        test_properties_exceptions("[]", "Error Null Search Query");
+        test_properties_exceptions("", "Error Null Search Query");
+        test_properties_exceptions("", "Error parsing operator list, expected intersection or union", "foo");
+        test_properties_exceptions("[name=test]", "Error parsing operator list, expected intersection or union", "bar");
+    }
+
+    @Test
+    public void test_individual_legaltag_properties()
+    {
+        // tag
+        test_properties("[name=opendes-osdu-testing-1]", true);
+        test_properties("[description=legal tag description test]", true);
+        // properties
+        test_properties("[countryOfOrigin=US]", true);
+        test_properties("[contractId=123450]", true);
+        test_properties("[expirationDate=2023-11]", true);
+        test_properties("[expirationDate between (2023-03-04,2023-11-22)]", true);
+        test_properties("[originator=Schul]", true);
+        test_properties("[originator=schul]", true);
+        test_properties("[dataType=third party]", true);
+        test_properties("[securityClassification=private]", true);
+        test_properties("[personalData=no personal]", true);
+        test_properties("[exportClassification=ear99]", true);
+        // extension properties
+        test_properties("[AgreementIdentifier=test]", true);
+        test_properties("[EffectiveDate=2023-01]", true);
+        test_properties("[TerminationDate=2099-12]", true);
+        test_properties("[CountryCode=GBL]", true);
+        test_properties("[TestingMap=ABC]", true);
+        test_properties("[AffiliateEnablementIndicator=true]", true);
+        test_properties("[expirationDate between (2023-03-04,2023-11-22)]", true);
+        test_properties("[TestBoolean1=false]", true);
+        test_properties("[TestBoolean2=true]", true);
+        test_properties("[TestBoolean5=true]", true);
+        test_properties("[TestBoolean4=true]", true);
+        test_properties("[TestBoolean3=false]", true);
+        test_properties("[TestBoolean9=false]", false);
+        // any
+        when(featureFlagControllerMock.isLegalTagQueryApiFreeTextAllFieldsFlagEnabled()).thenReturn(true);
+        test_properties("[test]", true);
+        test_properties("[any=test]", true);
+        test_properties("[notfoundhere]", false);
+        // test nested extended properties
+        test_properties("[AgreementParty=some test data]", true);
+    }
+
+    @Test
+    public void test_operators()
+    {
+        test_properties("[name=opendes-osdu-testing-1]", true, "union");
+        test_properties("[name=opendes-osdu-testing-1]", true, "intersection");
+        test_properties("[name=opendes-osdu-testing-1]", true, "add");
+    }
+
+    private LegalTagService createSutWithExtensionProperties_test1() {
+        LegalTag output = new LegalTag();
+        output.setName("opendes-osdu-testing-1");
+        output.setDescription("legal tag description test");
+        output.setIsValid(true);
+        Properties properties = new Properties();
+        properties.setCountryOfOrigin(Collections.singletonList("US"));
+        properties.setContractId("123450");
+        properties.setExpirationDate(Date.valueOf("2023-11-20"));
+        properties.setOriginator("Schulmberger");
+        properties.setDataType("Third Party Data");
+        properties.setSecurityClassification("Private");
+        properties.setPersonalData("No Personal Data");
+        properties.setExportClassification("EAR99");
+        HashMap<String, Object> extensionPropertiesMap = new HashMap<>();
+        extensionPropertiesMap.put("AgreementIdentifier", "dz-test-0");
+        extensionPropertiesMap.put("EffectiveDate", "2023-01-00T00:00:00");
+        extensionPropertiesMap.put("TerminationDate", "2099-12-31T00:00:00");
+        extensionPropertiesMap.put("AffiliateEnablementIndicator", "true");
+        extensionPropertiesMap.put("TestBoolean1", "this is false");
+        extensionPropertiesMap.put("TestBoolean2", "this is true");
+        extensionPropertiesMap.put("TestBoolean3", false);
+        extensionPropertiesMap.put("TestBoolean4", true);
+        extensionPropertiesMap.put("TestBoolean5", true);
+        extensionPropertiesMap.put("TestBooleanString1", "true");
+        extensionPropertiesMap.put("TestBooleanString2", "false");
+        extensionPropertiesMap.put("TestBooleanArray1", "[true]");
+        extensionPropertiesMap.put("TestBooleanArray2", "[false]");
+        HashMap<String, Object> agreementPartyMap = new HashMap<String, Object>();
+        agreementPartyMap.put("AgreementPartyType", "omnibus");
+        agreementPartyMap.put("AgreementParty", "random things");
+        HashMap<String, Object> dataCoverageMap = new HashMap<String, Object>();
+        dataCoverageMap.put("Country", "osdu:master-data--GeopoliticalEntity:Global:");
+        dataCoverageMap.put("CountryCode", "GBL");
+        extensionPropertiesMap.put("DataCoverage", dataCoverageMap);
+
+        ArrayList<HashMap> agreementList = new ArrayList<HashMap>();
+        agreementList.add(agreementPartyMap);
+        agreementPartyMap.put("AgreementPartyType", "test AgreementPartyType");
+        agreementPartyMap.put("AgreementParty", "some test data");
+        agreementList.add(agreementPartyMap);
+
+        ArrayList<String> someArbitList = new ArrayList<String>();
+        someArbitList.add("ABC");
+        someArbitList.add("123");
+
+        extensionPropertiesMap.put("TestingMap", someArbitList);
+
+        extensionPropertiesMap.put("AgreementParties", agreementList);
+
+
+        properties.setExtensionProperties(extensionPropertiesMap);
+        output.setProperties(properties);
+        return createSut(output);
     }
 
     private LegalTagService createSut() {
