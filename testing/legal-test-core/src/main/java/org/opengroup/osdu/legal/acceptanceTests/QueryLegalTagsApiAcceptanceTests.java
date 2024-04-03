@@ -19,8 +19,9 @@ public abstract class QueryLegalTagsApiAcceptanceTests extends AcceptanceBaseTes
 
     @Test
     public void should_return400Error_when_givingInvalidPayload1() throws Exception {
-        ClientResponse response = send("", "?valid=true", TestUtils.getMyDataPartition());
-        assertTrue(BAD_REQUEST_VALUES.contains(response.getStatus()));
+        ClientResponse response = send("{\"notValid\":\"payload\"}", "?valid=true", TestUtils.getMyDataPartition());
+        assertTrue(String.format("Expected a 400 or 405, but got %d", response.getStatus()),
+            BAD_REQUEST_VALUES.contains(response.getStatus()));
     }
 
     @Test

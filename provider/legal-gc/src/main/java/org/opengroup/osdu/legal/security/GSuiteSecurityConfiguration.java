@@ -46,6 +46,7 @@ public class GSuiteSecurityConfiguration {
       "/legaltags:batchRetrieve",
       "/legaltags:validate",
       "/legaltags:properties",
+      "/legaltags:query",
       "/jobs/updateLegalTagStatus",
       "/info",
       "/_ah/liveness_check",
