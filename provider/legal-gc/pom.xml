@@ -5,12 +5,12 @@
   <parent>
     <artifactId>legal-service</artifactId>
     <groupId>org.opengroup.osdu.legal</groupId>
-    <version>0.26.0-SNAPSHOT</version>
+    <version>0.27.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>legal-gc</artifactId>
-  <version>0.26.0-SNAPSHOT</version>
+  <version>0.27.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>legal-gc</name>
   <description>Legal service for Hybrid Cloud</description>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>org.opengroup.osdu.legal</groupId>
       <artifactId>legal-core</artifactId>
-      <version>0.26.0-SNAPSHOT</version>
+      <version>0.27.0-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.api-client</groupId>
