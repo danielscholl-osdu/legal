@@ -8,13 +8,13 @@
         <maven.compiler.source>17</maven.compiler.source>
         <docker.image.prefix>opendes</docker.image.prefix>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <os-core-common.version>0.26.0-rc2</os-core-common.version>
+        <os-core-common.version>0.27.0-rc1</os-core-common.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <resilience4jVersion>1.7.0</resilience4jVersion>
         <openapi.version>1.6.14</openapi.version>
         <json-smart.version>2.5.0</json-smart.version>
         <jackson.version>2.16.1</jackson.version>
-        <spring-framework-version>6.1.5</spring-framework-version>
+        <spring-framework-version>6.1.6</spring-framework-version>
         <spring-boot.version>3.2.4</spring-boot.version>
         <spring-security.version>6.2.3</spring-security.version>
     </properties>
@@ -82,6 +82,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-bom</artifactId>
@@ -148,7 +149,6 @@
             <version>2.3.0</version>
         </dependency>
 		</dependencies>
-
     <profiles>
         <profile>
             <id>Default</id>
