@@ -1,6 +1,6 @@
 /*
- *  Copyright 2020-2023 Google LLC
- *  Copyright 2020-2023 EPAM Systems, Inc
+ *  Copyright 2020-2024 Google LLC
+ *  Copyright 2020-2024 EPAM Systems, Inc
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,39 +30,39 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class GSuiteSecurityConfiguration {
+public class SecurityConfiguration {
 
-  private static final String[] AUTH_ALLOWLIST = {
-      "/",
-      "/index.html",
-      "/api-docs.yaml",
-      "/api-docs/swagger-config",
-      "/api-docs/**",
-      "/swagger",
-      "/swagger-ui.html",
-      "/swagger-ui/**",
-      "/legaltags",
-      "/legaltags/**",
-      "/legaltags:batchRetrieve",
-      "/legaltags:validate",
-      "/legaltags:properties",
-      "/legaltags:query",
-      "/jobs/updateLegalTagStatus",
-      "/info",
-      "/_ah/liveness_check",
-      "/_ah/readiness_check"
+  private static final String[] AUTH_ALLOW_LIST = {
+    "/",
+    "/index.html",
+    "/api-docs.yaml",
+    "/api-docs/swagger-config",
+    "/api-docs/**",
+    "/swagger",
+    "/swagger-ui.html",
+    "/swagger-ui/**",
+    "/legaltags",
+    "/legaltags/**",
+    "/legaltags:batchRetrieve",
+    "/legaltags:validate",
+    "/legaltags:properties",
+    "/legaltags:query",
+    "/jobs/updateLegalTagStatus",
+    "/info",
+    "/_ah/liveness_check",
+    "/_ah/readiness_check",
+    "/actuator/**"
   };
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(AbstractHttpConfigurer::disable)
+    http.cors(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(AUTH_ALLOWLIST).permitAll()
-            .anyRequest().denyAll()
-        )
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(
+            authorize ->
+                authorize.requestMatchers(AUTH_ALLOW_LIST).permitAll().anyRequest().denyAll())
         .httpBasic(withDefaults());
     return http.build();
   }
