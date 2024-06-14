@@ -70,7 +70,7 @@ This service uses specific implementations of DestinationResolvers based on the 
 
 ### Google Cloud
 
-[Google Cloud service configuration](docs/google_cloud/README.md)
+[Google Cloud service configuration](docs/gc/README.md)
 
 Check that maven is installed:
 
