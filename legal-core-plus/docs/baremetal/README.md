@@ -41,13 +41,15 @@ Must have:
 
 Defined in default application property file but possible to override:
 
-| name                                     | value                                        | description                                                                                                                                                         | sensitive? | source                              |
-|------------------------------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------|
-| `LOG_PREFIX`                             | `legal`                                      | Logging prefix                                                                                                                                                      | no         | -                                   |
-| `AUTHORIZE_API`                          | `http://entitlements/entitlements/v1`        | Entitlements API endpoint                                                                                                                                           | no         | output of infrastructure deployment | |
-| `PARTITION_API`                          | ex `http://partition/api/partition/v1`       | Partition service endpoint                                                                                                                                          | no         | -                                   |
-| `PARTITION_AUTH_ENABLED`                 | `false`                                      | Disable auth token provisioning for requests to Partition service                                                                                                   | no         | -                                   |
-| `PARTITION_PROPERTIES_LEGAL_BUCKET_NAME` | ex `legal.bucket.name`                       | Name of partition property for legal bucket name value                                                                                                              | yes        | -                                   |
+| name                                     | value                                  | description                                                       | sensitive? | source                              |
+|------------------------------------------|----------------------------------------|-------------------------------------------------------------------|------------|-------------------------------------|
+| `LOG_PREFIX`                             | `legal`                                | Logging prefix                                                    | no         | -                                   |
+| `AUTHORIZE_API`                          | `http://entitlements/entitlements/v1`  | Entitlements API endpoint                                         | no         | output of infrastructure deployment | |
+| `PARTITION_API`                          | ex `http://partition/api/partition/v1` | Partition service endpoint                                        | no         | -                                   |
+| `PARTITION_AUTH_ENABLED`                 | `false`                                | Disable auth token provisioning for requests to Partition service | no         | -                                   |
+| `PARTITION_PROPERTIES_LEGAL_BUCKET_NAME` | ex `legal.bucket.name`                 | Name of partition property for legal bucket name value            | yes        | -                                   |
+| `MANAGEMENT_ENDPOINTS_WEB_BASE`          | ex `/`                                 | Web base for Actuator                                             | no         | -                                   |
+| `MANAGEMENT_SERVER_PORT`                 | ex `8081`                              | Port for Actuator                                                 | no         | -                                   |
 
 
 ### Properties set in Partition service:
