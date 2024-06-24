@@ -51,7 +51,7 @@ public class SecurityConfiguration {
     "/info",
     "/_ah/liveness_check",
     "/_ah/readiness_check",
-    "/actuator/**"
+    "/health/**"
   };
 
   @Bean
