@@ -18,17 +18,14 @@ package org.opengroup.osdu.legal.mappers.osm;
 
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_SINGLETON;
 
-import com.google.cloud.Timestamp;
-import com.google.cloud.datastore.Key;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
-
 import org.opengroup.osdu.core.osm.core.persistence.IdentityTranslator;
 import org.opengroup.osdu.core.osm.core.translate.Instrumentation;
 import org.opengroup.osdu.core.osm.core.translate.TypeMapper;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
