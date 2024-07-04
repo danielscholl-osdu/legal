@@ -24,6 +24,5 @@ CMD java --add-opens java.base/java.lang=ALL-UNNAMED \
          -Dserver.port=${PORT} \
          -Dlog4j.formatMsgNoLookups=true \
          -Dloader.path=plugins/ \
-         -Dloader.debug=true \
          -Dloader.main=org.opengroup.osdu.legal.LegalApplication \
          -jar /app/legal-${PROVIDER_NAME}.jar
