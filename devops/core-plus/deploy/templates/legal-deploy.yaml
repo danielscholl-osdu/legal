@@ -41,13 +41,7 @@ spec:
           runAsNonRoot: true
         ports:
         - containerPort: 8080
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: api/legal/v1/_ah/liveness_check
-            port: 8080
-          initialDelaySeconds: 120
-          periodSeconds: 10
+        # Fix for me: after implementing health checks in service, needs to add liveness and readiness probe
         resources:
           requests:
             cpu: {{ .Values.data.requestsCpu | quote }}
