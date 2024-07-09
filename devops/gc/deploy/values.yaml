@@ -16,8 +16,8 @@ data:
   legalHost: "http://legal"
   partitionHost: "http://partition"
   # deployments
-  requestsCpu: "5m"
-  requestsMemory: "325Mi"
+  requestsCpu: "25m"
+  requestsMemory: "512Mi"
   limitsCpu: "1"
   limitsMemory: "1G"
   legalStatusUpdateImage: ""
