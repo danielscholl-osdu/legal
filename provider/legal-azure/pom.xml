@@ -34,32 +34,9 @@
         <osdu.corelibazure.version>0.26.0-rc6</osdu.corelibazure.version>
         <osdu.legal-core.version>0.27.0-SNAPSHOT</osdu.legal-core.version>
         <woodstox-core.version>6.4.0</woodstox-core.version>
-        <netty.version>4.1.107.Final</netty.version>
         <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
-        <reactor-netty-http.version>1.1.13</reactor-netty-http.version>
-        <azure-active-directory.version>5.10.0</azure-active-directory.version>
+        <spring-cloud-azure-starter-active-directory.version>5.13.0</spring-cloud-azure-starter-active-directory.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- netty-bom dependency to be declared before spring-boot-dependencies,
-           to pull all netty-transitive dependencies with same version -->
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-bom</artifactId>
-                <version>${netty.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.azure.spring</groupId>
-                <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
-                <version>${azure-active-directory.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -81,7 +58,7 @@
         <dependency>
             <groupId>com.azure.spring</groupId>
             <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
-            <version>${azure-active-directory.version}</version>
+            <version>${spring-cloud-azure-starter-active-directory.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
