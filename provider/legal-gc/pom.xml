@@ -13,216 +13,13 @@
   <version>0.27.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>legal-gc</name>
-  <description>Legal service for Hybrid Cloud</description>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.google.cloud</groupId>
-        <artifactId>libraries-bom</artifactId>
-        <version>26.15.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!--for MinIO-->
-      <dependency>
-        <groupId>org.jetbrains.kotlin</groupId>
-        <artifactId>kotlin-stdlib</artifactId>
-        <version>1.6.0</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.squareup.okio</groupId>
-        <artifactId>okio</artifactId>
-        <version>2.7.0</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.squareup.okhttp3</groupId>
-        <artifactId>okhttp</artifactId>
-        <version>4.9.2</version>
-        <scope>compile</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <description>Legal service for Google Cloud</description>
 
   <dependencies>
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
       <groupId>org.opengroup.osdu.legal</groupId>
-      <artifactId>legal-core</artifactId>
+      <artifactId>legal-core-plus</artifactId>
       <version>0.27.0-SNAPSHOT</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.api-client</groupId>
-          <artifactId>google-api-client</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>core-lib-gc-spring6</artifactId>
-      <version>0.26.0-rc4</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-      <version>6.0.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-    		<groupId>org.mortbay.jetty</groupId>
-    		<artifactId>jetty</artifactId>
-    		<version>6.1.26</version>
-    </dependency>
-
-    <dependency>
-      <groupId>jakarta.inject</groupId>
-      <artifactId>jakarta.inject-api</artifactId>
-      <version>2.0.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>io.jsonwebtoken</groupId>
-      <artifactId>jjwt</artifactId>
-      <version>0.9.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-circuitbreaker -->
-    <dependency>
-      <groupId>io.github.resilience4j</groupId>
-      <artifactId>resilience4j-circuitbreaker</artifactId>
-      <version>${resilience4jVersion}</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-retry -->
-    <dependency>
-      <groupId>io.github.resilience4j</groupId>
-      <artifactId>resilience4j-retry</artifactId>
-      <version>${resilience4jVersion}</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-    </dependency>
-
-    <!-- Test Dependencies -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Test Dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2 -->
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito2</artifactId>
-      <version>2.0.2</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>2.0.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-core</artifactId>
-      <version>3.9.6</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-      <version>3.0.24</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.github.stefanbirkner/system-rules -->
-    <dependency>
-      <groupId>com.github.stefanbirkner</groupId>
-      <artifactId>system-rules</artifactId>
-      <version>1.2.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback.contrib</groupId>
-      <artifactId>logback-json-classic</artifactId>
-      <version>0.1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback.contrib</groupId>
-      <artifactId>logback-jackson</artifactId>
-      <version>0.1.5</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>oqm</artifactId>
-      <version>0.25.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>osm</artifactId>
-      <version>0.25.0</version>
-      <exclusions>
-        <exclusion>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>42.7.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>obm</artifactId>
-      <version>0.25.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
   </dependencies>
 
@@ -231,6 +28,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>3.2.2</version>
         <executions>
           <execution>
             <goals>
@@ -239,7 +37,7 @@
             <configuration>
               <classifier>spring-boot</classifier>
               <mainClass>
-                org.opengroup.osdu.legal.LegalApplication
+                org.springframework.boot.loader.launch.PropertiesLauncher
               </mainClass>
             </configuration>
           </execution>

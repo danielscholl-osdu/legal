@@ -21,20 +21,22 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 
-@ComponentScan(value = {"org.opengroup.osdu"})
+@ComponentScan(value = {"org.opengroup.osdu"},
+    excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = LegalApplication.class)})
 @PropertySource("classpath:swagger.properties")
 @SpringBootApplication
-public class LegalApplication extends SpringBootServletInitializer {
+public class LegalApplicationGC extends SpringBootServletInitializer {
 
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-    return application.sources(LegalApplication.class);
+    return application.sources(LegalApplicationGC.class);
   }
 
   public static void main(String[] args) {
-    SpringApplication.run(LegalApplication.class, args);
+    SpringApplication.run(LegalApplicationGC.class, args);
   }
 
 }

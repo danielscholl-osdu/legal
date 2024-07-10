@@ -64,10 +64,6 @@ This service uses specific implementations of DestinationResolvers based on the 
 
 ## Service Configuration
 
-### Baremetal
-
-[Baremetal service configuration](docs/baremetal/README.md)
-
 ### Google Cloud
 
 [Google Cloud service configuration](docs/gc/README.md)
@@ -147,8 +143,12 @@ mvn clean install -DskipTests
 
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
 
+
 ```bash
-cd provider/legal-gc/ && mvn spring-boot:run -Dspring-boot.run.jvmArguments="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens  java.base/java.lang.reflect=ALL-UNNAMED"
+CMD java --add-opens java.base/java.lang=ALL-UNNAMED \
+         --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
+         -Dloader.main=org.opengroup.osdu.legal.LegalApplication \
+         -jar /app/legal-${PROVIDER_NAME}.jar
 ```
 
 ## Testing
@@ -163,10 +163,6 @@ $ (cd testing/legal-test-core/ && mvn clean install)
 ### Running E2E Tests
 
 This section describes how to run cloud OSDU E2E tests.
-
-### Baremetal test configuration
-
-[Baremetal service configuration](docs/baremetal/README.md)
 
 ### Google Cloud test configuration
 

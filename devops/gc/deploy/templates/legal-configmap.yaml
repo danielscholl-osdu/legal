@@ -8,8 +8,4 @@ metadata:
 data:
   ACCEPT_HTTP: {{ .Values.data.acceptHttp | quote }}
   LOG_LEVEL: {{ .Values.data.logLevel | quote }}
-  {{- if .Values.global.onPremEnabled }}
-  SPRING_PROFILES_ACTIVE: "anthos"
-  {{- else }}
   SPRING_PROFILES_ACTIVE: "gcp"
-  {{- end }}

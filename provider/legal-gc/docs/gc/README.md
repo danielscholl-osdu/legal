@@ -9,10 +9,12 @@ In order to run Legal with Java 17 additional run args must be provided:
 --add-opens java.base/java.lang=ALL-UNNAMED --add-opens  java.base/java.lang.reflect=ALL-UNNAMED
 ```
 
-Full command:
 
 ```bash
-java -jar legal.jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+CMD java --add-opens java.base/java.lang=ALL-UNNAMED \
+         --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
+         -Dloader.main=org.opengroup.osdu.legal.LegalApplication \
+         -jar /app/legal-${PROVIDER_NAME}.jar
 ```
 
 ## Environment variables
@@ -46,10 +48,6 @@ Usage of spring profiles is preferred.
 | name                     | value                  | description                                                                                                               | sensitive? | source |
 |--------------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------|------------|--------|
 | `PARTITION_AUTH_ENABLED` | ex `true` or `false`   | Disable or enable auth token provisioning for requests to Partition service                                               | no         | -      |
-| `OQMDRIVER`              | `rabbitmq` or `pubsub` | Oqm driver mode that defines which message broker will be used                                                            | no         | -      |
-| `OSMDRIVER`              | `datastore`            | Osm driver mode that defines which KV storage will be used                                                                | no         | -      |
-| `OBMDRIVER`              | `gcs`                  | Obm driver mode that defines which object storage will be used                                                            | no         | -      |
-| `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID`      | Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no         | -      |
 
 ### Running Locally
 
