@@ -129,10 +129,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 |------|-------------|------|---------|---------|
 **conf.configmap** | configmap to be used | string | legal-config | yes
 **conf.appName** | name of the app | string | legal | yes
-**conf.minioSecretName** | Secret name for minio service | string | legal-minio-secret | yes
-**conf.postgresSecretName** | Secret name for postgres service | string | legal-postgres-secret | yes
-**conf.rabbitmqSecretName** | Secret name for rabbitmq service | string | rabbitmq-secret | yes
-**conf.bootstrapSecretName** | Secret name for cronjob | string | datafier-secret | yes
+**conf.replicas** | Number of pods for service  | integer | 1 | yes
 
 ### Istio variables
 
