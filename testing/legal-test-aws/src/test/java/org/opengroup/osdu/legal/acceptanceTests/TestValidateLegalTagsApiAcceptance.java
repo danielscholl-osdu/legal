@@ -29,11 +29,7 @@ public class TestValidateLegalTagsApiAcceptance extends ValidateLegalTagsApiAcce
         AwsLegalTagUtils legalTagUtils = new AwsLegalTagUtils();
 
         // Insert expired legal tag directly for should_return200_withLegalTagNamesAndInvalidExpirationDateReason_when_GivenExistingInvalidLegalTagNames
-        if (StringUtils.isBlank(System.getenv("MONGO_DB_TEST"))) {
-            legalTagUtils.insertExpiredLegalTag();
-        }else {
-            legalTagUtils.insertExpiredLegalTagMongoDb();
-        }
+        legalTagUtils.insertExpiredLegalTag();
         this.legalTagUtils = legalTagUtils;
 
         super.setup();
