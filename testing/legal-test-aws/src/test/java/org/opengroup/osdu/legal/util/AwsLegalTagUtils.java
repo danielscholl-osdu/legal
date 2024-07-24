@@ -19,10 +19,8 @@ package org.opengroup.osdu.legal.util;
 import com.amazonaws.services.s3.AmazonS3;
 import org.opengroup.osdu.core.aws.cognito.AWSCognitoClient;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
-import org.opengroup.osdu.core.aws.mongodb.helper.BasicMongoDBHelper;
 import org.opengroup.osdu.core.aws.s3.S3Config;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
-import org.opengroup.osdu.legal.util.mongo.MongoDbSimpleTestFactory;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -42,8 +40,6 @@ public class AwsLegalTagUtils extends LegalTagUtils {
     private final static String DYNAMO_DB_REGION = "DYNAMO_DB_REGION";
     private final static String DYNAMO_DB_ENDPOINT = "DYNAMO_DB_ENDPOINT";
     private static final String COLLECTION_PREFIX = "Legal-";
-    private static final String MONGO_DB_CONNECTION_URL = "MONGO_DB_URL";
-    private static final String MONGO_DB_DATABASE_NAME = "MONGO_DB_DATABASE_NAME";
 
 
     private String BearerToken = "";
@@ -100,24 +96,6 @@ public class AwsLegalTagUtils extends LegalTagUtils {
         }
 
         queryHelper.save(doc);
-    }
-
-    public void insertExpiredLegalTagMongoDb() {
-        // directly create expired legal tag document
-        String integrationTagTestName = String.format("%s-dps-integration-test-1566474656479", getMyDataPartition()); // name has to match what's hardcoded in the test
-
-        String mongoDbConnectionUrl = System.getenv(MONGO_DB_CONNECTION_URL);
-        String mongoDbDatabaseName = System.getenv(MONGO_DB_DATABASE_NAME);
-        MongoDbSimpleTestFactory mongoDBSimpleFactory = new MongoDbSimpleTestFactory();
-        BasicMongoDBHelper basicMongoDBHelper = mongoDBSimpleFactory.getHelper(mongoDbConnectionUrl, mongoDbDatabaseName);
-
-        LegalTag legalTag = new LegalTag();
-        legalTag.setName(integrationTagTestName);
-        legalTag.setId((long) integrationTagTestName.hashCode());
-        legalTag.setDefaultId();
-        legalTag.setDescription("Expired integration test tag");
-        legalTag.setProperties(getLegalTagProperties());
-        basicMongoDBHelper.save(legalTag, COLLECTION_PREFIX + System.getenv("MY_TENANT"));
     }
 
     private org.opengroup.osdu.core.common.model.legal.Properties getLegalTagProperties(){

@@ -10,12 +10,6 @@ variables:
   AWS_DEPLOY_TARGET: TF
   AWS_EKS_DEPLOYMENT_NAME: os-legal
 
-  MONGODB_AWS_SERVICE: legal
-  MONGODB_AWS_BUILD_SUBDIR: provider/legal-aws/build-aws
-  MONGODB_AWS_TEST_SUBDIR: testing/legal-test-aws
-  MONGODB_AWS_EKS_DEPLOYMENT_NAME: os-legal
-  MONGODB_AWS_DEPLOY_TARGET: TF
-
   IBM_BUILD_SUBDIR: provider/legal-ibm
   IBM_INT_TEST_SUBDIR: testing/legal-test-ibm
 
@@ -52,12 +46,6 @@ include:
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-maven.yml"
-
-  # - project: "osdu/platform/ci-cd-pipelines"
-  #   file: "cloud-providers/aws-mongodb-global.yml"
-
-  # - project: "osdu/platform/ci-cd-pipelines"
-  #   file: "cloud-providers/aws-mongodb-maven.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/ibm.yml"
@@ -219,9 +207,6 @@ azure_code_coverage:
 
 aws-test-java:
   image: $CI_REGISTRY/osdu/platform/deployment-and-operations/base-containers-aws/aws-maven/aws-maven:v2.0
-
-# aws-mongodb-test-java:
-#   image: $CI_REGISTRY/osdu/platform/deployment-and-operations/base-containers-aws/aws-maven/aws-maven:v2.0
 
 fossa-analyze:
   image: $CI_REGISTRY/divido/fossa-with-cache:v0.9-jdk17
