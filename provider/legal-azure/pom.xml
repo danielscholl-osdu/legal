@@ -19,7 +19,7 @@
     <parent>
         <artifactId>legal-service</artifactId>
         <groupId>org.opengroup.osdu.legal</groupId>
-        <version>0.27.0-SNAPSHOT</version>
+        <version>0.28.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -32,7 +32,7 @@
         <azure.appservice.appname />
         <azure.appservice.subscription />
         <core-lib-azure-spring6.version>0.27.0-rc3</core-lib-azure-spring6.version>
-        <osdu.legal-core.version>0.27.0-SNAPSHOT</osdu.legal-core.version>
+        <osdu.legal-core.version>0.28.0-SNAPSHOT</osdu.legal-core.version>
         <woodstox-core.version>6.4.0</woodstox-core.version>
         <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
         <spring-cloud-azure-starter-active-directory.version>5.13.0</spring-cloud-azure-starter-active-directory.version>
