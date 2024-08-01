@@ -29,7 +29,7 @@ data:
 conf:
   configmap: "legal-config"
   appName: "legal"
-  replicas: 1
+  replicas: 2
 
 istio:
   proxyCPU: "5m"
