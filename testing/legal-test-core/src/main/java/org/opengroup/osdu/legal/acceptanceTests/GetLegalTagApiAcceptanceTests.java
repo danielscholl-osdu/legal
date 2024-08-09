@@ -49,6 +49,19 @@ public abstract class GetLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
     }
 
     @Test
+    public void should_beAbleToRetrieveLegalTag_when_tenantIsAutomaticallyAppendedOnCreation_withTrailingSlash() throws Exception {
+        name = LegalTagUtils.createRandomNameTenant();
+        ClientResponse response = legalTagUtils.create("US", name, "2099-12-25", "Third Party Data");
+        legalTagUtils.getResult(response, 201, String.class);
+
+        Map<String, String> headers = legalTagUtils.getHeaders();
+        response = legalTagUtils.send("legaltags/" + name + "/", "GET",
+                legalTagUtils.accessToken(), "", "", headers);
+        legalTagUtils.getResult(response, 200, LegalTagUtils.ReadableLegalTag.class);
+        legalTagUtils.delete(name);
+    }
+
+    @Test
     public void should_retrieveLegalTag_when_givenExistingName() throws Exception {
         name = LegalTagUtils.createRandomNameTenant();
         ClientResponse result = legalTagUtils.create("US", name);

@@ -31,7 +31,7 @@
         <azure.appservice.plan />
         <azure.appservice.appname />
         <azure.appservice.subscription />
-        <core-lib-azure-spring6.version>0.27.0-rc4</core-lib-azure-spring6.version>
+        <core-lib-azure-spring6.version>0.27.0-rc7</core-lib-azure-spring6.version>
         <osdu.legal-core.version>0.28.0-SNAPSHOT</osdu.legal-core.version>
         <woodstox-core.version>6.4.0</woodstox-core.version>
         <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
