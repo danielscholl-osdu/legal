@@ -22,9 +22,9 @@ import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +60,7 @@ public class LegalTagStatusJobControllerTest {
         tenantInfo.setName("tenantName");
         tenantInfo.setProjectId("projectId");
         tenantInfo.setDataPartitionId("common");
-        when(tenantStorageFactory.listTenantInfo()).thenReturn(Collections.singletonList(tenantInfo));
+        when(tenantStorageFactory.getTenantInfo(anyString())).thenReturn(tenantInfo);
     }
 
     @Test
@@ -88,30 +88,4 @@ public class LegalTagStatusJobControllerTest {
         verify(log).error("Error running check LegalTag compliance job on tenant common", exception);
     }
 
-    @Test
-    public void shouldReturn500_whenCheckUpdateStatus_ThrowsAnErrorForFirstJobAndSucceedsForNextJob() throws Exception {
-        TenantInfo tenantInfo1 = new TenantInfo();
-        tenantInfo1.setName("tenantName1");
-        tenantInfo1.setProjectId("projectId1");
-        tenantInfo1.setDataPartitionId("common");
-        TenantInfo tenantInfo2 = new TenantInfo();
-        tenantInfo2.setName("tenantName2");
-        tenantInfo2.setProjectId("projectId2");
-        tenantInfo2.setDataPartitionId("common");
-        StatusChangedTag statusChangedTag = new StatusChangedTag("testTag", LegalTagCompliance.incompliant);
-        StatusChangedTags statusChangedTags = new StatusChangedTags();
-        statusChangedTags.getStatusChangedTags().add(statusChangedTag);
-        LegalTagJobResult legalTagJobResult = new LegalTagJobResult(statusChangedTags, new AboutToExpireLegalTags());
-
-        when(tenantStorageFactory.listTenantInfo()).thenReturn(List.of(tenantInfo1, tenantInfo2));
-        Exception exception = new Exception("error occurred");
-        when(legalTagStatusJob.run("projectId1", dpsHeaders, "tenantName1")).thenThrow(exception);
-        when(legalTagStatusJob.run("projectId2", dpsHeaders, "tenantName2")).thenReturn(legalTagJobResult);
-
-
-        ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        verify(log).error("Error running check LegalTag compliance job on tenant common", exception);
-    }
 }
