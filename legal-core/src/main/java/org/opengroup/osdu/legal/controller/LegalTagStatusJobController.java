@@ -3,6 +3,7 @@ package org.opengroup.osdu.legal.controller;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
+import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.legal.api.LegalTagStatusJobApi;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 
 import jakarta.inject.Inject;
-import java.util.Collection;
 
 import static java.util.Collections.singletonList;
 
@@ -40,18 +40,10 @@ public class LegalTagStatusJobController implements LegalTagStatusJobApi {
     public ResponseEntity<HttpStatus> checkLegalTagStatusChanges() {
         tenantStorageFactory.flushCache();
         DpsHeaders convertedHeaders = requestInfo.getHeaders();
-        Collection<TenantInfo> tenantsInfo = tenantStorageFactory.listTenantInfo();
 
-        boolean allPassed = true;
-        for (TenantInfo tenantInfo : tenantsInfo) {
-            convertedHeaders.put(DpsHeaders.DATA_PARTITION_ID, tenantInfo.getDataPartitionId());
-            boolean result = runJob(convertedHeaders, tenantInfo, legalTagStatusJob);
-            if (allPassed) {
-                allPassed = result;
-            }
-        }
+        boolean result = runJob(convertedHeaders, tenantStorageFactory.getTenantInfo(convertedHeaders.getPartitionId()), legalTagStatusJob);
 
-        HttpStatus status = allPassed ? HttpStatus.NO_CONTENT : HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus status = result ? HttpStatus.NO_CONTENT : HttpStatus.INTERNAL_SERVER_ERROR;
         return new ResponseEntity<>(status);
     }
 
