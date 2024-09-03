@@ -97,39 +97,40 @@ First you need to set variables in **values.yaml** file using any code editor. S
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
 **global.domain** | your domain for the external endpoint, ex `example.com` | string | - | yes
-**global.onPremEnabled** | whether on-prem is enabled | boolean | false | yes
-**global.limitsEnabled** | whether CPU and memory limits are enabled | boolean | true | yes
+**global.onPremEnabled** | whether on-prem is enabled | boolean |  `false` | yes
+**global.limitsEnabled** | whether CPU and memory limits are enabled | boolean | `true` | yes
+**global.logLevel** | severity of logging level | string | `ERROR` | yes
 
 ### Configmap variables
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
-**data.logLevel** | logging level | string | ERROR | yes
-**data.acceptHttp** | accept Http traffic | string | true | yes
-**data.entitlementsHost** | Entitlements host URL | string | <http://entitlements> | yes
-**data.defaultLegalTag** | Default legal tag | string | default-data-tag| yes
-**data.legalHost** | Legal host URL | string | <http://legal> | yes
+**data.logLevel** | logging severity level for this service only  | string | - | yes, only if differs from the `global.logLevel`
+**data.acceptHttp** | accept Http traffic | string | `true` | yes
+**data.entitlementsHost** | Entitlements host URL | string | `http://entitlements` | yes
+**data.defaultLegalTag** | Default legal tag | string | `default-data-tag` | yes
+**data.legalHost** | Legal host URL | string | `http://legal` | yes
 
 ### Deployment variables
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
-**data.requestsCpu** | amount of requests CPU | string | 10m | yes
-**data.requestsMemory** | amount of requests memory| string | 550Mi | yes
-**data.limitsCpu** | CPU limit | string | 1 | only if `global.limitsEnabled` is true
-**data.limitsMemory** | memory limit | string | 1G | only if `global.limitsEnabled` is true
+**data.requestsCpu** | amount of requests CPU | string | `10m` | yes
+**data.requestsMemory** | amount of requests memory| string | `550Mi` | yes
+**data.limitsCpu** | CPU limit | string | `1` | only if `global.limitsEnabled` is true
+**data.limitsMemory** | memory limit | string | `1G` | only if `global.limitsEnabled` is true
 **data.cronJobServiceAccountName** | name of the service account used in cronjob | string | - | yes
-**data.serviceAccountName** | name of your service account | string | legal | yes
-**data.imagePullPolicy** | when to pull the image | string | IfNotPresent | yes
+**data.serviceAccountName** | name of your service account | string | `legal` | yes
+**data.imagePullPolicy** | when to pull the image | string | `IfNotPresent` | yes
 **data.image** | path to the image in a registry | string | - | yes
 
 ### Configuration variables
 
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
-**conf.configmap** | configmap to be used | string | legal-config | yes
-**conf.appName** | name of the app | string | legal | yes
-**conf.replicas** | Number of pods for service  | integer | 1 | yes
+**conf.configmap** | configmap to be used | string | `legal-config` | yes
+**conf.appName** | name of the app | string | `legal` | yes
+**conf.replicas** | Number of pods for service  | integer | `1` | yes
 
 ### Istio variables
 

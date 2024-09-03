@@ -7,5 +7,5 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 data:
   ACCEPT_HTTP: {{ .Values.data.acceptHttp | quote }}
-  LOG_LEVEL: {{ .Values.data.logLevel | quote }}
+  LOG_LEVEL: {{ .Values.data.logLevel | default .Values.global.logLevel | quote }}
   SPRING_PROFILES_ACTIVE: "gcp"
