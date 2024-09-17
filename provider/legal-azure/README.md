@@ -12,6 +12,7 @@ In order to run this service locally, you will need the following:
 - [Java 17](https://adoptopenjdk.net/)
 - Infrastructure dependencies, deployable through the relevant [infrastructure template](https://dev.azure.com/slb-des-ext-collaboration/open-data-ecosystem/_git/infrastructure-templates?path=%2Finfra&version=GBmaster&_a=contents)
 - While not a strict dependency, example commands in this document use [bash](https://www.gnu.org/software/bash/)
+- Download the [application-insights-agent](https://github.com/microsoft/ApplicationInsights-Java/releases/tag/3.5.2) jar
 
 ### General Tips
 
@@ -37,30 +38,31 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 
 **Required to run service**
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `LOG_PREFIX` | `legal` | Logging prefix | no | - |
-| `server.servlet.contextPath` | `/api/legal/v1/` | Servlet context path | no | - |
-| `legal_service_region` | `us` | Legal service region | no | - |
-| `entitlements_service_endpoint` | ex `https://foo-entitlements.azurewebsites.net` | Entitlements API endpoint | no | output of infrastructure deployment |
-| `entitlements_service_api_key` | `********` | The API key clients will need to use when calling the service | yes | -- |
-| `partition_service_endpoint` |  ex `https://foo-partition.azurewebsites.net` | Partition Service API endpoint | no | output of infrastructure deployment |
-| `azure.activedirectory.app-resource-id` | `********` | AAD client application ID | yes | output of infrastructure deployment |
-| `LEGAL_HOSTNAME` | `notused` | Possibly unused | no | - |
-| `CRON_JOB_IP` | `10.0.0.1` | Possibly unused | no | - |
-| `azure.activedirectory.session-stateless` | `true` | Flag run in stateless mode (needed by AAD dependency) | no | -- |
-| `aad_client_id` | `********` | AAD client application ID | yes | output of infrastructure deployment |
-| `azure.activedirectory.AppIdUri` | `api://${azure.activedirectory.client-id}` | URI for AAD Application | no | -- |
-| `cosmosdb_database` | ex `dev-osdu-r2-db` | Cosmos database for legal documents | no | output of infrastructure deployment |
-| `azure.storage.container-name` | ex `legal-service-azure-configuration` | Storage container for legal documents | no | output of infrastructure deployment |
-| `azure.storage.enable-https` | `true` | Spring configuration for Azure Storage | no | - |
-| `servicebus_topic_name` | `legaltags` | Topic for async messaging | no | output of infrastructure deployment |
-| `KEYVAULT_URI` | ex `https://foo-keyvault.vault.azure.net/` | URI of KeyVault that holds application secrets | no | output of infrastructure deployment |
-| `AZURE_CLIENT_ID` | `********` | Identity to run the service locally. This enables access to Azure resources. You only need this if running locally | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-username` |
-| `AZURE_TENANT_ID` | `********` | AD tenant to authenticate users from | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-tenant-id` |
-| `AZURE_CLIENT_SECRET` | `********` | Secret for `$AZURE_CLIENT_ID` | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-password` |
-| `appinsights_key` | `********` | API Key for App Insights | yes | output of infrastructure deployment |
-| `azure_istioauth_enabled` | `true` | Flag to Disable AAD auth | no | -- |
+| name | value | description                                                                                                        | sensitive? | source |
+| ---  | ---   |--------------------------------------------------------------------------------------------------------------------|------------| ---    |
+| `LOG_PREFIX` | `legal` | Logging prefix                                                                                                     | no         | - |
+| `server.servlet.contextPath` | `/api/legal/v1/` | Servlet context path                                                                                               | no         | - |
+| `legal_service_region` | `us` | Legal service region                                                                                               | no         | - |
+| `entitlements_service_endpoint` | ex `https://foo-entitlements.azurewebsites.net` | Entitlements API endpoint                                                                                          | no         | output of infrastructure deployment |
+| `entitlements_service_api_key` | `********` | The API key clients will need to use when calling the service                                                      | yes        | -- |
+| `partition_service_endpoint` |  ex `https://foo-partition.azurewebsites.net` | Partition Service API endpoint                                                                                     | no         | output of infrastructure deployment |
+| `azure.activedirectory.app-resource-id` | `********` | AAD client application ID                                                                                          | yes        | output of infrastructure deployment |
+| `LEGAL_HOSTNAME` | `notused` | Possibly unused                                                                                                    | no         | - |
+| `CRON_JOB_IP` | `10.0.0.1` | Possibly unused                                                                                                    | no         | - |
+| `azure.activedirectory.session-stateless` | `true` | Flag run in stateless mode (needed by AAD dependency)                                                              | no         | -- |
+| `aad_client_id` | `********` | AAD client application ID                                                                                          | yes        | output of infrastructure deployment |
+| `azure.activedirectory.AppIdUri` | `api://${azure.activedirectory.client-id}` | URI for AAD Application                                                                                            | no         | -- |
+| `cosmosdb_database` | ex `dev-osdu-r2-db` | Cosmos database for legal documents                                                                                | no         | output of infrastructure deployment |
+| `azure.storage.container-name` | ex `legal-service-azure-configuration` | Storage container for legal documents                                                                              | no         | output of infrastructure deployment |
+| `azure.storage.enable-https` | `true` | Spring configuration for Azure Storage                                                                             | no         | - |
+| `servicebus_topic_name` | `legaltags` | Topic for async messaging                                                                                          | no         | output of infrastructure deployment |
+| `KEYVAULT_URI` | ex `https://foo-keyvault.vault.azure.net/` | URI of KeyVault that holds application secrets                                                                     | no         | output of infrastructure deployment |
+| `AZURE_CLIENT_ID` | `********` | Identity to run the service locally. This enables access to Azure resources. You only need this if running locally | yes        | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-username` |
+| `AZURE_TENANT_ID` | `********` | AD tenant to authenticate users from                                                                               | yes        | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-tenant-id` |
+| `AZURE_CLIENT_SECRET` | `********` | Secret for `$AZURE_CLIENT_ID`                                                                                      | yes        | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-password` |
+| `appinsights_key` | `********` | API Key for App Insights                                                                                           | yes        | output of infrastructure deployment |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | `InstrumentationKey=********` | Connection String for App Insights. Instrumentation Key value can be obtained from Azure portal                    | yes        | keyvault secret: `$KEYVAULT_URI/secrets/appinsights-connection-string` |
+| `azure_istioauth_enabled` | `true` | Flag to Disable AAD auth                                                                                           | no         | -- |
 
 **Required to run integration tests**
 
@@ -90,6 +92,9 @@ Java version: 17.0.7
 ...
 ```
 
+### Application Insights Agent
+- [Download the jar from the link locally to your file system](https://github.com/microsoft/ApplicationInsights-Java/releases/tag/3.5.2)
+
 ### Build and run the application
 
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
@@ -105,7 +110,7 @@ $ (cd provider/legal-azure/ && mvn clean package)
 #
 # Note: this assumes that the environment variables for running the service as outlined
 #       above are already exported in your environment.
-$ java -jar $(find provider/legal-azure/target/ -name '*-spring-boot.jar') --add-opens java.base/java.lang=ALL-UNNAMED --add-opens  java.base/java.lang.reflect=ALL-UNNAMED
+$ java -jar $(find provider/legal-azure/target/ -name '*-spring-boot.jar') --add-opens java.base/java.lang=ALL-UNNAMED --add-opens  java.base/java.lang.reflect=ALL-UNNAMED -javaagent:<<Absolute file path to application-insights-agent jar>> -DAPPINSIGHTS_LOGGING_ENABLED=true
 
 # Alternately you can run using the Mavan Task
 $ mvn spring-boot:run
