@@ -16,10 +16,14 @@ package org.opengroup.osdu.legal.azure.countries;
 
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class StorageReaderImpl implements IStorageReader {
 
@@ -30,23 +34,36 @@ public class StorageReaderImpl implements IStorageReader {
 
     private static final String LEGAL_CONFIG_FILE_NAME = "Legal_COO.json";
 
-    public StorageReaderImpl(String dataPartitionId, String containerName, BlobStore blobStore) {
+    private ICache<String, byte[]> legalCOOCache;
+
+    public StorageReaderImpl(String dataPartitionId, String containerName, BlobStore blobStore, ICache<String, byte[]> legalCOOCache) {
         this.dataPartitionId = dataPartitionId;
         this.containerName = containerName;
         this.blobStore = blobStore;
+        this.legalCOOCache = legalCOOCache;
     }
 
     @Override
     public byte[] readAllBytes() {
         try {
-            //should return a json format of an array of Country class
-            return blobStore.readFromStorageContainer(dataPartitionId, LEGAL_CONFIG_FILE_NAME, containerName)
-                    .getBytes(StandardCharsets.UTF_8);
+            byte[] legalCOO = new byte[0];
+            if (Objects.isNull(legalCOOCache.get(dataPartitionId))) {
+                //should return a json format of an array of Country class
+                legalCOO = blobStore.readFromStorageContainer(dataPartitionId, LEGAL_CONFIG_FILE_NAME, containerName)
+                        .getBytes(StandardCharsets.UTF_8);
+                legalCOOCache.put(dataPartitionId, legalCOO);
+            } else {
+                legalCOO = legalCOOCache.get(dataPartitionId);
+            }
+
+            return legalCOO;
         } catch (AppException appException) {
             if (appException.getError().getCode() == HttpStatus.SC_NOT_FOUND) {
                 // Storage File does not exist. No countries are being overwritten using Storage account.
                 // Continue using the DefaultCountryCode.json
-                return new byte[0];
+                byte[] legalCOO = new byte[0];
+                legalCOOCache.put(dataPartitionId, legalCOO);
+                return legalCOO;
             }
             throw appException;
         }

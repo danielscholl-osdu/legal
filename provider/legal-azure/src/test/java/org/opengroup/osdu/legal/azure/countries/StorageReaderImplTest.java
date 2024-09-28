@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.http.AppException;
 
 import java.nio.charset.StandardCharsets;
@@ -28,6 +29,8 @@ public class StorageReaderImplTest {
     private final String containerName = "test-container";
     @Mock
     private BlobStore blobStore;
+    @Mock
+    private ICache<String, byte[]> legalCOOCache;
 
     private static final String LEGAL_CONFIG_FILE_NAME = "Legal_COO.json";
 
@@ -40,13 +43,25 @@ public class StorageReaderImplTest {
 
     @Before
     public void setup() {
-        storageReaderImpl = new StorageReaderImpl(dataPartitionId, containerName, blobStore);
+        storageReaderImpl = new StorageReaderImpl(dataPartitionId, containerName, blobStore, legalCOOCache);
     }
 
     @Test
     public void shouldReturnContentAsBytes_whenCountriesFileFound() {
+        when(legalCOOCache.get(dataPartitionId)).thenReturn(null);
         when(blobStore.readFromStorageContainer(dataPartitionId, LEGAL_CONFIG_FILE_NAME, containerName)).thenReturn(content);
+
         byte[] expected = content.getBytes(StandardCharsets.UTF_8);
+
+        byte[] actual = storageReaderImpl.readAllBytes();
+
+        assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldReturnContentAsBytes_whenCacheEntryFound() {
+        byte[] expected = content.getBytes(StandardCharsets.UTF_8);
+        when(legalCOOCache.get(dataPartitionId)).thenReturn(expected);
 
         byte[] actual = storageReaderImpl.readAllBytes();
 
@@ -57,6 +72,7 @@ public class StorageReaderImplTest {
     public void shouldReturnEmptyBytes_whenCountriesFileNotFound() {
         BlobStorageException blobStorageException = new BlobStorageException("Blob not found", null, null);
         AppException appExceptionWithNotFoundError = new AppException(HttpStatus.SC_NOT_FOUND, "testReason", "testMessage", blobStorageException);
+        when(legalCOOCache.get(dataPartitionId)).thenReturn(null);
         when(blobStore.readFromStorageContainer(dataPartitionId, LEGAL_CONFIG_FILE_NAME, containerName)).thenThrow(appExceptionWithNotFoundError);
         byte[] expected = new byte[0];
 

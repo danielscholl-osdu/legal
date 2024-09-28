@@ -18,6 +18,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
@@ -38,8 +39,11 @@ public class StorageReaderFactoryImpl implements IStorageReaderFactory {
     @Autowired
     private BlobStore blobStore;
 
+    @Autowired
+    private ICache<String, byte[]> legalCOOCache;
+
     @Override
     public IStorageReader getReader(TenantInfo tenant, String projectRegion) {
-        return new StorageReaderImpl(headers.getPartitionId(), containerName, blobStore);
+        return new StorageReaderImpl(headers.getPartitionId(), containerName, blobStore, legalCOOCache);
     }
 }
