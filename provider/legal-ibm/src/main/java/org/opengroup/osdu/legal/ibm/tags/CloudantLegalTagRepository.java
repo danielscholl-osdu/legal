@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import com.cloudant.client.internal.views.AllDocsRequestResponse;
+
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
@@ -172,7 +173,7 @@ public class CloudantLegalTagRepository implements ILegalTagRepository {
 		try {
 			Response resp = db.save(legalTag);
 			db.ensureFullCommit();
-			
+			logger.info("Query on {}", db.info().getDbName());
 			if (200 <= resp.getStatusCode() && resp.getStatusCode() < 300) {
 				
 				if (resp.getStatusCode() == 202) {
@@ -339,43 +340,30 @@ public class CloudantLegalTagRepository implements ILegalTagRepository {
 	 * @see org.opengroup.osdu.legal.provider.interfaces.LegalTagRepository#list(org.opengroup.osdu.legal.tags.dataaccess.ListLegalTagArgs)
 	 */
 	@Override
-	public Collection<LegalTag> list(ListLegalTagArgs args) {		
+	public Collection<LegalTag> list(ListLegalTagArgs args) {
 
-		Selector query = EmptyExpression.empty(); 
-		// Since the isValid attribute is a Boolean rather than a bool
-		// we will interpret this a three state flag
-		// The byoc doesn't help to clarify that because it hits a
-		// NullPointerException when comparing a bool this a null Boolean,
-		// But at least the behavior is consistent when the limit is not
-		// null
-		// Both the commented code and the code below pass all acceptance tests
-		// query = eq("is_valid", Optional.ofNullable(args.getIsValid()).orElse(true).booleanValue());
-		if (args.getIsValid() != null) {
-			query = eq("is_valid", args.getIsValid().booleanValue());
+		AllDocsRequestResponse allDocResponse = null;
+		try {
+			allDocResponse = (AllDocsRequestResponse) db.getAllDocsRequestBuilder().includeDocs(true).build().getResponse();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		List<LegalTag> legalTags;
+		try {
+			legalTags = allDocResponse.getResponse().getDocsAs(BanckendLegalTag.class)
+					.stream()
+					.filter(lTag ->  lTag.getIs_Valid() == args.getIsValid())
+					.collect(Collectors.toList());
+
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 
+		logger.info("Query on {}", db.info().getDbName());
+		//logExecutionStat(db, legalTags);
 
-		QueryBuilder builder = new QueryBuilder(query);
 
-		builder.bookmark(args.getCursor());
-
-		if (logger.isDebugEnabled()) {
-			builder.executionStats(true);
-		}
-
-		if (args.getLimit() > 0) {
-			builder.limit(args.getLimit());
-		}
-
-		QueryResult<CloudantBackedLegalTag> result = db.query(builder.build()
-				, CloudantBackedLegalTag.class);
-
-		logExecutionStat(db, result);
-
-		if (args.getLimit() > 0) {
-			args.setCursor(result.getBookmark());
-		}
-			return Collections.unmodifiableCollection(result.getDocs());
+		return Collections.unmodifiableCollection(legalTags);
 	}
 	
 	private void logExecutionStat(Database db, QueryResult<?> result) {
