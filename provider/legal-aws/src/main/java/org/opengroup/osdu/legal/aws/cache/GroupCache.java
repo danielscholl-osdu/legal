@@ -16,96 +16,37 @@
 
 package org.opengroup.osdu.legal.aws.cache;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.opengroup.osdu.core.aws.cache.DummyCache;
-import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
-import org.opengroup.osdu.core.aws.ssm.K8sParameterNotFoundException;
+import org.opengroup.osdu.core.aws.cache.CacheParameters;
+import org.opengroup.osdu.core.aws.cache.NameSpacedCache;
+import org.opengroup.osdu.core.aws.cache.DefaultCache;
 import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.entitlements.Groups;
-import org.opengroup.osdu.core.aws.cache.CacheFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Component
-public class GroupCache<K,V> implements ICache<K,V>{
-    @Value("${aws.elasticache.cluster.endpoint:null}")
-    String redisSearchHost;
-    @Value("${aws.elasticache.cluster.port:null}")
-    String redisSearchPort;
-    @Value("${aws.elasticache.cluster.key:null}")
-    String redisSearchKey;
-
-    private ICache<K,V> cache;
-    
-    private K8sLocalParameterProvider provider;
-
-    private CacheFactory<K,V> cacheFactory;
+public class GroupCache<K,V> extends DefaultCache<K,V> {
+    static final String KEY_NAMESPACE = "groupCache";
 
     // overloaded constructor for testing
-    public GroupCache() throws K8sParameterNotFoundException, JsonProcessingException {
-        this(System.getenv("DISABLE_CACHE"), null, null, null);
+    public GroupCache(
+        @Value("${aws.elasticache.cluster.endpoint:null}") String redisEndpoint,
+        @Value("${aws.elasticache.cluster.port:null}") String redisPort,
+        @Value("${aws.elasticache.cluster.key:null}") String redisPassword
+    ) {
+        super((ICache<K, V>) new NameSpacedCache<>(CacheParameters.<String, V>builder()
+                                                                  .expTimeSeconds(60)
+                                                                  .maxSize(10)
+                                                                  .defaultHost(redisEndpoint)
+                                                                  .defaultPort(redisPort)
+                                                                  .defaultPassword(redisPassword)
+                                                                  .keyNamespace(KEY_NAMESPACE)
+                                                                  .build()
+                                                                  .initFromLocalParameters(String.class, (Class<V>) Groups.class)));
     }
 
 
-    public GroupCache(String disableCacheResult, K8sLocalParameterProvider givenProvider, String redisSearchKey, CacheFactory<K,V> cacheFactory) throws K8sParameterNotFoundException, JsonProcessingException {
-        if (cacheFactory != null) {
-            this.cacheFactory = cacheFactory;
-        } else {
-            this.cacheFactory = new CacheFactory<>();
-        }
-        if (givenProvider == null){
-            this.provider = new K8sLocalParameterProvider();
-        }
-        else{
-            this.provider = givenProvider;
-        }
-        if (redisSearchKey != null){
-            this.redisSearchKey = redisSearchKey;
-        }
-        if (Boolean.TRUE.equals(provider.getLocalMode())){
-            if (Boolean.parseBoolean(disableCacheResult)){
-                this.cache =  new DummyCache<>();
-            }
-            this.cache =  this.cacheFactory.getVmCache(60, 10);
-
-        } else {
-            String host = provider.getParameterAsStringOrDefault("CACHE_CLUSTER_ENDPOINT", redisSearchHost);
-            int port = Integer.parseInt(provider.getParameterAsStringOrDefault("CACHE_CLUSTER_PORT", redisSearchPort));
-            Map<String, String > credential =provider.getCredentialsAsMap("CACHE_CLUSTER_KEY");
-            String password;
-            if (credential !=null){
-                password = credential.get("token");
-            } else{
-                password = redisSearchKey;
-            }
-            this.cache =  this.cacheFactory.getRedisCache(host, port, password, 60, (Class<K>) String.class, (Class<V>) Groups.class);
-
-        }
-    }
-
-    ICache<K,V> getCacheForTesting(){
-        return this.cache;
-    }
-
-    @Override
-    public void put(K k, V o) {
-        this.cache.put(k,o);
-    }
-
-    @Override
-    public V get(K k) {
-        return this.cache.get(k);
-    }
-
-    @Override
-    public void delete(K k) {
-        this.cache.delete(k);
-    }
-
-    @Override
-    public void clearAll() {
-        this.cache.clearAll();
+    public GroupCache() {
+        this(null, null, null);
     }
 }
