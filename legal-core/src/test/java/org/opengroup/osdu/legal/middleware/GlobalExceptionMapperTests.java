@@ -1,27 +1,5 @@
 package org.opengroup.osdu.legal.middleware;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import javassist.NotFoundException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.model.http.AppError;
-import org.opengroup.osdu.core.common.model.http.AppException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.context.request.WebRequest;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ValidationException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,8 +7,34 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.when;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.AppError;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.context.request.WebRequest;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
+import javassist.NotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GlobalExceptionMapperTests {
@@ -47,10 +51,12 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity<Object> response = sut.handleAppException(exception);
 		assertEquals(409, response.getStatusCodeValue());
-		//assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType().toString());
+		// assertEquals(MediaType.APPLICATION_JSON,
+		// response.getHeaders().getContentType().toString());
 		AppError expectedError = new AppError(409, "any reason", "any message");
 		assertEquals(expectedError, response.getBody());
 	}
+
 	@Test
 	public void should_addLocationHeader_when_fromAppException() {
 
@@ -59,6 +65,7 @@ public class GlobalExceptionMapperTests {
 		ResponseEntity<Object> response = sut.handleAppException(exception);
 		assertEquals(302, response.getStatusCodeValue());
 	}
+
 	@Test
 	public void should_useGenericResponse_when_exceptionIsThrownDuringMapping() {
 
@@ -67,8 +74,9 @@ public class GlobalExceptionMapperTests {
 		ResponseEntity<Object> response = sut.handleAppException(exception);
 
 		assertEquals(302, response.getStatusCodeValue());
-		//assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType().toString());
-		//assertEquals("any message", response.getBody());
+		// assertEquals(MediaType.APPLICATION_JSON,
+		// response.getHeaders().getContentType().toString());
+		// assertEquals("any message", response.getBody());
 	}
 
 	@Test
@@ -77,8 +85,9 @@ public class GlobalExceptionMapperTests {
 		NotFoundException exception = new NotFoundException("any message");
 		ResponseEntity<Object> response = sut.handleNotFoundException(exception);
 		assertEquals(404, response.getStatusCodeValue());
-		//assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType().toString());
-		//assertEquals(null, response.getBody().getMessage());
+		// assertEquals(MediaType.APPLICATION_JSON,
+		// response.getHeaders().getContentType().toString());
+		// assertEquals(null, response.getBody().getMessage());
 	}
 
 	@Test
@@ -86,17 +95,43 @@ public class GlobalExceptionMapperTests {
 		HttpHeaders httpHeaders = mock(HttpHeaders.class);
 		WebRequest webRequest = mock(WebRequest.class);
 		HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("any message");
-		ResponseEntity<Object> response = sut.handleHttpRequestMethodNotSupported(exception, httpHeaders, HttpStatus.METHOD_NOT_ALLOWED, webRequest);
+		ResponseEntity<Object> response = sut.handleHttpRequestMethodNotSupported(exception, httpHeaders,
+				HttpStatus.METHOD_NOT_ALLOWED, webRequest);
 		assertEquals(405, response.getStatusCodeValue());
 	}
 
 	@Test
 	public void should_use400ValueInResponse_When_MethodArgumentNotValidExceptionIsHandledByGlobalExceptionMapper() {
-		HttpHeaders httpHeaders = mock(HttpHeaders.class);
+		HttpHeaders httpHeaders = new HttpHeaders();
 		WebRequest webRequest = mock(WebRequest.class);
-		MethodArgumentNotValidException exception = mock(MethodArgumentNotValidException.class);
-		ResponseEntity<Object> response = sut.handleMethodArgumentNotValid(exception, httpHeaders, HttpStatus.BAD_REQUEST, webRequest);
+
+		BindingResult bindingResult = mock(BindingResult.class);
+		MethodArgumentNotValidException exception = new MethodArgumentNotValidException(null, bindingResult);
+		when(bindingResult.getFieldErrors()).thenReturn(Collections.emptyList());
+		ResponseEntity<Object> response = sut.handleMethodArgumentNotValid(exception, httpHeaders,
+				HttpStatus.BAD_REQUEST, webRequest);
 		assertEquals(400, response.getStatusCodeValue());
+
+	}
+
+	@Test
+	public void should_sanitizeErrorMessages_When_MethodArgumentNotValidExceptionIsHandledByGlobalExceptionMapper() {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		WebRequest webRequest = mock(WebRequest.class);
+		FieldError fieldError = new FieldError("objectName", "fieldName",
+				"log_injection_before_3773793\r\nlog_injection_after_3773793");
+		BindingResult bindingResult = mock(BindingResult.class);
+		when(bindingResult.getFieldErrors()).thenReturn(Collections.singletonList(fieldError));
+
+		MethodArgumentNotValidException exception = new MethodArgumentNotValidException(null, bindingResult);
+
+		ResponseEntity<Object> response = sut.handleMethodArgumentNotValid(exception, httpHeaders,
+				HttpStatus.BAD_REQUEST, webRequest);
+
+		assertEquals(400, response.getStatusCodeValue());
+	
+		AppError error = (AppError) response.getBody();
+		assertTrue(error.getMessage().contains("log_injection_before_3773793\\r\\nlog_injection_after_3773793"));
 	}
 
 	@Test
@@ -106,8 +141,10 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity<Object> response = sut.handleGeneralException(exception);
 		assertEquals(500, response.getStatusCodeValue());
-		//assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType().toString());
-		//assertEquals("An unknown error has occurred.", response.getBody().getMessage());
+		// assertEquals(MediaType.APPLICATION_JSON,
+		// response.getHeaders().getContentType().toString());
+		// assertEquals("An unknown error has occurred.",
+		// response.getBody().getMessage());
 	}
 
 	@Test
@@ -150,7 +187,7 @@ public class GlobalExceptionMapperTests {
 
 	@Test
 	public void should_returnForbidden_when_AccessDeniedExceptionIsCaptured() {
-		AccessDeniedException accessDeniedException = mock(AccessDeniedException .class);
+		AccessDeniedException accessDeniedException = mock(AccessDeniedException.class);
 		when(accessDeniedException.getMessage()).thenReturn("Access Denied exception");
 
 		ResponseEntity response = sut.handleAccessDeniedException(accessDeniedException);
@@ -170,13 +207,14 @@ public class GlobalExceptionMapperTests {
 
 	@Test
 	public void should_returnBadRequest_when_ConstraintViolationExceptionWithMessageIsCaptured() {
-		ConstraintViolationException constraintViolationException = mock(ConstraintViolationException .class);
+		ConstraintViolationException constraintViolationException = mock(ConstraintViolationException.class);
 		ConstraintViolation constraintViolation = mock(ConstraintViolation.class);
 
 		Set<ConstraintViolation> constraintViolations = new HashSet<>();
 		constraintViolations.add(constraintViolation);
 
-		when(constraintViolationException.getConstraintViolations()).thenReturn(Collections.singleton(constraintViolation));
+		when(constraintViolationException.getConstraintViolations())
+				.thenReturn(Collections.singleton(constraintViolation));
 		when(constraintViolation.getMessage()).thenReturn("custom constraint validation");
 
 		ResponseEntity response = sut.handleConstraintValidationException(constraintViolationException);
@@ -186,7 +224,7 @@ public class GlobalExceptionMapperTests {
 
 	@Test
 	public void should_returnBadRequest_when_ConstraintViolationExceptionWithEmptyMessageIsCaptured() {
-		ConstraintViolationException constraintViolationException = mock(ConstraintViolationException .class);
+		ConstraintViolationException constraintViolationException = mock(ConstraintViolationException.class);
 
 		ResponseEntity response = sut.handleConstraintValidationException(constraintViolationException);
 
