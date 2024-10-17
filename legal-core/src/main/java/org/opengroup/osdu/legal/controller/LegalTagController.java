@@ -1,24 +1,31 @@
 package org.opengroup.osdu.legal.controller;
 
-import com.google.gson.Gson;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.inject.Inject;
-import jakarta.validation.ValidationException;
 
-import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
+import org.opengroup.osdu.legal.FeatureFlagController;
 import org.opengroup.osdu.legal.api.LegalTagApi;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.legal.tags.LegalTagService;
-import org.opengroup.osdu.legal.tags.dto.*;
-import org.opengroup.osdu.legal.FeatureFlagController;
+import org.opengroup.osdu.legal.tags.dto.InvalidTagsWithReason;
+import org.opengroup.osdu.legal.tags.dto.LegalTagDto;
+import org.opengroup.osdu.legal.tags.dto.LegalTagDtos;
+import org.opengroup.osdu.legal.tags.dto.QueryLegalTag;
+import org.opengroup.osdu.legal.tags.dto.ReadablePropertyValues;
+import org.opengroup.osdu.legal.tags.dto.RequestLegalTags;
+import org.opengroup.osdu.legal.tags.dto.UpdateLegalTag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.gson.Gson;
+
+import jakarta.inject.Inject;
+import jakarta.validation.ValidationException;
 
 @RestController
 public class LegalTagController implements LegalTagApi {

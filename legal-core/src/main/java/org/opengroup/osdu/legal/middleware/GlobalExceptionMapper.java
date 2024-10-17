@@ -29,6 +29,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import org.apache.commons.text.StringEscapeUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -78,7 +79,8 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(UnrecognizedPropertyException.class)
 	protected ResponseEntity<Object> handleUnrecognizedPropertyException(UnrecognizedPropertyException e) {
 		return this.getErrorResponse(
-				new AppException(HttpStatus.BAD_REQUEST.value(), "Unrecognized fields found on request", e.getMessage()));
+				new AppException(HttpStatus.BAD_REQUEST.value(), "Unrecognized fields found on request",
+						e.getMessage()));
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
@@ -95,7 +97,7 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	protected ResponseEntity<Object> handleConstraintValidationException(ConstraintViolationException e) {
-		jaxRsDpsLogger.error( "Validation exception", e);
+		jaxRsDpsLogger.error("Validation exception", e);
 
 		List<String> msgs = new ArrayList<String>();
 		for (ConstraintViolation violation : e.getConstraintViolations()) {
@@ -104,12 +106,13 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 		if (msgs.isEmpty()) {
 			msgs.add("Invalid payload");
 		}
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 		ArrayNode array = mapper.valueToTree(msgs);
 		JsonNode result = mapper.createObjectNode().set("errors", array);
 
-		return this.getErrorResponse(new AppException(HttpStatus.BAD_REQUEST.value(), "Validation error.", result.toString()));
+		return this.getErrorResponse(
+				new AppException(HttpStatus.BAD_REQUEST.value(), "Validation error.", result.toString()));
 	}
 
 	@ExceptionHandler(IOException.class)
@@ -127,30 +130,45 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleGeneralException(Exception e) {
 		return this.getErrorResponse(
 				new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server error.",
-						"An unknown error has occurred.",e.getMessage(), e));
+						"An unknown error has occurred.", e.getMessage(), e));
 	}
 
 	@Override
 	@NonNull
-	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(@NonNull HttpRequestMethodNotSupportedException e,
-																		 @NonNull HttpHeaders headers,
-																		 @NonNull HttpStatusCode status,
-        															 @NonNull WebRequest request) {
-	  return this.getErrorResponse(
+	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+			@NonNull HttpRequestMethodNotSupportedException e,
+			@NonNull HttpHeaders headers,
+			@NonNull HttpStatusCode status,
+			@NonNull WebRequest request) {
+		return this.getErrorResponse(
 				new AppException(HttpStatus.METHOD_NOT_ALLOWED.value(), "Method not found.",
 						"Method not found.", e));
 	}
 
-  @Override
-  @NonNull
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException e,
-                                                                @NonNull HttpHeaders headers,
-                                                                @NonNull HttpStatusCode status,
-                                                                @NonNull WebRequest request) {
-    return this.getErrorResponse(
-        new AppException(HttpStatus.BAD_REQUEST.value(), "Validation failed.",
-            "Validation failed.", e));
-  }
+	@Override
+	@NonNull
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(
+			@NonNull MethodArgumentNotValidException e,
+			@NonNull HttpHeaders headers,
+			@NonNull HttpStatusCode status,
+			@NonNull WebRequest request) {
+
+		List<String> sanitizedErrorMessages = new ArrayList<>();
+		e.getBindingResult().getFieldErrors().forEach(fieldError -> {
+			String errorMessage = fieldError.getDefaultMessage();
+			String sanitizedMessage = StringEscapeUtils.escapeJava(errorMessage);
+			sanitizedErrorMessages.add(sanitizedMessage);
+		});
+
+		String errorsString = String.join("; ", sanitizedErrorMessages);
+
+		AppException appException = new AppException(
+				HttpStatus.BAD_REQUEST.value(),
+				"Validation failed.",
+				errorsString);
+
+		return this.getErrorResponse(appException);
+	}
 
 	public ResponseEntity<Object> getErrorResponse(AppException e) {
 
@@ -162,6 +180,6 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 			this.jaxRsDpsLogger.warning(exceptionMsg, e);
 		}
 
-      return new ResponseEntity<Object>(e.getError(),HttpStatus.resolve(e.getError().getCode()));
+		return new ResponseEntity<Object>(e.getError(), HttpStatus.resolve(e.getError().getCode()));
 	}
 }

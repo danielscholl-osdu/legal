@@ -17,7 +17,10 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.ObjectUtils.Null;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,18 +64,24 @@ import java.util.logging.Level;
 public class LegalTagService {
 
   @Inject
-  public PersistenceExceptionToAppExceptionMapper
-      exceptionMapper; // public for testing purposes only
+  public PersistenceExceptionToAppExceptionMapper exceptionMapper; // public for testing purposes only
 
-  @Inject private ILegalTagRepositoryFactory repositories;
-  @Inject private LegalTagConstraintValidator validator;
-  @Inject private AuditLogger auditLogger;
-  @Inject private ILegalTagPublisher legalTagPublisher;
-  @Inject private JaxRsDpsLog log;
-  @Inject private FeatureFlagController featureFlagController;
+  @Inject
+  private ILegalTagRepositoryFactory repositories;
+  @Inject
+  private LegalTagConstraintValidator validator;
+  @Inject
+  private AuditLogger auditLogger;
+  @Inject
+  private ILegalTagPublisher legalTagPublisher;
+  @Inject
+  private JaxRsDpsLog log;
+  @Inject
+  private FeatureFlagController featureFlagController;
 
   public LegalTagDto create(LegalTagDto legalTagDto, String tenantName) {
-    if (legalTagDto == null) return null;
+    if (legalTagDto == null)
+      return null;
     validator.isValidThrows(legalTagDto);
 
     ILegalTagRepository legalTagRepository = repositories.get(tenantName);
@@ -95,13 +104,14 @@ public class LegalTagService {
 
   public Boolean delete(
       String projectId, String name, DpsHeaders requestHeaders, String tenantName) {
-    if (Strings.isNullOrEmpty(name) || requestHeaders == null) return false;
+    if (Strings.isNullOrEmpty(name) || requestHeaders == null)
+      return false;
 
     LegalTag legalTag = getLegalTag(name, tenantName);
-    if (legalTag == null) return true;
+    if (legalTag == null)
+      return true;
     ILegalTagRepository legalTagRepository = repositories.get(tenantName);
-    Boolean result =
-        exceptionMapper.run(legalTagRepository::delete, legalTag, "Error deleting LegalTag.");
+    Boolean result = exceptionMapper.run(legalTagRepository::delete, legalTag, "Error deleting LegalTag.");
     if (Boolean.TRUE.equals(result)) {
       publishMessageToPubSubOnDeletion(projectId, legalTag, requestHeaders);
       auditLogger.deletedLegalTagSuccess(singletonList(legalTag.toString()));
@@ -110,10 +120,12 @@ public class LegalTagService {
   }
 
   public LegalTagDto get(String name, String tenantName) {
-    if (Strings.isNullOrEmpty(name)) return null;
+    if (Strings.isNullOrEmpty(name))
+      return null;
 
-    LegalTagDtos tags = getBatch(new String[] {name}, tenantName);
-    if (tags == null || tags.getLegalTags() == null || tags.getLegalTags().isEmpty()) return null;
+    LegalTagDtos tags = getBatch(new String[] { name }, tenantName);
+    if (tags == null || tags.getLegalTags() == null || tags.getLegalTags().isEmpty())
+      return null;
     else {
       auditLogger.readLegalTagSuccess(Collections.singletonList(name));
       return Iterables.get(tags.getLegalTags(), 0);
@@ -130,14 +142,14 @@ public class LegalTagService {
   public LegalTagDtos list(boolean valid, String tenantName) {
     Collection<LegalTag> tags = listLegalTag(valid, tenantName);
     LegalTagDtos outputs = legalTagsToReadableLegalTags(tags);
-    List<String> names =
-        outputs.getLegalTags().stream().map(x -> x.getName()).collect(Collectors.toList());
+    List<String> names = outputs.getLegalTags().stream().map(x -> x.getName()).collect(Collectors.toList());
     auditLogger.readLegalTagSuccess(names);
     return outputs;
   }
 
   public LegalTagDtos getBatch(String[] names, String tenantName) {
-    if (names == null) return null;
+    if (names == null)
+      return null;
 
     Collection<LegalTag> legalTags = getLegalTags(names, tenantName);
     auditLogger.readLegalTagSuccess(Collections.singletonList(String.join(", ", names)));
@@ -179,18 +191,18 @@ public class LegalTagService {
   }
 
   public LegalTagDto update(UpdateLegalTag newLegalTag, String tenantName) {
-    if (newLegalTag == null) return null;
+    if (newLegalTag == null)
+      return null;
 
     LegalTag currentLegalTag = getLegalTag(newLegalTag.getName(), tenantName);
-
-    if (currentLegalTag == null)
+    if (currentLegalTag == null) {
       throw AppException.legalTagDoesNotExistError(newLegalTag.getName());
+    }
 
     currentLegalTag.getProperties().setContractId(newLegalTag.getContractId());
     currentLegalTag.getProperties().setExpirationDate(newLegalTag.getExpirationDate());
     currentLegalTag.getProperties().setExtensionProperties(newLegalTag.getExtensionProperties());
     currentLegalTag.setDescription(newLegalTag.getDescription());
-
     validator.isValidThrows(currentLegalTag);
 
     auditLogger.updatedLegalTagSuccess(Collections.singletonList(currentLegalTag.toString()));
@@ -199,11 +211,13 @@ public class LegalTagService {
   }
 
   public LegalTagDto updateStatus(String legalTagName, Boolean isValid, String tenantName) {
-    if (legalTagName == null) return null;
+    if (legalTagName == null)
+      return null;
 
     LegalTag currentLegalTag = getLegalTag(legalTagName, tenantName);
 
-    if (currentLegalTag == null) throw AppException.legalTagDoesNotExistError(legalTagName);
+    if (currentLegalTag == null)
+      throw AppException.legalTagDoesNotExistError(legalTagName);
 
     currentLegalTag.setIsValid(isValid);
     return update(currentLegalTag, tenantName);
@@ -213,13 +227,15 @@ public class LegalTagService {
     ILegalTagRepository legalTagRepository = repositories.get(tenantName);
     LegalTag output = exceptionMapper.run(legalTagRepository::update, currentLegalTag, "error");
 
-    if (output == null) return null;
+    if (output == null)
+      return null;
     auditLogger.updatedLegalTagSuccess(singletonList(currentLegalTag.toString()));
     return LegalTagDto.convertTo(output);
   }
 
   private LegalTagDtos legalTagsToReadableLegalTags(Collection<LegalTag> legalTags) {
-    if (legalTags == null || legalTags.isEmpty()) return new LegalTagDtos();
+    if (legalTags == null || legalTags.isEmpty())
+      return new LegalTagDtos();
 
     List<LegalTagDto> convertedTags = new ArrayList<>();
     for (LegalTag tag : legalTags) {
@@ -248,7 +264,7 @@ public class LegalTagService {
   }
 
   private LegalTag getLegalTag(String name, String tenantName) {
-    Collection<LegalTag> output = getLegalTags(new String[] {name}, tenantName);
+    Collection<LegalTag> output = getLegalTags(new String[] { name }, tenantName);
     return output == null || output.size() == 0 ? null : Iterables.get(output, 0);
   }
 
@@ -283,8 +299,7 @@ public class LegalTagService {
     log.debug(String.format("DEBUG Number of legaltags matched with input criteria %d", matchedTags.size()));
 
     outputs = legalTagsToReadableLegalTags(matchedTags);
-    List<String> names =
-        outputs.getLegalTags().stream().map(x -> x.getName()).toList();
+    List<String> names = outputs.getLegalTags().stream().map(x -> x.getName()).toList();
     auditLogger.readLegalTagSuccess(names);
 
     return outputs;
@@ -319,19 +334,19 @@ public class LegalTagService {
       } else if (StringUtils.containsAnyIgnoreCase(first, LEGAL_QUERY_API_UNION_OPERATOR)) {
         intersection = false;
         union = true;
-      } else if (StringUtils.containsAnyIgnoreCase(first, LEGAL_QUERY_API_ADD_OPERATOR)){
+      } else if (StringUtils.containsAnyIgnoreCase(first, LEGAL_QUERY_API_ADD_OPERATOR)) {
         intersection = false;
         union = false;
       } else {
         log.info(String.format("invalid operator %s", first));
-        throw new AppException(HttpStatus.SC_BAD_REQUEST, "Error parsing operator list", "Error parsing operator list, expected intersection or union");
+        throw new AppException(HttpStatus.SC_BAD_REQUEST, "Error parsing operator list",
+            "Error parsing operator list, expected intersection or union");
       }
     }
 
     ListIterator<String> queryListIt = queryList.listIterator();
 
-    while (queryListIt.hasNext())
-    {
+    while (queryListIt.hasNext()) {
 
       extractedSearchQuery = queryListIt.next();
       Matcher m = Pattern.compile("\\[([^]]*)").matcher(extractedSearchQuery);
@@ -345,19 +360,21 @@ public class LegalTagService {
 
     if (union) {
       log.info(String.format("union %s", first));
-      return matchTagArrayList.stream().flatMap(Collection::stream).collect(Collectors.toMap(LegalTag::getName, Function.identity(), (existing, replacement) -> existing)).values();
-    } else if (intersection){
+      return matchTagArrayList.stream().flatMap(Collection::stream)
+          .collect(Collectors.toMap(LegalTag::getName, Function.identity(), (existing, replacement) -> existing))
+          .values();
+    } else if (intersection) {
 
-    List<LegalTag> allTags = matchTagArrayList.stream().flatMap(Collection::stream).collect(Collectors.toList());
+      List<LegalTag> allTags = matchTagArrayList.stream().flatMap(Collection::stream).collect(Collectors.toList());
 
-    Collection<LegalTag> duplicateTags = allTags.stream()
-      .collect(Collectors.groupingBy(LegalTag::getName))
-      .entrySet().stream()
-      .filter(entry -> entry.getValue().size() > 1) 
-      .flatMap(entry -> entry.getValue().stream().limit(1)) 
-      .collect(Collectors.toList());
+      Collection<LegalTag> duplicateTags = allTags.stream()
+          .collect(Collectors.groupingBy(LegalTag::getName))
+          .entrySet().stream()
+          .filter(entry -> entry.getValue().size() > 1)
+          .flatMap(entry -> entry.getValue().stream().limit(1))
+          .collect(Collectors.toList());
 
-    return duplicateTags;
+      return duplicateTags;
     } else { // return add
       return matchTagArrayList.stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
@@ -369,130 +386,127 @@ public class LegalTagService {
 
     Collection<LegalTag> matchedTags = new ArrayList<>();
 
-      StringTokenizer st = null;
-      String attribute = null;
-      String pattern = null;
-      String searchedString = null;
-      String fromDate = null;
-      String toDate = null;
-      LocalDate fromlocalDate = null;
-      LocalDate toLocalDate = null;
-      boolean matchedTag = false;
-      LocalDate expirationDate = null;
+    StringTokenizer st = null;
+    String attribute = null;
+    String pattern = null;
+    String searchedString = null;
+    String fromDate = null;
+    String toDate = null;
+    LocalDate fromlocalDate = null;
+    LocalDate toLocalDate = null;
+    boolean matchedTag = false;
+    LocalDate expirationDate = null;
 
-      Iterator<LegalTag> legaliterator = legalTags.iterator();
-      log.debug(String.format("parseInputAndSearch Search query %s", searchQuery));
+    Iterator<LegalTag> legaliterator = legalTags.iterator();
+    log.debug(String.format("parseInputAndSearch Search query %s", searchQuery));
 
-      if (searchQuery == null || searchQuery.equals("")) {
-        log.error("Null query");
-        throw new AppException(HttpStatus.SC_BAD_REQUEST, "Null Search Query", "Error Null Search Query");
-      } else if (searchQuery.contains(LEGAL_QUERY_API_ATTRIBUTE_SEPARATOR)) {
-        st = new StringTokenizer(searchQuery, LEGAL_QUERY_API_ATTRIBUTE_SEPARATOR);
-        log.debug(String.format("DEBUG readInputAndSearch contains =, %s", searchQuery));
-        int tokens = st.countTokens();
-        if (tokens == 2) {
-          attribute = st.nextToken().trim();
-          pattern = st.nextToken().trim();
-        } else {
-          log.error("invalid query input %s", searchQuery);
-          throw new AppException(HttpStatus.SC_BAD_REQUEST, "Error parsing attribute query", "Error parsing attribute query, expected attribute=string");
-        }
-      } else if (searchQuery.contains(LEGAL_QUERY_API_BETWEEN_START)) {
-        // date
-        log.debug(String.format("DEBUG readInputAndSearch contains (), %s", searchQuery));
-        searchedString =
-            searchQuery.substring(searchQuery.indexOf(LEGAL_QUERY_API_BETWEEN_START) + 1, searchQuery.lastIndexOf(LEGAL_QUERY_API_BETWEEN_END));
-
-        if (searchedString.contains(LEGAL_QUERY_API_QUERY_SEPARATOR)) {
-          st = new StringTokenizer(searchedString, LEGAL_QUERY_API_QUERY_SEPARATOR);
-          fromDate = st.nextToken().trim();
-          toDate = st.nextToken().trim();
-        }
-
-        fromlocalDate = LocalDate.parse(fromDate);
-        toLocalDate = LocalDate.parse(toDate);
-
+    if (searchQuery == null || searchQuery.equals("")) {
+      log.error("Null query");
+      throw new AppException(HttpStatus.SC_BAD_REQUEST, "Null Search Query", "Error Null Search Query");
+    } else if (searchQuery.contains(LEGAL_QUERY_API_ATTRIBUTE_SEPARATOR)) {
+      st = new StringTokenizer(searchQuery, LEGAL_QUERY_API_ATTRIBUTE_SEPARATOR);
+      log.debug(String.format("DEBUG readInputAndSearch contains =, %s", searchQuery));
+      int tokens = st.countTokens();
+      if (tokens == 2) {
+        attribute = st.nextToken().trim();
+        pattern = st.nextToken().trim();
       } else {
-        log.debug(String.format("DEBUG readInputAndSearch contains free text search, %s", searchQuery));
-        attribute = LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE;
-        pattern = searchQuery;
+        log.error("invalid query input %s", searchQuery);
+        throw new AppException(HttpStatus.SC_BAD_REQUEST, "Error parsing attribute query",
+            "Error parsing attribute query, expected attribute=string");
+      }
+    } else if (searchQuery.contains(LEGAL_QUERY_API_BETWEEN_START)) {
+      // date
+      log.debug(String.format("DEBUG readInputAndSearch contains (), %s", searchQuery));
+      searchedString = searchQuery.substring(searchQuery.indexOf(LEGAL_QUERY_API_BETWEEN_START) + 1,
+          searchQuery.lastIndexOf(LEGAL_QUERY_API_BETWEEN_END));
+
+      if (searchedString.contains(LEGAL_QUERY_API_QUERY_SEPARATOR)) {
+        st = new StringTokenizer(searchedString, LEGAL_QUERY_API_QUERY_SEPARATOR);
+        fromDate = st.nextToken().trim();
+        toDate = st.nextToken().trim();
       }
 
-      log.debug(String.format("DEBUG parseInputAndSearch pattern: %s attribute %s, %s", pattern, attribute, searchQuery));
-      while (null != legaliterator && legaliterator.hasNext()) {
-        LegalTag oneLegalTag = legaliterator.next();
-        if (searchQuery.contains(LEGAL_QUERY_API_ATTRIBUTE_SEPARATOR)) {
-          matchedTag = searchInLegalTag(attribute, pattern, oneLegalTag);
-        } else if (searchQuery.contains(LEGAL_QUERY_API_BETWEEN_START)) {
-          expirationDate = oneLegalTag.getProperties().getExpirationDate().toLocalDate();
-          matchedTag =
-              expirationDate.isAfter(fromlocalDate) && expirationDate.isBefore(toLocalDate);
-        } else if (attribute.contains(LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE)) {
-          matchedTag = searchInLegalTag(attribute, pattern, oneLegalTag);
-        } else {
-          log.error("Unexpected query state");
-          throw new AppException(HttpStatus.SC_BAD_REQUEST, "Error processing query", "Error processing query");
-        }
+      fromlocalDate = LocalDate.parse(fromDate);
+      toLocalDate = LocalDate.parse(toDate);
 
-        if (matchedTag) {
-          matchedTags.add(oneLegalTag);
-        }
+    } else {
+      log.debug(String.format("DEBUG readInputAndSearch contains free text search, %s", searchQuery));
+      attribute = LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE;
+      pattern = searchQuery;
+    }
+
+    log.debug(String.format("DEBUG parseInputAndSearch pattern: %s attribute %s, %s", pattern, attribute, searchQuery));
+    while (null != legaliterator && legaliterator.hasNext()) {
+      LegalTag oneLegalTag = legaliterator.next();
+      if (searchQuery.contains(LEGAL_QUERY_API_ATTRIBUTE_SEPARATOR)) {
+        matchedTag = searchInLegalTag(attribute, pattern, oneLegalTag);
+      } else if (searchQuery.contains(LEGAL_QUERY_API_BETWEEN_START)) {
+        expirationDate = oneLegalTag.getProperties().getExpirationDate().toLocalDate();
+        matchedTag = expirationDate.isAfter(fromlocalDate) && expirationDate.isBefore(toLocalDate);
+      } else if (attribute.contains(LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE)) {
+        matchedTag = searchInLegalTag(attribute, pattern, oneLegalTag);
+      } else {
+        log.error("Unexpected query state");
+        throw new AppException(HttpStatus.SC_BAD_REQUEST, "Error processing query", "Error processing query");
       }
+
+      if (matchedTag) {
+        matchedTags.add(oneLegalTag);
+      }
+    }
 
     return matchedTags;
   }
 
   public boolean checkAttributeForMatch(String attribute,
-    String pattern,
-    LegalTag legalTag
-    ) {
+      String pattern,
+      LegalTag legalTag) {
 
-    org.opengroup.osdu.core.common.model.legal.Properties findInProperties =
-          legalTag.getProperties();
+    org.opengroup.osdu.core.common.model.legal.Properties findInProperties = legalTag.getProperties();
     BeanWrapper beanWrapper = new BeanWrapperImpl(findInProperties);
 
     log.debug("checkAttributeForMatch Attribute %s", attribute);
-      switch (attribute) {
-          case "countryOfOrigin" -> {
-              List<String> countryList = findInProperties.getCountryOfOrigin();
-              return countryList.stream().anyMatch(pattern::equalsIgnoreCase);
-          }
-          case "expirationDate" -> {
-              Date expirationDate = findInProperties.getExpirationDate();
-              DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-              String strDate = dateFormat.format(expirationDate);
-              if (StringUtils.contains(strDate, pattern)) {
-                  log.debug(String.format("expirationDate Match found: %s, %s", strDate, pattern));
-                  return true;
-              }
-              return false;
-          }
-          case LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE -> {
-              log.debug(String.format("free text search: pattern : %s", pattern));
-              return freeTextSearch(pattern, legalTag);
-          }
-          default -> {
-              log.debug(String.format("Attribute from properties: %s", attribute));
-              Object value = beanWrapper.getPropertyValue(attribute);
-              log.debug(String.format("Attribute from properties: %s, Value: %s", attribute, value));
-              return (value instanceof String && StringUtils.containsAnyIgnoreCase(value.toString().trim(), pattern));
-          }
+    switch (attribute) {
+      case "countryOfOrigin" -> {
+        List<String> countryList = findInProperties.getCountryOfOrigin();
+        return countryList.stream().anyMatch(pattern::equalsIgnoreCase);
       }
+      case "expirationDate" -> {
+        Date expirationDate = findInProperties.getExpirationDate();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String strDate = dateFormat.format(expirationDate);
+        if (StringUtils.contains(strDate, pattern)) {
+          log.debug(String.format("expirationDate Match found: %s, %s", strDate, pattern));
+          return true;
+        }
+        return false;
+      }
+      case LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE -> {
+        log.debug(String.format("free text search: pattern : %s", pattern));
+        return freeTextSearch(pattern, legalTag);
+      }
+      default -> {
+        log.debug(String.format("Attribute from properties: %s", attribute));
+        Object value = beanWrapper.getPropertyValue(attribute);
+        log.debug(String.format("Attribute from properties: %s, Value: %s", attribute, value));
+        return (value instanceof String && StringUtils.containsAnyIgnoreCase(value.toString().trim(), pattern));
+      }
+    }
   }
 
   public boolean freeTextSearch(String pattern, LegalTag legalTag) {
 
-
     String name = legalTag.getName();
     if (StringUtils.containsAnyIgnoreCase(name.trim(), pattern)) {
-        return true;
+      return true;
     }
 
     String description = legalTag.getDescription();
-    if (StringUtils.containsAnyIgnoreCase(description.trim(), pattern)){
+    if (StringUtils.containsAnyIgnoreCase(description.trim(), pattern)) {
       return true;
     }
-    
+
     List<String> attributeList = new ArrayList<String>();
     attributeList.add("countryOfOrigin");
     attributeList.add("contractId");
@@ -505,9 +519,8 @@ public class LegalTagService {
       attributeList.add("personalData");
       attributeList.add("exportClassification");
     }
-    
-    org.opengroup.osdu.core.common.model.legal.Properties findInProperties =
-          legalTag.getProperties();
+
+    org.opengroup.osdu.core.common.model.legal.Properties findInProperties = legalTag.getProperties();
     BeanWrapper beanWrapper = new BeanWrapperImpl(findInProperties);
     Object value;
     for (int i = 0; i < attributeList.size(); i++) {
@@ -531,8 +544,7 @@ public class LegalTagService {
       return (value instanceof String && StringUtils.containsAnyIgnoreCase(value.toString(), pattern));
 
     } else {
-      org.opengroup.osdu.core.common.model.legal.Properties findInProperties =
-          legalTag.getProperties();
+      org.opengroup.osdu.core.common.model.legal.Properties findInProperties = legalTag.getProperties();
       beanWrapper = new BeanWrapperImpl(findInProperties);
       if (beanWrapper.isReadableProperty(attribute)) {
 
@@ -575,9 +587,11 @@ public class LegalTagService {
 
         } else if (jsonObject.get(key) instanceof String) {
           value = jsonObject.get(key);
-          didItMatchKey = key.equalsIgnoreCase(attribute) && StringUtils.containsAnyIgnoreCase(value.toString(), pattern);
+          didItMatchKey = key.equalsIgnoreCase(attribute)
+              && StringUtils.containsAnyIgnoreCase(value.toString(), pattern);
           if (!didItMatchKey) {
-            didItMatchAny = attribute.equalsIgnoreCase(LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE) && StringUtils.containsAnyIgnoreCase(value.toString(), pattern);
+            didItMatchAny = attribute.equalsIgnoreCase(LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE)
+                && StringUtils.containsAnyIgnoreCase(value.toString(), pattern);
           }
           didItMatch = didItMatchKey || didItMatchAny;
 
@@ -585,28 +599,34 @@ public class LegalTagService {
           for (int i = 0; i < jsonArray.length(); i++) {
             if (jsonArray.get(i) instanceof JSONObject newJsonObj) {
               didItMatch = matchInExtensionPropertiesJSON(attribute, pattern, newJsonObj);
-              if (didItMatch) break;
+              if (didItMatch)
+                break;
             }
 
             if (jsonArray.get(i) instanceof String) {
               value = jsonArray.get(i);
-              didItMatchKey = key.equalsIgnoreCase(attribute) && StringUtils.containsAnyIgnoreCase(value.toString(), pattern);
+              didItMatchKey = key.equalsIgnoreCase(attribute)
+                  && StringUtils.containsAnyIgnoreCase(value.toString(), pattern);
               if (!didItMatchKey) {
-                log.debug(String.format("DEBUG Got %d Found %s=%s, Looking for %s=%s match: %b", i, key, value, attribute, pattern, didItMatch));
-                didItMatchAny = attribute.equalsIgnoreCase(LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE) && StringUtils.containsAnyIgnoreCase(value.toString(), pattern);
+                log.debug(String.format("DEBUG Got %d Found %s=%s, Looking for %s=%s match: %b", i, key, value,
+                    attribute, pattern, didItMatch));
+                didItMatchAny = attribute.equalsIgnoreCase(LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE)
+                    && StringUtils.containsAnyIgnoreCase(value.toString(), pattern);
               }
               didItMatch = didItMatchKey || didItMatchAny;
-              if (didItMatch) break;
+              if (didItMatch)
+                break;
             }
           } // end for
         } else if (jsonObject.get(key) instanceof Boolean boolValue) {
-          boolean boolPattern = Boolean.parseBoolean(pattern);  
+          boolean boolPattern = Boolean.parseBoolean(pattern);
           didItMatch = key.equalsIgnoreCase(attribute) && (boolValue == boolPattern);
         }
 
-        if (didItMatch) return true;
+        if (didItMatch)
+          return true;
       }
-  }
-  return didItMatch;
+    }
+    return didItMatch;
   }
 }
