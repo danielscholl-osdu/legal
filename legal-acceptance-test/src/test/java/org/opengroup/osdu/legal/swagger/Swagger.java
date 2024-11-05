@@ -7,7 +7,7 @@ import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public abstract class Swagger extends AcceptanceBaseTest {
+public final class Swagger extends AcceptanceBaseTest {
 
     protected static final String SWAGGER_API_PATH = "swagger";
 

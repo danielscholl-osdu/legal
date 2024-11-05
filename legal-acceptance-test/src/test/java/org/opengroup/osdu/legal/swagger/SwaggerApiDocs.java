@@ -7,7 +7,7 @@ import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public abstract class SwaggerApiDocs extends AcceptanceBaseTest {
+public final class SwaggerApiDocs extends AcceptanceBaseTest {
 
     protected static final String SWAGGER_API_DOCS_PATH = "api-docs";
 

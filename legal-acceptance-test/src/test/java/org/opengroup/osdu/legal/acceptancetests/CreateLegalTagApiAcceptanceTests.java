@@ -21,7 +21,7 @@ import org.opengroup.osdu.legal.util.TokenLegalTagUtils;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-public class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
+public final class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
 
     private String name = LegalTagUtils.createRandomNameTenant();
     private String COO = "";
