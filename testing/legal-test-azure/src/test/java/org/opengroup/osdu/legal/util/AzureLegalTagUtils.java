@@ -15,7 +15,10 @@
 package org.opengroup.osdu.legal.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
@@ -23,6 +26,8 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.BlobUrlParts;
 import com.azure.storage.blob.specialized.BlockBlobClient;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import org.opengroup.osdu.azure.util.AzureServicePrincipal;
 
@@ -57,6 +62,69 @@ public class AzureLegalTagUtils extends LegalTagUtils {
         }catch (IOException ex){
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public List<String> readCOOCountries(String storageAccount, String defaultCOOFileName) throws IOException {
+
+        List<String> countries = new ArrayList<>();
+
+        String blobPath = String.format("https://%s.blob.core.windows.net/%s/%s", storageAccount.toLowerCase(), CONTAINER_NAME_AZURE, FILE_NAME);
+        BlobUrlParts parts = BlobUrlParts.parse(blobPath);
+        ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
+                .clientSecret(clientSecret)
+                .clientId(clientId)
+                .tenantId(tenantId)
+                .build();
+        BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
+                .endpoint(String.format("https://%s.blob.core.windows.net", parts.getAccountName()))
+                .credential(clientSecretCredential)
+                .containerName(parts.getBlobContainerName())
+                .buildClient();
+
+        BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(parts.getBlobName()).getBlockBlobClient();
+        if (blobContainerClient.exists()) {
+            try {
+                if (blockBlobClient.exists()) {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    blockBlobClient.download(outputStream);
+                    ByteArrayInputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
+                    int byteData;
+                    StringBuffer sb = new StringBuffer();
+                    while ((byteData = stream.read()) != -1) {
+                        sb.append((char) byteData);
+                    }
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode root = objectMapper.readTree(sb.toString());
+
+                    if(root.isArray()) {
+                        for (JsonNode node : root) {
+                            countries.add(node.path("alpha2").toString().replaceAll("\"", ""));
+                        }
+                    }
+                    stream.close();
+                } else {
+                    String content = readTestFile(defaultCOOFileName);
+                    ByteArrayInputStream newStream = new ByteArrayInputStream(content.getBytes());
+                    newStream.reset();
+                    blockBlobClient.upload(newStream, content.length(), true);
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode root = objectMapper.readTree(content);
+
+                    if(root.isArray()) {
+                        for (JsonNode node : root) {
+                            countries.add(node.path("alpha2").toString().replaceAll("\"", ""));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                throw new AssertionError(String.format("Error: Could not create test %s file blob", parts.getBlobName()), e);
+            }
+        }
+
+        return countries;
     }
 
     private static String generateContainerPath(String accountName, String containerName) {

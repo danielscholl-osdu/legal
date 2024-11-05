@@ -74,6 +74,11 @@ public class AwsLegalTagUtils extends LegalTagUtils {
         return "Bearer " + BearerToken;
     }
 
+    @Override
+    public List<String> readCOOCountries(String storageAccount, String defaultCOOFileName) throws IOException {
+        return List.of();
+    }
+
     public void insertExpiredLegalTag() {
         // directly create expired legal tag document
         String integrationTagTestName = String.format("%s-dps-integration-test-1566474656479", getMyDataPartition()); // name has to match what's hardcoded in the test

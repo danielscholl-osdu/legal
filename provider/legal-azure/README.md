@@ -79,6 +79,8 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AZURE_LEGAL_TOPICNAME` | `legaltags` | Same as `servicebus_topic_name` above | no | - |
 | `HOST_URL` | `http://localhost:8080/` | local service endpoint | no | - |
 | `ENTITLEMENT_URL` | Same as `entitlements_service_endpoint` above | Endpoint for entitlements URL | no | - |
+| `MY_SECOND_TENANT` | same as `opendes` | OSDU tenant used for testing | no | -- |
+| `AZURE_LEGAL_STORAGE_ACCOUNT_SECOND` | same as `storage_account` above | Storage account for integration tests| no | - |
 
 
 ### Configure Maven
@@ -170,6 +172,7 @@ export AZURE_SERVICE="legal"
 export AZURE_BUILD_SUBDIR="provider/legal-azure"
 export AZURE_TEST_SUBDIR="testing/legal-test-azure"
 export AZURE_OSDU_TENANT="opendes"
+export AZURE_OSDU_SECOND_TENANT="opendes2"
 export AZURE_SERVICE_BUS_TOPIC="legaltags"
 export LEGAL_STORAGE_CONTAINER="legal-service-azure-configuration"
 
@@ -185,11 +188,13 @@ export AZURE_APPSERVICE_NAME="${AZURE_BASENAME_21}-au-${AZURE_SERVICE}"
 export HOST_URL="https://${AZURE_BASENAME_21}-au-legal.azurewebsites.net/"
 export ENTITLEMENT_URL="https://${AZURE_BASENAME_21}-au-entitlements.azurewebsites.net/"
 export MY_TENANT="${AZURE_OSDU_TENANT}"
+export MY_SECOND_TENANT="${AZURE_OSDU_SECOND_TENANT}"
 export AZURE_AD_TENANT_ID="${AZURE_TENANT_ID}"
 export INTEGRATION_TESTER="${AZURE_PRINCIPAL_ID}"
 export AZURE_TESTER_SERVICEPRINCIPAL_SECRET="${AZURE_PRINCIPAL_SECRET}"
 export AZURE_AD_APP_RESOURCE_ID="${AZURE_APP_ID}"
 export AZURE_LEGAL_STORAGE_ACCOUNT="${AZURE_BASE}sa"
+export AZURE_LEGAL_STORAGE_ACCOUNT_SECOND="${AZURE_BASE}sa2"
 export AZURE_LEGAL_STORAGE_KEY="${AZURE_STORAGE_KEY}"
 export AZURE_LEGAL_SERVICEBUS="Endpoint=sb://${AZURE_BASENAME_21}sb.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=${AZURE_SERVICEBUS_KEY}"
 export AZURE_LEGAL_TOPICNAME="${AZURE_SERVICE_BUS_TOPIC}"

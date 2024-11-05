@@ -61,6 +61,10 @@ public class TestUtils {
 		return System.getProperty("MY_TENANT", System.getenv("MY_TENANT"));
 	}
 
+	public static String getMySecondDataPartition(){
+		return System.getProperty("MY_SECOND_TENANT", System.getenv("MY_SECOND_TENANT"));
+	}
+
 	public ClientResponse send(String path, String httpMethod, String token, String requestBody, String query)
 			throws Exception {
 
