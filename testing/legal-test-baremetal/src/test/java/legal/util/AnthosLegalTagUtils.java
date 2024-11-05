@@ -21,6 +21,9 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.legal.util.LegalTagUtils;
 
+import java.io.IOException;
+import java.util.List;
+
 @Slf4j
 public class AnthosLegalTagUtils extends LegalTagUtils {
 
@@ -39,5 +42,10 @@ public class AnthosLegalTagUtils extends LegalTagUtils {
             token = tokenProvider.getToken();
         }
         return "Bearer " + token;
+    }
+
+    @Override
+    public List<String> readCOOCountries(String storageAccount, String defaultCOOFileName) throws IOException {
+        return List.of();
     }
 }

@@ -19,6 +19,9 @@ import org.opengroup.osdu.core.ibm.util.IdentityClient;
 
 import com.google.common.base.Strings;
 
+import java.io.IOException;
+import java.util.List;
+
 public class IBMLegalTagUtils extends LegalTagUtils {
 
     @Override
@@ -33,7 +36,12 @@ public class IBMLegalTagUtils extends LegalTagUtils {
         }
         return "Bearer " + token;
     }
-    
+
+    @Override
+    public List<String> readCOOCountries(String storageAccount, String defaultCOOFileName) throws IOException {
+        return List.of();
+    }
+
     private static final String mqConnection = "IBM_LEGAL_MQ_CONNECTION";
     private static final String envPrefix = "IBM_ENV_PREFIX";
     
