@@ -31,18 +31,17 @@ public class AwsLegalTagUtils extends LegalTagUtils {
     private static final String FILE_NAME = "Legal_COO.json";
     private static final String BUCKET_NAME_AWS = System.getProperty("S3_LEGAL_CONFIG_BUCKET", System.getenv("S3_LEGAL_CONFIG_BUCKET"));
 
-    private final static String COGNITO_CLIENT_ID_PROPERTY = "AWS_COGNITO_CLIENT_ID";
-    private final static String COGNITO_AUTH_FLOW_PROPERTY = "AWS_COGNITO_AUTH_FLOW";
-    private final static String COGNITO_AUTH_PARAMS_USER_PROPERTY = "AWS_COGNITO_AUTH_PARAMS_USER";
-    private final static String COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY = "AWS_COGNITO_AUTH_PARAMS_PASSWORD";
+    private static final String COGNITO_CLIENT_ID_PROPERTY = "AWS_COGNITO_CLIENT_ID";
+    private static final String COGNITO_AUTH_FLOW_PROPERTY = "AWS_COGNITO_AUTH_FLOW";
+    private static final String COGNITO_AUTH_PARAMS_USER_PROPERTY = "AWS_COGNITO_AUTH_PARAMS_USER";
+    private static final String COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY = "AWS_COGNITO_AUTH_PARAMS_PASSWORD";
 
-    private final static String TABLE_PREFIX = "TABLE_PREFIX";
-    private final static String DYNAMO_DB_REGION = "DYNAMO_DB_REGION";
-    private final static String DYNAMO_DB_ENDPOINT = "DYNAMO_DB_ENDPOINT";
-    private static final String COLLECTION_PREFIX = "Legal-";
+    private static final String TABLE_PREFIX = "TABLE_PREFIX";
+    private static final String DYNAMO_DB_REGION = "DYNAMO_DB_REGION";
+    private static final String DYNAMO_DB_ENDPOINT = "DYNAMO_DB_ENDPOINT";
 
 
-    private String BearerToken = "";
+    private String bearerToken = "";
 
     @Override
     public synchronized void uploadTenantTestingConfigFile() {
@@ -62,16 +61,16 @@ public class AwsLegalTagUtils extends LegalTagUtils {
 
     @Override
     public synchronized String accessToken() throws Exception {
-        if (BearerToken == "") {
+        if (bearerToken.equals("")) {
             String clientId = System.getProperty(COGNITO_CLIENT_ID_PROPERTY, System.getenv(COGNITO_CLIENT_ID_PROPERTY));
             String authFlow = System.getProperty(COGNITO_AUTH_FLOW_PROPERTY, System.getenv(COGNITO_AUTH_FLOW_PROPERTY));
             String user = System.getProperty(COGNITO_AUTH_PARAMS_USER_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_USER_PROPERTY));
             String password = System.getProperty(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY));
 
             AWSCognitoClient client = new AWSCognitoClient(clientId, authFlow, user, password);
-            BearerToken = client.getToken();
+            bearerToken = client.getToken();
         }
-        return "Bearer " + BearerToken;
+        return "Bearer " + bearerToken;
     }
 
     public void insertExpiredLegalTag() {

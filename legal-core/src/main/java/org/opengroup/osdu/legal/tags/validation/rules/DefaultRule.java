@@ -43,6 +43,6 @@ public class DefaultRule extends Rule {
     private boolean isAllowedCOO(Properties properties){
         Map<String, String> validCOOs = legalTagCountriesService.getValidCOOs(properties.getDataType());
         return properties.getCountryOfOrigin() != null && !properties.getCountryOfOrigin().isEmpty() &&
-                properties.getCountryOfOrigin().stream().allMatch( s -> validCOOs.containsKey(s));
+                properties.getCountryOfOrigin().stream().allMatch(validCOOs::containsKey);
     }
 }
