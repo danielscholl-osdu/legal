@@ -20,6 +20,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
 import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.legal.Properties;
@@ -28,6 +29,7 @@ import org.opengroup.osdu.core.ibm.cloudant.IBMCloudantClientFactory;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Repository;
@@ -48,7 +50,8 @@ import com.cloudant.client.org.lightcouch.DocumentConflictException;
  */
 @Repository
 public class CloudantLegalTagRepository implements ILegalTagRepository {
-
+	@Autowired
+	private DpsHeaders headers;
 	@Value("${ibm.legal.db.url}") 
 	private String dbUrl;
 	@Value("${ibm.legal.db.apikey:#{null}}")
@@ -353,6 +356,7 @@ public class CloudantLegalTagRepository implements ILegalTagRepository {
 			legalTags = allDocResponse.getResponse().getDocsAs(BanckendLegalTag.class)
 					.stream()
 					.filter(lTag ->  lTag.getIs_Valid() == args.getIsValid())
+					.filter(f->f.getName().split("-")[0].equalsIgnoreCase(headers.getPartitionId()))
 					.collect(Collectors.toList());
 
 		} catch (IOException e) {
