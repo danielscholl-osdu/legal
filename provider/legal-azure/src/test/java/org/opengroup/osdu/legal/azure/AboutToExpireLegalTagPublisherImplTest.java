@@ -33,7 +33,7 @@ public class AboutToExpireLegalTagPublisherImplTest {
     private AboutToExpireLegalTagPublisherImpl sut;
 
     @Test
-    public void shouldPublishToServiceBus() throws Exception {
+    public void shouldPublishToServiceBus() {
         AboutToExpireLegalTags aboutToExpireLegalTags = new AboutToExpireLegalTags();
         sut.publish("project-id", headers, aboutToExpireLegalTags);
     }

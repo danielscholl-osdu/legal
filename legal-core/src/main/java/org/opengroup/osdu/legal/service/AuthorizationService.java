@@ -22,7 +22,6 @@ import org.opengroup.osdu.core.common.model.entitlements.Groups;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.provider.interfaces.IAuthorizationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +29,16 @@ import org.springframework.stereotype.Service;
 @Primary // overrides class in core common
 public class AuthorizationService implements IAuthorizationService {
 
-    @Autowired
-    private IEntitlementsExtensionService entitlementsService;
+    private final IEntitlementsExtensionService entitlementsService;
+
+    public AuthorizationService(IEntitlementsExtensionService entitlementsService) {
+        this.entitlementsService = entitlementsService;
+    }
 
     @Override
     public AuthorizationResponse authorizeAny(DpsHeaders dpsHeaders, String... permissions) {
         Groups groups = entitlementsService.getGroups(dpsHeaders);
-        if(!groups.any(permissions)) {
+        if(Boolean.FALSE.equals(groups.any(permissions))) {
             throw new AppException(HttpStatus.SC_UNAUTHORIZED, "Unauthorized", "User does nto have access to the API");
         }
         return AuthorizationResponse.builder()

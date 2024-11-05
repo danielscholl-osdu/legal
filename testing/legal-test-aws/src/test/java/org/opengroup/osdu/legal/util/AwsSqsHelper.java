@@ -31,12 +31,11 @@ public class AwsSqsHelper {
     public static List<Message> getMessages(){
         String amazonSqsEndpoint = System.getenv("LEGAL_QUEUE");
         AmazonSQS sqs = AmazonSQSClientBuilder.standard().withRegion("us-east-1").build();
-        List<Message> messages = sqs.receiveMessage(amazonSqsEndpoint).getMessages();
-        return messages;
+        return sqs.receiveMessage(amazonSqsEndpoint).getMessages();
     }
 
     public static void purgeQueue(){
-        String amazonSqsEndpoint = System.getenv("LEGAL_QUEUE");;
+        String amazonSqsEndpoint = System.getenv("LEGAL_QUEUE");
         AmazonSQS sqs = AmazonSQSClientBuilder.standard().withRegion("us-east-1").build();
         PurgeQueueRequest request = new PurgeQueueRequest();
         request.setQueueUrl(amazonSqsEndpoint);
@@ -53,7 +52,7 @@ public class AwsSqsHelper {
         data = data.substring(1);
         data = data.substring(0, data.length() - 1);
         String dataCheck = "{\"statusChangedTags\":[{\"dataPartitionId\":\"" + TestUtils.getMyDataPartition() + "\",\"changedTagName\":\"" + name + "\",\"changedTagStatus\":\"incompliant\"}]}";
-        dataCheck = dataCheck.replaceAll("\"", "\\\\\"");
+        dataCheck = dataCheck.replace("\"", "\\\\\"");
         return data.equals(dataCheck);
     }
 }

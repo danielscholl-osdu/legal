@@ -1,7 +1,6 @@
 package org.opengroup.osdu.legal.util;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.info.ConnectedOuterServicesBuilder;
@@ -15,18 +14,18 @@ public class CloudConnectedOuterServicesBuilder implements ConnectedOuterService
 
   private static final String REDIS_PREFIX = "Redis-";
 
-  private List<RedisCache> redisCaches;
+  private List<RedisCache<?, ?>> redisCaches;
 
-  public CloudConnectedOuterServicesBuilder(List<RedisCache> redisCaches) {
+  public CloudConnectedOuterServicesBuilder(List<RedisCache<?, ?>> redisCaches) {
     this.redisCaches = redisCaches;
   }
 
   @Override
   public List<ConnectedOuterService> buildConnectedOuterServices() {
-    return redisCaches.stream().map(this::fetchRedisInfo).collect(Collectors.toList());
+    return redisCaches.stream().map(this::fetchRedisInfo).toList();
   }
 
-  private ConnectedOuterService fetchRedisInfo(RedisCache cache) {
+  private ConnectedOuterService fetchRedisInfo(RedisCache<?, ?> cache) {
     String redisVersion = StringUtils.substringBetween(cache.info(), ":", "\r");
     return ConnectedOuterService.builder()
         .name(REDIS_PREFIX + StringUtils.substringAfterLast(cache.getClass().getName(), "."))

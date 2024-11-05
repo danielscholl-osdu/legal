@@ -19,7 +19,6 @@ import org.opengroup.osdu.legal.config.LegalTagConfig;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -62,7 +61,7 @@ public class LegalTagStatusJob {
 
         publishLegalTagStatusUpdateEvents(!legalTagJobResult.statusChangedTags.getStatusChangedTags().isEmpty(), projectId, headers, legalTagJobResult.statusChangedTags);
         if (featureFlagController.isAboutToExpireFeatureFlagEnabled()) {
-            publishAboutToExpireLegalTagEvents(!legalTagJobResult.aboutToExpireLegalTags.getAboutToExpireLegalTags().isEmpty(), projectId, headers, legalTagJobResult.aboutToExpireLegalTags);
+            publishAboutToExpireLegalTagEvents(!legalTagJobResult.aboutToExpireLegalTags.getLegalTags().isEmpty(), projectId, headers, legalTagJobResult.aboutToExpireLegalTags);
         }
 
         return legalTagJobResult;
@@ -100,7 +99,7 @@ public class LegalTagStatusJob {
             Boolean isAboutToExpire = aboutToExpireDate.equals(today);
             if (isAboutToExpire) {
                 log.info(String.format("Found legal tag about to expire: %s at %s", tag.getName(), expirationDate));
-                aboutToExpireLegalTags.getAboutToExpireLegalTags().add(new AboutToExpireLegalTag(tag.getName(), properties.getExpirationDate()));
+                aboutToExpireLegalTags.getLegalTags().add(new AboutToExpireLegalTag(tag.getName(), properties.getExpirationDate()));
                 return;
             }
         }

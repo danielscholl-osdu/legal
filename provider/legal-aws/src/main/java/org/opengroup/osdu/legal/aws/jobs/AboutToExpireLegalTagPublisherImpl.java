@@ -16,11 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AboutToExpireLegalTagPublisherImpl implements IAboutToExpireLegalTagPublisher {
@@ -36,8 +33,11 @@ public class AboutToExpireLegalTagPublisherImpl implements IAboutToExpireLegalTa
     @Value("${OSDU_ABOUT_TO_EXPIRE_LEGALTAG_TOPIC}")
     private String osduAboutToExpireLegalTagTopic;
 
-    @Inject
-    private JaxRsDpsLog log;
+    private final JaxRsDpsLog log;
+
+    public AboutToExpireLegalTagPublisherImpl(JaxRsDpsLog log) {
+        this.log = log;
+    }
 
     public void setK8sLocalParameterProvider(K8sLocalParameterProvider k8sLocalParameterProvider) {
         this.k8sLocalParameterProvider = k8sLocalParameterProvider;
@@ -61,11 +61,11 @@ public class AboutToExpireLegalTagPublisherImpl implements IAboutToExpireLegalTa
         PublishRequestBuilder<AwsAboutToExpireLegalTags> publishRequestBuilder = new PublishRequestBuilder<>();
         publishRequestBuilder.setGeneralParametersFromHeaders(headers);
         log.debug("Publishing to topic " + osduAboutToExpireLegalTagTopic);
-        for (int i = 0; i < aboutToExpireLegalTags.getAboutToExpireLegalTags().size(); i += BATCH_SIZE){
-            List<AboutToExpireLegalTag> batch = aboutToExpireLegalTags.getAboutToExpireLegalTags().subList(i, Math.min(aboutToExpireLegalTags.getAboutToExpireLegalTags().size(), i + BATCH_SIZE));
+        for (int i = 0; i < aboutToExpireLegalTags.getLegalTags().size(); i += BATCH_SIZE){
+            List<AboutToExpireLegalTag> batch = aboutToExpireLegalTags.getLegalTags().subList(i, Math.min(aboutToExpireLegalTags.getLegalTags().size(), i + BATCH_SIZE));
             List<AwsAboutToExpireLegalTag> awsBatch = batch.stream()
                     .map(aboutToExpireLegalTag -> new AwsAboutToExpireLegalTag(aboutToExpireLegalTag.getTagName(), headers.getPartitionId(), aboutToExpireLegalTag.getExpirationDate()))
-                    .collect(Collectors.toList());
+                    .toList();
             AwsAboutToExpireLegalTags awsBatchTags = new AwsAboutToExpireLegalTags(awsBatch);
             PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest(osduAboutToExpireLegalTagTopic, amazonSNSTopic, awsBatchTags);
             snsClient.publish(publishRequest);

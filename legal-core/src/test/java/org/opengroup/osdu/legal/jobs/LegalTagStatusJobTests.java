@@ -1,9 +1,7 @@
 package org.opengroup.osdu.legal.jobs;
 
-import org.junit.Ignore;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
@@ -13,7 +11,6 @@ import org.opengroup.osdu.legal.tags.LegalTagService;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
-import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 import org.opengroup.osdu.legal.FeatureFlagController;
 import org.opengroup.osdu.legal.config.LegalTagConfig;
 
@@ -28,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Calendar;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
@@ -181,11 +177,11 @@ public class LegalTagStatusJobTests {
         sut = createSut(validLegalTags);
         LegalTagJobResult result = sut.run("project1", headers, "tenant");
 
-        assertEquals(4, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag1", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
-        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(1).getTagName());
-        assertEquals("aboutToExpireLegalTag3", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(2).getTagName());
-        assertEquals("aboutToExpireLegalTag4", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(3).getTagName());
+        assertEquals(4, result.aboutToExpireLegalTags.getLegalTags().size());
+        assertEquals("aboutToExpireLegalTag1", result.aboutToExpireLegalTags.getLegalTags().get(0).getTagName());
+        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getLegalTags().get(1).getTagName());
+        assertEquals("aboutToExpireLegalTag3", result.aboutToExpireLegalTags.getLegalTags().get(2).getTagName());
+        assertEquals("aboutToExpireLegalTag4", result.aboutToExpireLegalTags.getLegalTags().get(3).getTagName());
     }
 
     @Test
@@ -204,8 +200,8 @@ public class LegalTagStatusJobTests {
         sut = createSut(validLegalTags);
         LegalTagJobResult result = sut.run("project1", headers, "tenant");
 
-        assertEquals(1, result.aboutToExpireLegalTags.getAboutToExpireLegalTags().size());
-        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getAboutToExpireLegalTags().get(0).getTagName());
+        assertEquals(1, result.aboutToExpireLegalTags.getLegalTags().size());
+        assertEquals("aboutToExpireLegalTag2", result.aboutToExpireLegalTags.getLegalTags().get(0).getTagName());
     }
 
     @Test
