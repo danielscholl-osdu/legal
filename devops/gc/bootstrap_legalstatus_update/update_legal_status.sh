@@ -20,28 +20,13 @@
 ## Common:
 #  - LEGAL_HOST
 #  - DATA_PARTITION_ID
-## Baremetal:
-#  - OPENID_PROVIDER_URL
-#  - OPENID_PROVIDER_CLIENT_ID
-#  - OPENID_PROVIDER_CLIENT_SECRET
 
 set -ex
 
 get_token() {
-  if [ "${ONPREM_ENABLED}" == "true" ]; then
-    # id token
-    TOKEN="$(curl --location --silent --globoff --request POST "${OPENID_PROVIDER_URL}/protocol/openid-connect/token" \
-      --header "Content-Type: application/x-www-form-urlencoded" \
-      --data-urlencode "grant_type=client_credentials" \
-      --data-urlencode "scope=openid" \
-      --data-urlencode "client_id=${OPENID_PROVIDER_CLIENT_ID}" \
-      --data-urlencode "client_secret=${OPENID_PROVIDER_CLIENT_SECRET}" | jq -r ".id_token")"
-    export TOKEN
-  else
     # access token
     TOKEN="$(gcloud auth print-access-token)"
     export TOKEN
-  fi
 }
 
 update_legal_status() {
@@ -66,11 +51,6 @@ update_legal_status() {
 # Check variables
 source ./validate-env.sh "PARTITION_HOST"
 source ./validate-env.sh "LEGAL_HOST"
-if [[ "${ONPREM_ENABLED}" == "true" ]]; then
-  source ./validate-env.sh "OPENID_PROVIDER_URL"
-  source ./validate-env.sh "OPENID_PROVIDER_CLIENT_ID"
-  source ./validate-env.sh "OPENID_PROVIDER_CLIENT_SECRET"
-fi
 
 # Get list of partitions 
 status_code=$(curl --location --request GET \

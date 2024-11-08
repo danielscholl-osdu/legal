@@ -6,4 +6,3 @@ metadata:
 data:
   LEGAL_HOST: {{ .Values.data.legalHost | quote }}
   PARTITION_HOST: {{ .Values.data.partitionHost | quote }}
-  ONPREM_ENABLED: {{ .Values.global.onPremEnabled | quote }}

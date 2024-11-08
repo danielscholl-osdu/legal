@@ -97,7 +97,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 | Name | Description | Type | Default |Required |
 |------|-------------|------|---------|---------|
 **global.domain** | your domain for the external endpoint, ex `example.com` | string | - | yes
-**global.onPremEnabled** | whether on-prem is enabled | boolean |  `false` | yes
 **global.limitsEnabled** | whether CPU and memory limits are enabled | boolean | `true` | yes
 **global.logLevel** | severity of logging level | string | `ERROR` | yes
 **global.tier** | Only PROD must be used to enable autoscaling | string | "" | no
