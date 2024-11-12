@@ -8,7 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
-import org.opengroup.osdu.legal.util.TokenLegalTagUtils;
+import org.opengroup.osdu.legal.util.LegalTagUtils;
 import org.opengroup.osdu.legal.util.VersionInfoUtils;
 
 import com.sun.jersey.api.client.ClientResponse;
@@ -20,7 +20,7 @@ public final class GetInfoApiAcceptanceTests extends AcceptanceBaseTest {
   @BeforeEach
   @Override
   public void setup() throws Exception {
-      this.legalTagUtils = new TokenLegalTagUtils();
+      this.legalTagUtils = new LegalTagUtils();
       super.setup();
   }
 

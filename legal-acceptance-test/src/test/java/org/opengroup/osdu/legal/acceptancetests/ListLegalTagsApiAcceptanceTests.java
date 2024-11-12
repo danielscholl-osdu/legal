@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
 import org.opengroup.osdu.legal.util.LegalTagUtils;
 import org.opengroup.osdu.legal.util.TestUtils;
-import org.opengroup.osdu.legal.util.TokenLegalTagUtils;
 
 import com.google.common.base.Strings;
 import com.sun.jersey.api.client.ClientResponse;
@@ -22,7 +21,7 @@ public final class ListLegalTagsApiAcceptanceTests extends AcceptanceBaseTest {
 	@BeforeEach
     @Override
     public void setup() throws Exception {
-        this.legalTagUtils = new TokenLegalTagUtils();
+        this.legalTagUtils = new LegalTagUtils();
         super.setup();
     }
 

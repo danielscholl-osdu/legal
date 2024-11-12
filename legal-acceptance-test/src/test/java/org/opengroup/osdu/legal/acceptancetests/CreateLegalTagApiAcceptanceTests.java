@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
 import org.opengroup.osdu.legal.util.LegalTagUtils;
 import org.opengroup.osdu.legal.util.TestUtils;
-import org.opengroup.osdu.legal.util.TokenLegalTagUtils;
 
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -29,7 +28,7 @@ public final class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
     @BeforeEach
     @Override
     public void setup() throws Exception {
-        this.legalTagUtils = new TokenLegalTagUtils();
+        this.legalTagUtils = new LegalTagUtils();
         COO = "US";
         super.setup();
     }
@@ -149,7 +148,7 @@ public final class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
     // following two tests prove the older version config file in tenant would also work
     @Test
     public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsTransferredData() throws Exception{
-        legalTagUtils.uploadTenantTestingConfigFile();
+        //legalTagUtils.uploadTenantTestingConfigFile();
         ClientResponse response = legalTagUtils.create("MY", name, "Transferred Data");
         LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
         assertEquals(name, readableLegalTags.name);
@@ -158,7 +157,7 @@ public final class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
 
     @Test
     public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsFirstPartyData() throws Exception{
-        legalTagUtils.uploadTenantTestingConfigFile();
+        //legalTagUtils.uploadTenantTestingConfigFile();
         ClientResponse response = legalTagUtils.create("MY", name, "First Party Data");
         LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
         

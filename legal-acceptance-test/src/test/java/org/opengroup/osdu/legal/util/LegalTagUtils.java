@@ -10,16 +10,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.api.client.util.Strings;
 import com.google.gson.Gson;
 import com.sun.jersey.api.client.ClientResponse;
 
-public abstract class LegalTagUtils extends TestUtils {
+public class LegalTagUtils extends TestUtils {
 
 	protected static String token = null;
+	private OpenIDTokenProvider tokenProvider;
 
-    public abstract void uploadTenantTestingConfigFile();
-
-	public abstract String accessToken() throws Exception; 
+	public LegalTagUtils() {
+		if (Strings.isNullOrEmpty(token)) {
+			tokenProvider = new OpenIDTokenProvider();
+		}
+    }
+	
+    public synchronized String accessToken() throws Exception {
+        if (Strings.isNullOrEmpty(token)) {
+            token = tokenProvider.getToken();
+        }
+        return "Bearer " + token;
+    }
 
     private static InputStream getTestFileInputStream(String fileName) throws IOException {
         return LegalTagUtils.class.getResourceAsStream("/" + fileName);
