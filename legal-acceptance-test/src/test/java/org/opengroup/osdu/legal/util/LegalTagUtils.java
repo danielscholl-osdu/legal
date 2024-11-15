@@ -22,6 +22,7 @@ public class LegalTagUtils extends TestUtils {
 	public LegalTagUtils() {
 		if (Strings.isNullOrEmpty(token)) {
 			tokenProvider = new OpenIDTokenProvider();
+			token = tokenProvider.getToken();
 		}
     }
 	
