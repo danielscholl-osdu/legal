@@ -11,20 +11,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.logging.ConsoleHandler;
 import java.util.regex.Matcher;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.opengroup.osdu.core.common.logging.ILogger;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -42,6 +36,7 @@ import org.opengroup.osdu.legal.tags.dto.*;
 import org.opengroup.osdu.legal.tags.util.PersistenceExceptionToAppExceptionMapper;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static org.opengroup.osdu.legal.Constants.LEGAL_QUERY_API_UNION_OPERATOR;
@@ -53,31 +48,33 @@ import static org.opengroup.osdu.legal.Constants.LEGAL_QUERY_API_BETWEEN_START;
 import static org.opengroup.osdu.legal.Constants.LEGAL_QUERY_API_ADD_OPERATOR;
 import static org.opengroup.osdu.legal.Constants.LEGAL_QUERY_API_FREE_TEXT_ATTRIBUTE;
 
-import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-
 @Service
 public class LegalTagService {
 
-  @Inject
-  public PersistenceExceptionToAppExceptionMapper exceptionMapper; // public for testing purposes only
+  PersistenceExceptionToAppExceptionMapper exceptionMapper;
+  private final ILegalTagRepositoryFactory repositories;
+  private final LegalTagConstraintValidator validator;
+  private final AuditLogger auditLogger;
+  private final ILegalTagPublisher legalTagPublisher;
+  private final JaxRsDpsLog log;
+  private final FeatureFlagController featureFlagController;
 
-  @Inject
-  private ILegalTagRepositoryFactory repositories;
-  @Inject
-  private LegalTagConstraintValidator validator;
-  @Inject
-  private AuditLogger auditLogger;
-  @Inject
-  private ILegalTagPublisher legalTagPublisher;
-  @Inject
-  private JaxRsDpsLog log;
-  @Inject
-  private FeatureFlagController featureFlagController;
+  @Autowired
+  public LegalTagService(PersistenceExceptionToAppExceptionMapper exceptionMapper,
+                         ILegalTagRepositoryFactory repositories,
+                         LegalTagConstraintValidator validator,
+                         AuditLogger auditLogger,
+                         ILegalTagPublisher legalTagPublisher,
+                         JaxRsDpsLog log,
+                         FeatureFlagController featureFlagController) {
+    this.exceptionMapper = exceptionMapper;
+    this.repositories = repositories;
+    this.validator = validator;
+    this.auditLogger = auditLogger;
+    this.legalTagPublisher = legalTagPublisher;
+    this.log = log;
+    this.featureFlagController = featureFlagController;
+  }
 
   public LegalTagDto create(LegalTagDto legalTagDto, String tenantName) {
     if (legalTagDto == null)
@@ -142,7 +139,7 @@ public class LegalTagService {
   public LegalTagDtos list(boolean valid, String tenantName) {
     Collection<LegalTag> tags = listLegalTag(valid, tenantName);
     LegalTagDtos outputs = legalTagsToReadableLegalTags(tags);
-    List<String> names = outputs.getLegalTags().stream().map(x -> x.getName()).collect(Collectors.toList());
+    List<String> names = outputs.getLegalTags().stream().map(x -> x.getName()).toList();
     auditLogger.readLegalTagSuccess(names);
     return outputs;
   }
@@ -167,7 +164,7 @@ public class LegalTagService {
     List<String> notFoundNames = new ArrayList<>(asList(names));
 
     Collection<LegalTag> legalTags = getLegalTags(names, tenantName);
-    if (legalTags == null || legalTags.size() == 0) {
+    if (legalTags == null || legalTags.isEmpty()) {
       for (String name : names)
         generateInvalidTagsWithReason(invalidTagsWithReason, name, "LegalTag not found");
       return new InvalidTagsWithReason(invalidTagsWithReason);
@@ -180,7 +177,7 @@ public class LegalTagService {
         generateInvalidTagsWithReason(invalidTagsWithReason, tag.getName(), errors);
     }
 
-    if (notFoundNames.size() > 0) {
+    if (!notFoundNames.isEmpty()) {
       for (String notFoundName : notFoundNames)
         generateInvalidTagsWithReason(invalidTagsWithReason, notFoundName, "LegalTag not found");
     }
@@ -265,7 +262,7 @@ public class LegalTagService {
 
   private LegalTag getLegalTag(String name, String tenantName) {
     Collection<LegalTag> output = getLegalTags(new String[] { name }, tenantName);
-    return output == null || output.size() == 0 ? null : Iterables.get(output, 0);
+    return output == null || output.isEmpty() ? null : Iterables.get(output, 0);
   }
 
   private void generateInvalidTagsWithReason(
@@ -365,18 +362,17 @@ public class LegalTagService {
           .values();
     } else if (intersection) {
 
-      List<LegalTag> allTags = matchTagArrayList.stream().flatMap(Collection::stream).collect(Collectors.toList());
+      List<LegalTag> allTags = matchTagArrayList.stream().flatMap(Collection::stream).toList();
 
-      Collection<LegalTag> duplicateTags = allTags.stream()
+      return allTags.stream()
           .collect(Collectors.groupingBy(LegalTag::getName))
           .entrySet().stream()
           .filter(entry -> entry.getValue().size() > 1)
           .flatMap(entry -> entry.getValue().stream().limit(1))
-          .collect(Collectors.toList());
+          .toList();
 
-      return duplicateTags;
     } else { // return add
-      return matchTagArrayList.stream().flatMap(Collection::stream).collect(Collectors.toList());
+      return matchTagArrayList.stream().flatMap(Collection::stream).toList();
     }
 
   }
@@ -386,10 +382,10 @@ public class LegalTagService {
 
     Collection<LegalTag> matchedTags = new ArrayList<>();
 
-    StringTokenizer st = null;
+    StringTokenizer st;
     String attribute = null;
     String pattern = null;
-    String searchedString = null;
+    String searchedString;
     String fromDate = null;
     String toDate = null;
     LocalDate fromlocalDate = null;
@@ -507,7 +503,7 @@ public class LegalTagService {
       return true;
     }
 
-    List<String> attributeList = new ArrayList<String>();
+    List<String> attributeList = new ArrayList<>();
     attributeList.add("countryOfOrigin");
     attributeList.add("contractId");
     attributeList.add("originator");
@@ -525,7 +521,8 @@ public class LegalTagService {
     Object value;
     for (int i = 0; i < attributeList.size(); i++) {
       value = beanWrapper.getPropertyValue(attributeList.get(i));
-      if (StringUtils.containsAnyIgnoreCase(value.toString().trim(), pattern)) {
+      String stringValue = Objects.toString(value, "").trim();
+      if (StringUtils.containsAnyIgnoreCase(stringValue, pattern)) {
         return true;
       }
     }

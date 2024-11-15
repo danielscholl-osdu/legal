@@ -15,4 +15,8 @@ public class Constants {
     public static final String LEGAL_QUERY_API_UNION_OPERATOR = "union";
     public static final String LEGAL_QUERY_API_INTERSECTION_OPERATOR = "intersection";
     public static final String LEGAL_QUERY_API_ADD_OPERATOR = "add";
+
+    private Constants() {
+        // Private constructor to prevent instantiation
+    }
 }

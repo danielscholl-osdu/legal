@@ -20,6 +20,9 @@ package org.opengroup.osdu.legal.util;
 import com.google.api.client.util.Strings;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.util.List;
+
 @Slf4j
 public class GCPLegalTagUtils extends LegalTagUtils {
 
@@ -34,5 +37,10 @@ public class GCPLegalTagUtils extends LegalTagUtils {
       token = new GoogleServiceAccount(serviceAccountFile).getAuthToken();
     }
     return "Bearer " + token;
+  }
+
+  @Override
+  public List<String> readCOOCountries(String storageAccount, String defaultCOOFileName) throws IOException {
+    return List.of();
   }
 }

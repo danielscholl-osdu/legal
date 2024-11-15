@@ -4,7 +4,6 @@
 
 global:
   domain: ""
-  onPremEnabled: false
   limitsEnabled: true
   logLevel: "ERROR"
   tier: ""

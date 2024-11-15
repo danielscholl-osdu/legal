@@ -1,7 +1,6 @@
 package org.opengroup.osdu.legal.logging;
 
 import java.util.List;
-import jakarta.inject.Inject;
 
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
@@ -12,13 +11,14 @@ import org.springframework.web.context.annotation.RequestScope;
 @RequestScope
 @Component
 public class AuditLogger {
-	@Inject
-	private JaxRsDpsLog logger;
-
-	@Inject
-	private RequestInfo requestInfo;
-
+	private final JaxRsDpsLog logger;
+	private final RequestInfo requestInfo;
 	private AuditEvents events = null;
+
+	public AuditLogger(JaxRsDpsLog logger, RequestInfo requestInfo) {
+		this.logger = logger;
+		this.requestInfo = requestInfo;
+	}
 
 	private AuditEvents getEvents() {
 		if (this.events == null) {

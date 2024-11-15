@@ -79,7 +79,7 @@ class AboutToExpireLegalTagPublisherImplTest {
     private final String testRegion = "testRegion";
 
     @BeforeEach
-    void setup() throws K8sParameterNotFoundException {
+    void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -93,11 +93,11 @@ class AboutToExpireLegalTagPublisherImplTest {
     }  
 
     @Test
-    void testPublish() throws K8sParameterNotFoundException{
+    void testPublish() {
                                                                                                           
         List<AboutToExpireLegalTag> tagList = new ArrayList<AboutToExpireLegalTag>();
         tagList.add(tag);
-        when(tags.getAboutToExpireLegalTags()).thenReturn(tagList);
+        when(tags.getLegalTags()).thenReturn(tagList);
         aboutToExpireLegalTagPublisherImpl.publish("projectId", headers, tags);
         verify(snsClient, times(1)).publish(any(PublishRequest.class));
 

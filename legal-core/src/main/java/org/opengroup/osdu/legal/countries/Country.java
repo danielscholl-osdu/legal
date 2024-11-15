@@ -25,6 +25,8 @@ public class Country {
         public static final String EMBARGOED = "Embargoed";
         public static final String DEFAULT = "Default";
         public static final String CLIENT_CONSENT_REQUIRED = "Client consent required";
+        
+        private RESIDENCY_RISK() {}
     }
 
     public boolean isMatchByAlpha2(Country other) {

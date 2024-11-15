@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +25,8 @@ public abstract class LegalTagUtils extends TestUtils {
     private static InputStream getTestFileInputStream(String fileName) throws IOException {
         return LegalTagUtils.class.getResourceAsStream("/" + fileName);
     }
+
+    public abstract List<String> readCOOCountries(String storageAccount, String defaultCOOFileName) throws IOException;
 
     protected static String readTestFile(String fileName) throws IOException {
         InputStream inputStream = getTestFileInputStream(fileName);
