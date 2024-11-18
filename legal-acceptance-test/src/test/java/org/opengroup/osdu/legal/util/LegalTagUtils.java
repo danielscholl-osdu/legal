@@ -16,10 +16,12 @@ import com.sun.jersey.api.client.ClientResponse;
 
 public class LegalTagUtils extends TestUtils {
 
+	public static final String INTEGRATION_TESTER_TOKEN = "TEST_USER_TOKEN";
 	protected static String token = null;
 	private OpenIDTokenProvider tokenProvider;
 
 	public LegalTagUtils() {
+		token = System.getProperty(INTEGRATION_TESTER_TOKEN, System.getenv(INTEGRATION_TESTER_TOKEN));
 		if (Strings.isNullOrEmpty(token)) {
 			tokenProvider = new OpenIDTokenProvider();
 			token = tokenProvider.getToken();
