@@ -19,15 +19,15 @@ Authentication can be provided as OIDC config:
 
 | name                                            | value                                   | description                   | sensitive? | source |
 |-------------------------------------------------|-----------------------------------------|-------------------------------|------------|--------|
-| `TEST_OPENID_PROVIDER_CLIENT_ID`     | `********`                              | PRIVILEGED_USER Client Id     | yes        | -      |
-| `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********`                              | PRIVILEGED_USER Client secret | yes        | -      |
+| `TEST_OPENID_PROVIDER_CLIENT_ID`     | `********`                              | Client Id for `$INTEGRATION_TESTER`      | yes        | -      |
+| `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********`                              | Client secret for `$INTEGRATION_TESTER` | yes        | -      |
 | `TEST_OPENID_PROVIDER_URL`                      | `https://keycloak.com/auth/realms/osdu` | OpenID provider url           | yes        | -      |
 
 Or tokens can be used directly from env variables:
 
 | name                    | value      | description           | sensitive? | source |
 |-------------------------|------------|-----------------------|------------|--------|
-| `TEST_USER_TOKEN` | `********` | PRIVILEGED_USER Token | yes        | -      |
+| `TEST_USER_TOKEN` | `********` | `$INTEGRATION_TESTER` Token | yes        | -      |
 
 
 **Entitlements configuration for integration accounts**
@@ -41,8 +41,7 @@ Execute following command to build code and run all the integration tests:
 ```bash
 # Note: this assumes that the environment variables for integration tests as outlined
 #       above are already exported in your environment.
-$ (cd testing/legal-test-core/ && mvn clean install)
-$ (cd testing/legal-test-baremetal/ && mvn clean test)
+$ (cd legal-acceptance-test && mvn clean test)
 ```
 
 
