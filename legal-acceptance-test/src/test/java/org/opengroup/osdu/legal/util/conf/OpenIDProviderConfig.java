@@ -25,6 +25,10 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 
 public class OpenIDProviderConfig {
 
+	public static final String TEST_OPENID_PROVIDER_CLIENT_ID = "PRIVILEGED_USER_OPENID_PROVIDER_CLIENT_ID";
+	public static final String TEST_OPENID_PROVIDER_CLIENT_SECRET = "PRIVILEGED_USER_OPENID_PROVIDER_CLIENT_SECRET";
+	public static final String TEST_OPENID_PROVIDER_URL = "TEST_OPENID_PROVIDER_URL";
+	
     private String clientId;
     private String clientSecret;
     private String url;
@@ -34,9 +38,13 @@ public class OpenIDProviderConfig {
 
     public static OpenIDProviderConfig Instance() {
         try {
-            openIDProviderConfig.clientId = System.getProperty("TEST_OPENID_PROVIDER_CLIENT_ID", System.getenv("TEST_OPENID_PROVIDER_CLIENT_ID"));
-            openIDProviderConfig.clientSecret = System.getProperty("TEST_OPENID_PROVIDER_CLIENT_SECRET", System.getenv("TEST_OPENID_PROVIDER_CLIENT_SECRET"));
-            openIDProviderConfig.url = System.getProperty("TEST_OPENID_PROVIDER_URL", System.getenv("TEST_OPENID_PROVIDER_URL"));
+			openIDProviderConfig.clientId = System.getProperty(TEST_OPENID_PROVIDER_CLIENT_ID,
+					System.getenv(TEST_OPENID_PROVIDER_CLIENT_ID));
+			openIDProviderConfig.clientSecret = System.getProperty(TEST_OPENID_PROVIDER_CLIENT_SECRET,
+					System.getenv(TEST_OPENID_PROVIDER_CLIENT_SECRET));
+			openIDProviderConfig.url = System.getProperty(TEST_OPENID_PROVIDER_URL,
+					System.getenv(TEST_OPENID_PROVIDER_URL));
+
             Issuer issuer = new Issuer(openIDProviderConfig.url);
             OIDCProviderConfigurationRequest request = new OIDCProviderConfigurationRequest(issuer);
             HTTPRequest httpRequest = request.toHTTPRequest();

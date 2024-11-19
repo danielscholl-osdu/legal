@@ -16,7 +16,7 @@ import com.sun.jersey.api.client.ClientResponse;
 
 public class LegalTagUtils extends TestUtils {
 
-	public static final String INTEGRATION_TESTER_TOKEN = "TEST_USER_TOKEN";
+	public static final String INTEGRATION_TESTER_TOKEN = "PRIVILEGED_USER_TOKEN";
 	protected static String token = null;
 	private OpenIDTokenProvider tokenProvider;
 

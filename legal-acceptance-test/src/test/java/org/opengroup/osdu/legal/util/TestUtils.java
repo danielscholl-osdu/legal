@@ -38,16 +38,8 @@ public class TestUtils {
 			baseUrl = baseUrl.replaceFirst("https", "http");
 	}
 
-	public TestUtils(String url){
-		baseUrl = url;
-	}
-
 	public boolean isLocalHost(){
 		return baseUrl.contains("//localhost");
-	}
-
-	public static String getMyProjectAccountId(){
-		return System.getProperty("MY_TENANT_PROJECT", System.getenv("MY_TENANT_PROJECT"));
 	}
 
 	public String getBaseHost() {return baseUrl.substring(8,baseUrl.length()-1);}

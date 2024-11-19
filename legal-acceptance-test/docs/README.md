@@ -7,10 +7,6 @@ You will need to have the following environment variables defined.
 | `HOST_URL`                           | ex `https://osdu.core-dev.gcp.gnrg-osdu.projects.epam.com/api/legal/v1/`         | -                                                                                                                                                                                                                              | yes                                     | -      |
 | `MY_TENANT`                          | ex `osdu`                                        | OSDU tenant used for testing                                                                                                                                                                                                   | yes                                     | -      |
 | `SKIP_HTTP_TESTS`                    | ex `true`                                        | jetty server returns 403 when running locally when deployed jettyserver is not used and the app returns a 302 so just run against deployed version only when checking http -> https redirects. Use 'true' for Google Cloud Run | yes                                     | -      |
-| `BAREMETAL_PROJECT_ID`               | ex `osdu-cim-dev`                                | project id used to specify bucket name if `ENABLE_FULL_BUCKET_NAME`=true                                                                                                                                                       | no                                      | -      |
-| `TEST_MINIO_ACCESS_KEY`              | ex `admin`                                       | Minio access key                                                                                                                                                                                                               | no                                      | -      |
-| `TEST_MINIO_SECRET_KEY`              | `********`                                       | Minio secret                                                                                                                                                                                                                   | yes                                     | --     |
-| `TEST_MINIO_URL`                     | ex `https://s3.core-dev.gcp.gnrg-osdu.projects.epam.com` | Minio url                                                                                                                                                                                                                      | --                                      |
 | `PARTITION_API`                      | ex `https://osdu.core-dev.gcp.gnrg-osdu.projects.epam.com/api/partition/v1`     | Partition service host                                                                                                                                                                                                         | no                                      | --     |
 
 
@@ -19,20 +15,20 @@ Authentication can be provided as OIDC config:
 
 | name                                            | value                                   | description                   | sensitive? | source |
 |-------------------------------------------------|-----------------------------------------|-------------------------------|------------|--------|
-| `TEST_OPENID_PROVIDER_CLIENT_ID`     | `********`                              | Client Id for `$INTEGRATION_TESTER`      | yes        | -      |
-| `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********`                              | Client secret for `$INTEGRATION_TESTER` | yes        | -      |
+| `PRIVILEGED_USER_OPENID_PROVIDER_CLIENT_ID`     | `********`                              | PRIVILEGED_USER Client Id      | yes        | -      |
+| `PRIVILEGED_USER_OPENID_PROVIDER_CLIENT_SECRET` | `********`                              | PRIVILEGED_USER Client secret | yes        | -      |
 | `TEST_OPENID_PROVIDER_URL`                      | `https://keycloak.com/auth/realms/osdu` | OpenID provider url           | yes        | -      |
 
 Or tokens can be used directly from env variables:
 
 | name                    | value      | description           | sensitive? | source |
 |-------------------------|------------|-----------------------|------------|--------|
-| `TEST_USER_TOKEN` | `********` | `$INTEGRATION_TESTER` Token | yes        | -      |
+| `PRIVILEGED_USER_TOKEN` | `********` | PRIVILEGED_USER_TOKEN Token | yes        | -      |
 
 
 **Entitlements configuration for integration accounts**
 
-| INTEGRATION_TESTER                                                                                                                                   |
+| PRIVILEGED_USER                                                                                                                                   |
 |------------------------------------------------------------------------------------------------------------------------------------------------------|
 | users<br/>service.entitlements.user<br/>service.legal.admin<br/>service.legal.editor<br/>service.legal.user<br/>data.test1<br/>data.integration.test |
 
