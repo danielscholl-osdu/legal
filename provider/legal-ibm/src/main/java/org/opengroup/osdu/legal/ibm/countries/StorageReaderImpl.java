@@ -7,10 +7,14 @@ import static com.cloudant.client.api.query.Expression.eq;
 import static com.cloudant.client.api.query.Operation.and;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.google.gson.JsonParser;
 import jakarta.inject.Inject;
 
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
@@ -42,7 +46,7 @@ public class StorageReaderImpl implements IStorageReader {
     private static final long CACHE_EXPIRATION_MS = 60000;
     private AtomicLong lastUpdate = new AtomicLong(0);
     private WeakReference<byte[]> cache = new WeakReference<byte[]>(null);
-     
+	private static final String LEGAL_CONFIG_FILE_NAME = "legal.coo.json";
 
     public StorageReaderImpl(TenantInfo tenantInfo, String projectRegion, IBMCloudantClientFactory cloudantFactory, String dbNamePrefix, String dbName) throws MalformedURLException, FileNotFoundException {
         this.tenantInfo = tenantInfo;
@@ -71,28 +75,26 @@ public class StorageReaderImpl implements IStorageReader {
 		}
 		
 		try {
-			
 			Database db = cloudantFactory.getDatabase(cloudant, dbNamePrefix, dbName);
-	        
-	        QueryResult<JsonObject> result = db.query(new QueryBuilder(and(eq("tenant", tenantInfo.getName()), eq("region", cloudRegion)))
-	        		.fields("name", "alpha2", "numeric", "residencyRisk", "typesNotApplyDataResidency").build(), JsonObject.class);
-	        
-	        // The encapsulation of the Database class sucks in this case. If we could grab its internal
-	        // import com.cloudant.client.org.lightcouch.CouchDbClient we could avoid de-serializing the
-	        // response just to serialize it again.
-	        JsonArray array = new JsonArray();
-	        for (JsonObject s: result.getDocs()) { 
-	        	array.add(s);
-	        }
-	        byte[] blob = cloudant.getGson().toJson(array).getBytes();
-	        
+
+			QueryResult<JsonObject> result = db.query(new QueryBuilder(and(eq("tenant", tenantInfo.getName()), eq("region", cloudRegion)))
+					.fields("name", "alpha2", "numeric", "residencyRisk", "typesNotApplyDataResidency").build(), JsonObject.class);
+			JsonArray array = new JsonArray();
+			for (JsonObject s: result.getDocs()) {
+				array.add(s);
+			}
+			String content = new String(Files.readAllBytes(Paths.get("/config/"+LEGAL_CONFIG_FILE_NAME)));
+			JsonArray data = JsonParser.parseString(content).getAsJsonArray();
+
+			array.forEach(data::add);
+			byte[] blob = cloudant.getGson().toJson(data).getBytes();
 	        cache = new WeakReference<byte[]>(blob);
 	        lastUpdate.set(System.currentTimeMillis());
 	        
 	        return blob;
-		} catch (MalformedURLException e) {
-		    logger.error(" 500, Malformed URL Invalid cloudant URL", e);
-			throw new AppException(500, "Malformed URL", "Invalid cloudant URL", e);
+		} catch (IOException e) {
+		    logger.error(" 500, IOException", e);
+			throw new AppException(500, "IOException", "Invalid cloudant URL", e);
 		}
 	}
 
