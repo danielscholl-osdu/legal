@@ -356,7 +356,7 @@ public class CloudantLegalTagRepository implements ILegalTagRepository {
 			legalTags = allDocResponse.getResponse().getDocsAs(BanckendLegalTag.class)
 					.stream()
 					.filter(lTag ->  lTag.getIs_Valid() == args.getIsValid())
-					.filter(f->f.getName().split("-")[0].equalsIgnoreCase(headers.getPartitionId()))
+					.filter(f->f.getName().length() > headers.getPartitionId().length() && f.getName().substring(0,headers.getPartitionId().length()).equalsIgnoreCase(headers.getPartitionId()))
 					.collect(Collectors.toList());
 
 		} catch (IOException e) {
