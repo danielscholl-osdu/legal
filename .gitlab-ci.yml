@@ -27,7 +27,8 @@ variables:
   # We exclude it here to speed up pipeline execution, and avoid having the image fail on our Maven builds
   # Maven jobs should be using semgrep instead
   SAST_EXCLUDED_ANALYZERS: "spotbugs"
-
+  
+  ACCEPTANCE_TEST_DIR: "legal-acceptance-test"
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
