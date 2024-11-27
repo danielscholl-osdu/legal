@@ -131,7 +131,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 |------|-------------|------|---------|---------|
 **conf.configmap** | configmap to be used | string | `legal-config` | yes
 **conf.appName** | name of the app | string | `legal` | yes
-**conf.replicas** | Number of pods for service  | integer | `1` | yes
+**conf.replicas** | Number of pods for service  | integer | `2` | yes
 
 ### Istio variables
 
