@@ -1,19 +1,16 @@
 package org.opengroup.osdu.legal.countries;
 
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.common.model.http.AppException;
-import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
-import org.opengroup.osdu.legal.provider.interfaces.IStorageReaderFactory;
-
-import org.springframework.stereotype.Repository;
-
+import jakarta.inject.Inject;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.HashMap;
-import java.util.Map;
-import jakarta.inject.Inject;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
+import org.opengroup.osdu.legal.provider.interfaces.IStorageReaderFactory;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @Log
@@ -22,7 +19,7 @@ public class LegalTagCountriesTenantRepositories {
     @Inject
     private IStorageReaderFactory storageReaderFactory;
 
-    private final Map<String, LegalTagCountriesRepository> countriesTenantRepositories = new HashMap<>();
+    private final Map<String, LegalTagCountriesRepository> countriesTenantRepositories = new ConcurrentHashMap<>();
 
     LegalTagCountriesRepository get(TenantInfo tenant, String projectRegion){
         String tenantName = tenant.getName();

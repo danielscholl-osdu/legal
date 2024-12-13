@@ -1,6 +1,6 @@
 /*
- *  Copyright 2020-2023 Google LLC
- *  Copyright 2020-2023 EPAM Systems, Inc
+ *  Copyright 2020-2024 Google LLC
+ *  Copyright 2020-2024 EPAM Systems, Inc
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 
 package org.opengroup.osdu.legal.countries;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.obm.core.Driver;
@@ -28,31 +30,31 @@ import org.opengroup.osdu.core.obm.core.persistence.ObmDestination;
 import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 
-import java.util.Objects;
-
 @RequiredArgsConstructor
 @Slf4j
 public class StorageReaderImpl implements IStorageReader {
 
+  private static final String SEPARATOR = "-";
+  private static final String FILE_NAME = "Legal_COO.json";
+  protected static final String BUCKET_NAME = "legal-config";
+
   private PartitionPropertyResolver partitionPropertyResolver;
   private PartitionPropertyNames partitionPropertyNames;
-
   private TenantInfo tenantInfo;
   private Driver storage;
-
-  protected static final String BUCKET_NAME = "legal-config";
-  private static final String FILE_NAME = "Legal_COO.json";
-  private boolean isFullBucketName = false;
+  private ICache<String, byte[]> legalCOOCache;
 
   public StorageReaderImpl(
       TenantInfo tenantInfo,
       Driver storage,
       PartitionPropertyResolver partitionPropertyResolver,
-      PartitionPropertyNames partitionPropertyNames) {
+      PartitionPropertyNames partitionPropertyNames,
+      ICache<String, byte[]> legalCOOCache) {
     this.tenantInfo = tenantInfo;
     this.storage = storage;
     this.partitionPropertyResolver = partitionPropertyResolver;
     this.partitionPropertyNames = partitionPropertyNames;
+    this.legalCOOCache = legalCOOCache;
   }
 
   @Override
@@ -66,12 +68,17 @@ public class StorageReaderImpl implements IStorageReader {
         log.warn("Bucket %s is not existing.".formatted(tenantBucketName));
         return new byte[0];
       }
-
-      Blob blob = storage.getBlob(tenantBucketName, FILE_NAME, destination);
-      if (Objects.isNull(blob)) {
-        log.warn("File %s in bucket %s is not existing.".formatted(FILE_NAME, tenantBucketName));
+      String dataPartitionId = tenantInfo.getDataPartitionId();
+      if (Objects.isNull(legalCOOCache.get(dataPartitionId))) {
+        Blob blob = storage.getBlob(tenantBucketName, FILE_NAME, destination);
+        if (Objects.isNull(blob)) {
+          log.warn("File %s in bucket %s is not existing.".formatted(FILE_NAME, tenantBucketName));
+        } else {
+          content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
+          legalCOOCache.put(dataPartitionId, content);
+        }
       } else {
-        content = storage.getBlobContent(getTenantBucketName(), FILE_NAME, getDestination());
+        content = legalCOOCache.get(dataPartitionId);
       }
     } catch (ObmDriverRuntimeException e) {
       log.error(e.getMessage(), e);
@@ -86,9 +93,9 @@ public class StorageReaderImpl implements IStorageReader {
         .orElseGet(
             () ->
                 this.tenantInfo.getProjectId()
-                    + "-"
+                    + SEPARATOR
                     + this.tenantInfo.getName()
-                    + "-"
+                    + SEPARATOR
                     + BUCKET_NAME);
   }
 
