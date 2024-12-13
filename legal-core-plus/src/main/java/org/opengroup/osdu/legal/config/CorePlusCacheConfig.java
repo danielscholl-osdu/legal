@@ -1,6 +1,6 @@
 /*
- *  Copyright 2020-2023 Google LLC
- *  Copyright 2020-2023 EPAM Systems, Inc
+ *  Copyright 2020-2024 Google LLC
+ *  Copyright 2020-2024 EPAM Systems, Inc
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 package org.opengroup.osdu.legal.config;
 
-import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.cache.VmCache;
 import org.opengroup.osdu.core.common.partition.PartitionInfo;
@@ -25,8 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@RequiredArgsConstructor
-public class CacheConfig {
+public class CorePlusCacheConfig {
 
   @Bean
   public ICache<String, PartitionInfo> partitionInfoCache() {

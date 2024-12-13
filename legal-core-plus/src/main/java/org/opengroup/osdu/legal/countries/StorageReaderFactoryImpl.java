@@ -1,6 +1,6 @@
 /*
- *  Copyright 2020-2023 Google LLC
- *  Copyright 2020-2023 EPAM Systems, Inc
+ *  Copyright 2020-2024 Google LLC
+ *  Copyright 2020-2024 EPAM Systems, Inc
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.opengroup.osdu.legal.countries;
 
 import lombok.RequiredArgsConstructor;
+import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.obm.core.Driver;
@@ -30,14 +31,13 @@ import org.springframework.stereotype.Component;
 public class StorageReaderFactoryImpl implements IStorageReaderFactory {
 
   private final Driver storage;
-
   private final PartitionPropertyResolver partitionPropertyResolver;
-
   private final PartitionPropertyNames partitionPropertyNames;
+  private final ICache<String, byte[]> legalCOOCache;
 
   @Override
   public IStorageReader getReader(TenantInfo tenant, String projectRegion) {
     return new StorageReaderImpl(
-        tenant, storage, partitionPropertyResolver, partitionPropertyNames);
+        tenant, storage, partitionPropertyResolver, partitionPropertyNames, legalCOOCache);
   }
 }

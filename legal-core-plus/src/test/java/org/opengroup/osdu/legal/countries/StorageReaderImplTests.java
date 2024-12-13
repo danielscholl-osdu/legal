@@ -17,13 +17,20 @@
 
 package org.opengroup.osdu.legal.countries;
 
-import org.junit.Before;
+import static org.junit.Assert.*;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.obm.core.Driver;
@@ -32,32 +39,52 @@ import org.opengroup.osdu.core.obm.core.model.Bucket;
 import org.opengroup.osdu.core.obm.core.persistence.ObmDestination;
 import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class StorageReaderImplTests {
 
   private static final String TENANT_1 = "tenant1";
   private static final String FILE_NAME = "Legal_COO.json";
   private static final String BUCKET_FULL_NAME = "tenant1-tenant1-legal-config";
+  private static final String CONTENT =
+      """
+          [{
+            "name": "Malaysia",
+            "alpha2": "MY",
+            "numeric": 458,
+            "residencyRisk": "Client consent required"
+          }]""";
+  private static final String PARTITION_BUCKET_NAME = "partition-bucket-name";
 
-  @Mock private TenantInfo tenantInfo;
+  @Mock
+  private TenantInfo tenantInfo;
 
-  @Mock private Driver storage;
+  @Mock
+  private Driver storage;
 
-  @Mock private PartitionPropertyNames partitionPropertyNames;
+  @Mock
+  private PartitionPropertyNames partitionPropertyNames;
 
-  @Mock private PartitionPropertyResolver partitionPropertyResolver;
+  @Mock
+  private PartitionPropertyResolver partitionPropertyResolver;
 
-  @InjectMocks private StorageReaderImpl sut;
+  @Mock
+  private ICache<String, byte[]> legalCOOCache;
 
-  @Before
-  public void setup() {
-    MockitoAnnotations.initMocks(this);
+  @InjectMocks
+  private StorageReaderImpl sut;
+
+  private AutoCloseable mocks;
+
+  @BeforeEach
+  void setup() {
+    mocks = MockitoAnnotations.openMocks(this);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    if (mocks != null) {
+      mocks.close();
+    }
   }
 
   @Test
@@ -68,11 +95,12 @@ public class StorageReaderImplTests {
     when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new Bucket(TENANT_1));
     when(storage.getBlob(BUCKET_FULL_NAME, FILE_NAME, getDestination()))
         .thenReturn(Blob.builder().build());
-    byte[] expectedBytes = "test".getBytes();
+    byte[] expectedBytes = CONTENT.getBytes();
     when(storage.getBlobContent(BUCKET_FULL_NAME, FILE_NAME, getDestination()))
         .thenReturn(expectedBytes);
-
+    
     byte[] bytes = sut.readAllBytes();
+    
     assertEquals(expectedBytes, bytes);
   }
 
@@ -83,7 +111,8 @@ public class StorageReaderImplTests {
     when(tenantInfo.getProjectId()).thenReturn(TENANT_1);
 
     byte[] bytes = sut.readAllBytes();
-    assertTrue(bytes.length == 0);
+    
+    assertEquals(0, bytes.length);
   }
 
   @Test
@@ -97,21 +126,40 @@ public class StorageReaderImplTests {
     when(storage.getBlobContent(BUCKET_FULL_NAME, FILE_NAME, getDestination())).thenReturn(null);
 
     byte[] bytes = sut.readAllBytes();
-    assertTrue(bytes.length == 0);
+    
+    assertEquals(0, bytes.length);
   }
 
   @Test
   public void should_returnBucketName_fromPartition() {
-    when(partitionPropertyNames.getLegalBucketName()).thenReturn("partition-bucket-name");
+    when(partitionPropertyNames.getLegalBucketName()).thenReturn(PARTITION_BUCKET_NAME);
     when(partitionPropertyResolver.getOptionalPropertyValue(
             partitionPropertyNames.getLegalBucketName(), tenantInfo.getDataPartitionId()))
-        .thenReturn(Optional.of("partition-bucket-name"));
+        .thenReturn(Optional.of(PARTITION_BUCKET_NAME));
+   
     StorageReaderImpl storageReader =
         new StorageReaderImpl(
-            tenantInfo, storage, partitionPropertyResolver, partitionPropertyNames);
-
+            tenantInfo, storage, partitionPropertyResolver, partitionPropertyNames, legalCOOCache);
     String resultBucketName = storageReader.getTenantBucketName();
-    assertEquals("partition-bucket-name", resultBucketName);
+    
+    assertEquals(PARTITION_BUCKET_NAME, resultBucketName);
+  }
+
+  @Test
+  public void shouldReturnContentAsBytes_whenCacheEntryFound() {
+    byte[] expected = CONTENT.getBytes(StandardCharsets.UTF_8);
+    when(tenantInfo.getName()).thenReturn(TENANT_1);
+    when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
+    when(tenantInfo.getProjectId()).thenReturn(TENANT_1);
+    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new Bucket(TENANT_1));
+    when(legalCOOCache.get(tenantInfo.getDataPartitionId())).thenReturn(expected);
+
+    StorageReaderImpl storageReader =
+        new StorageReaderImpl(
+            tenantInfo, storage, partitionPropertyResolver, partitionPropertyNames, legalCOOCache);
+    byte[] actual = storageReader.readAllBytes();
+
+    assertArrayEquals(expected, actual);
   }
 
   private ObmDestination getDestination() {
