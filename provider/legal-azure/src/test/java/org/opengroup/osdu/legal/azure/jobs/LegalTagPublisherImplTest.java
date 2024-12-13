@@ -110,7 +110,7 @@ public class LegalTagPublisherImplTest {
         JsonObject jsonObjectMessage = gson.fromJson(new String(messageBody.getBinaryData().get(0)), JsonObject.class);
         JsonObject jsonObject = (JsonObject) jsonObjectMessage.get(messageKey);
 
-        assertEquals("Storage publishes message " + CORRELATION_ID, debugLogArgumentCaptor.getValue());
+        assertEquals("Legal publishes message " + CORRELATION_ID, debugLogArgumentCaptor.getValue());
         assertEquals(PARTITION_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
         assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
         assertEquals(USER_EMAIL, properties.get(DpsHeaders.USER_EMAIL));
@@ -147,7 +147,7 @@ public class LegalTagPublisherImplTest {
         JsonObject jsonObjectMessage = gson.fromJson(new String(messageBody.getBinaryData().get(0)), JsonObject.class);
         JsonObject jsonObject = (JsonObject) jsonObjectMessage.get(messageKey);
 
-        assertEquals("Storage publishes message " + CORRELATION_ID, debugLogArgumentCaptor.getValue());
+        assertEquals("Legal publishes message " + CORRELATION_ID, debugLogArgumentCaptor.getValue());
         assertEquals(serviceBusExceptionMessage, errorLogArgumentCaptor.getValue());
         assertEquals(serviceBusException, exceptionArgumentCaptor.getValue());
         assertEquals(PARTITION_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
