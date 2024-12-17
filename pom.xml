@@ -8,7 +8,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <docker.image.prefix>opendes</docker.image.prefix>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <os-core-common.version>0.27.0-rc1</os-core-common.version>
+        <os-core-common.version>3.3.0</os-core-common.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <resilience4jVersion>1.7.0</resilience4jVersion>
         <openapi.version>1.6.14</openapi.version>
@@ -83,14 +83,14 @@
             </dependency>
             <dependency>
                 <groupId>org.opengroup.osdu</groupId>
-                <artifactId>os-core-common-spring6</artifactId>
+                <artifactId>os-core-common</artifactId>
                 <version>${os-core-common.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.opengroup.osdu</groupId>
-                <artifactId>os-core-common-spring6</artifactId>
+                <artifactId>os-core-common</artifactId>
                 <version>${os-core-common.version}</version>
                 <exclusions>
                     <exclusion>

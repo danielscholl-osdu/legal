@@ -26,6 +26,11 @@
 			<version>${os-core-lib-ibm.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.opengroup.osdu</groupId>
+			<artifactId>os-core-common-spring6</artifactId>
+			<version>0.26.0</version>
+		</dependency>
+		<dependency>
 			<groupId>net.minidev</groupId>
 			<artifactId>json-smart</artifactId>
 			<version>${json-smart.version}</version>
