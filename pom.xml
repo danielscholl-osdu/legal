@@ -34,15 +34,6 @@
     <name>legal-service</name>
     <description>Legal service</description>
 
-    <modules>
-        <module>legal-core</module>
-        <module>legal-core-plus</module>
-        <module>provider/legal-gc</module>
-        <module>provider/legal-azure</module>
-        <module>provider/legal-aws</module>
-        <module>provider/legal-ibm</module>
-    </modules>
-
     <repositories>
         <repository>
             <id>${repo.releases.id}</id>
@@ -150,6 +141,40 @@
         </dependency>
 		</dependencies>
     <profiles>
+        <profile>
+            <id>core</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>legal-core</module>
+                <module>legal-core-plus</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>aws</id>
+            <modules>
+                <module>provider/legal-aws</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>azure</id>
+            <modules>
+                <module>provider/legal-azure</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>ibm</id>
+            <modules>
+                <module>provider/legal-ibm</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>gc</id>
+            <modules>
+                <module>provider/legal-gc</module>
+            </modules>
+        </profile>
         <profile>
             <id>Default</id>
             <activation>

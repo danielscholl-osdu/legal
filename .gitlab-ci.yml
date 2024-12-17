@@ -27,8 +27,8 @@ variables:
   # We exclude it here to speed up pipeline execution, and avoid having the image fail on our Maven builds
   # Maven jobs should be using semgrep instead
   SAST_EXCLUDED_ANALYZERS: "spotbugs"
-  
   ACCEPTANCE_TEST_DIR: "legal-acceptance-test"
+
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
@@ -59,6 +59,18 @@ include:
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/core-global.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/aws-one-pipeline.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/azure-one-pipeline.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/gc-one-pipeline.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/ibm-one-pipeline.yml"
 
   - local: "devops/gc/pipeline/override-stages.yml"
 
@@ -196,6 +208,7 @@ azure_deploy:
     AZURE_COVERAGE_THRESHOLD: 80
 
 azure_containerize:
+  needs: [ "azure-compile-and-unit-test" ]
   variables:
     AZURE_CONTAINERIZE_REPOSITORY: "-b jdk-17 https://gitlab-ci-token:${CI_JOB_TOKEN}@community.opengroup.org/osdu/platform/deployment-and-operations/base-containers-azure/service-base-image"
 
