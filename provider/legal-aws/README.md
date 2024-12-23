@@ -52,13 +52,13 @@ You may need to configure access to the remote maven repository that holds the O
 * Navigate to the service's root folder and run:
 
 ```bash
-mvn clean package -pl legal-core,provider/legal-aws
+mvn clean package -P aws
 ```
 
 * If you wish to build the project without running tests
 
 ```bash
-mvn clean package -pl legal-core,provider/legal-aws -DskipTests
+mvn clean package -P aws -DskipTests
 ```
 
 After configuring your environment as specified above, you can follow these steps to run the application. These steps should be invoked from the *repository root.*
