@@ -43,7 +43,7 @@ hpa:
   minReplicas: 6
   maxReplicas: 15
   targetType: "AverageValue"
-  targetValue: 50 #25 rps
+  targetValue: 40
   behaviorScaleUpStabilizationWindowSeconds: 10
   behaviorScaleUpPoliciesValue: 50
   behaviorScaleUpPoliciesPeriodSeconds: 15
