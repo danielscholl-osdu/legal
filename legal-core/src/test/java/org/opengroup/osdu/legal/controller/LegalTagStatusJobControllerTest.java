@@ -1,5 +1,6 @@
 package org.opengroup.osdu.legal.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,7 @@ import static org.mockito.Mockito.when;
 public class LegalTagStatusJobControllerTest {
 
     public static final DpsHeaders dpsHeaders = new DpsHeaders();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private RequestInfo requestInfo;
@@ -74,7 +76,7 @@ public class LegalTagStatusJobControllerTest {
         ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
 
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
-        verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(legalTagJobResult.toString()));
+        verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(objectMapper.writeValueAsString(legalTagJobResult)));
     }
 
     @Test
