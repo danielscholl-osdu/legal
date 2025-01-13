@@ -1,9 +1,9 @@
 package org.opengroup.osdu.legal.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
-import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.legal.api.LegalTagStatusJobApi;
@@ -36,6 +36,8 @@ public class LegalTagStatusJobController implements LegalTagStatusJobApi {
     @Inject
     private JaxRsDpsLog log;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public ResponseEntity<HttpStatus> checkLegalTagStatusChanges() {
         tenantStorageFactory.flushCache();
@@ -51,7 +53,7 @@ public class LegalTagStatusJobController implements LegalTagStatusJobApi {
         boolean success = true;
         try {
             LegalTagJobResult result = legalTagStatusJob.run(tenantInfo.getProjectId(), convertedHeaders, tenantInfo.getName());
-            auditLogger.legalTagJobRanSuccess(singletonList(result.toString()));
+            auditLogger.legalTagJobRanSuccess(singletonList(this.objectMapper.writeValueAsString(result)));
         } catch (Exception e) {
             success = false;
             log.error( "Error running check LegalTag compliance job on tenant " + convertedHeaders.getPartitionIdWithFallbackToAccountId(), e);
