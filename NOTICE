@@ -187,7 +187,7 @@ The following software have components provided under the terms of this license:
 - Standard Uri Template (from https://std-uritemplate.github.io/)
 - Swagger UI (from <http://webjars.org>, http://webjars.org, https://www.webjars.org)
 - Vavr (from http://vavr.io, https://www.vavr.io)
-- Vavr Match (from http://vavr.io)
+- Vavr Match (from http://vavr.io, https://vavr.io)
 - error-prone annotations (from https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations)
 - io.grpc:grpc-api (from https://github.com/grpc/grpc-java)
 - io.grpc:grpc-context (from https://github.com/grpc/grpc-java)

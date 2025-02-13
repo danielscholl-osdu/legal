@@ -47,7 +47,7 @@
     <spring-framework-version>6.1.16</spring-framework-version>
 
     <!-- Project Versions-->
-    <json-smart.version>2.5.1</json-smart.version>
+    <json-smart.version>2.5.2</json-smart.version>
     <resilience4jVersion>1.7.0</resilience4jVersion>
     <jackson.version>2.16.1</jackson.version>
     <gson.version>2.10.1</gson.version>
