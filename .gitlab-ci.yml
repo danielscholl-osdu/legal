@@ -58,7 +58,7 @@ include:
     file: "cloud-providers/gc-global.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/core-global.yml"
+    file: "cloud-providers/cimpl-global.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-one-pipeline.yml"
@@ -102,7 +102,7 @@ download_plugins:
 
   only:
     variables:
-      - $CORE == '1'
+      - $CIMPL == '1'
 
 azure_deploy:
   variables:
