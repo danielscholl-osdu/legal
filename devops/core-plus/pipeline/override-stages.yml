@@ -1,0 +1,52 @@
+variables:
+  CORE_SERVICE: legal
+  CORE_LEGALSTATUS_IMAGE_NAME: legal-status-update
+
+.core_set_image_name:
+  script:
+    - >
+      if echo $CI_COMMIT_REF_NAME | grep -Eq "^release\/[0-9]{1,2}.[0-9]{1,2}$";
+      then
+        export CORE_IMAGE_NAME=$CORE_IMAGE_NAME-release;
+        export CORE_IMAGE_BOOTSTRAP_NAME=$CORE_IMAGE_BOOTSTRAP_NAME-release;
+        export CORE_LEGALSTATUS_IMAGE_NAME=$CORE_LEGALSTATUS_IMAGE_NAME-release;
+      fi
+    - >
+      if [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
+      then
+        export CORE_IMAGE_NAME=$CORE_IMAGE_NAME-master;
+        export CORE_IMAGE_BOOTSTRAP_NAME=$CORE_IMAGE_BOOTSTRAP_NAME-master;
+        export CORE_LEGALSTATUS_IMAGE_NAME=$CORE_LEGALSTATUS_IMAGE_NAME-master;
+      fi
+    - >
+      if [[ "$CI_COMMIT_TAG" != "" ]];
+      then
+        CORE_IMAGE_TAG="$CI_COMMIT_TAG";
+        CORE_EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CORE_IMAGE_NAME:$CI_COMMIT_TAG";
+        CORE_EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CORE_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_TAG";
+      elif [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
+      then
+        CORE_IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
+        CORE_HELM_TAG="latest"
+        CORE_EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CORE_IMAGE_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$CORE_IMAGE_NAME:latest";
+        CORE_EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CORE_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$CORE_IMAGE_BOOTSTRAP_NAME:latest";
+      else
+        CORE_IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
+        CORE_HELM_TAG="core$CI_COMMIT_SHORT_SHA"
+        CORE_EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CORE_IMAGE_NAME:$CI_COMMIT_SHORT_SHA";
+        CORE_EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CORE_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA";
+      fi
+
+.core_substitute_image_in_helm:
+  script:
+    - wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+    - IMAGE="$CI_REGISTRY_IMAGE/$CORE_IMAGE_NAME:$CORE_IMAGE_TAG" yq -i '.data.image = env(IMAGE)' $CORE_HELM_DEPLOYMENT_DIR/values.yaml
+    - yq -e '.data | has("bootstrapImage")' $CORE_HELM_DEPLOYMENT_DIR/values.yaml &>/dev/null && BOOTSTRAP_IMAGE="$CI_REGISTRY_IMAGE/$CORE_IMAGE_BOOTSTRAP_NAME:$CORE_IMAGE_TAG" yq -i '.data.bootstrapImage = env(BOOTSTRAP_IMAGE)' $CORE_HELM_DEPLOYMENT_DIR/values.yaml
+    - LEGALSTATUS_UPDATE_IMAGE="$CI_REGISTRY_IMAGE/$CORE_LEGALSTATUS_IMAGE_NAME:$CORE_IMAGE_TAG" yq -i '.data.legalStatusUpdateImage = env(LEGALSTATUS_UPDATE_IMAGE)' $CORE_HELM_DEPLOYMENT_DIR/values.yaml
+    - cat $CORE_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
+
+core-containerize-cronjob-gitlab:
+  extends: core-containerize-gitlab
+  variables:
+    CORE_IMAGE_NAME: "$CORE_LEGALSTATUS_IMAGE_NAME"
+    CORE_BUILD_PATH: "devops/core-plus/bootstrap_legalstatus_update/Dockerfile"
