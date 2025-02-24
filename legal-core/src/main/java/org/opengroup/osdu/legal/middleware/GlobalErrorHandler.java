@@ -7,6 +7,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.apache.commons.text.StringEscapeUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +28,8 @@ public class GlobalErrorHandler implements ErrorController {
     if(exception instanceof AppException){
       AppException  appException = (AppException)exception;
       String message = appException.getError().getMessage();
+          // need sanitize the user's input because inputs may contain EL expressions like ${expression}
+          sanitization(appException);
       return new ResponseEntity<Object>(appException.getError(), HttpStatus.resolve(appException.getError().getCode()));
     }
     else if (statusCode != null) {
@@ -36,4 +39,38 @@ public class GlobalErrorHandler implements ErrorController {
     throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server error", "An unknown error has occurred.");
   }
 
+    /**
+     * Need to sanitize only two fields: message and reason. No need to sanitize other AppError object's fields since
+     * they are annotated with  @JsonIgnore thus they never will reach a client.
+     */
+    private static void sanitization(AppException appException) {
+        sanitizeMessage(appException);
+        sanitizeReason(appException);
+    }
+
+    private static void sanitizeMessage(AppException appException) {
+        String message = appException.getError().getMessage();
+        message = sanitize(message);
+        appException.getError().setMessage(message);
+    }
+
+    private static void sanitizeReason(AppException appException) {
+        String reason = appException.getError().getReason();
+        reason = sanitize(reason);
+        appException.getError().setReason(reason);
+    }
+
+    private static String sanitize(String message) {
+        if (message != null) {
+            message = StringEscapeUtils.escapeHtml4(message);
+            message = message.replace("#{", "")
+                .replace("${", "")
+                .replace("}", "")
+                .replace("'", "")
+                .replace("\"", "");
+        } else {
+            message = "No message given in AppException";
+        }
+        return message;
+    }
 }
