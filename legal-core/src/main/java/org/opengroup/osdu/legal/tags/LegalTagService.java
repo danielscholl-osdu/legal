@@ -79,6 +79,7 @@ public class LegalTagService {
   public LegalTagDto create(LegalTagDto legalTagDto, String tenantName) {
     if (legalTagDto == null)
       return null;
+    validateExpirationDate(legalTagDto.getProperties().getExpirationDate());
     validator.isValidThrows(legalTagDto);
 
     ILegalTagRepository legalTagRepository = repositories.get(tenantName);
@@ -190,7 +191,7 @@ public class LegalTagService {
   public LegalTagDto update(UpdateLegalTag newLegalTag, String tenantName) {
     if (newLegalTag == null)
       return null;
-
+    validateExpirationDate(newLegalTag.getExpirationDate());
     LegalTag currentLegalTag = getLegalTag(newLegalTag.getName(), tenantName);
     if (currentLegalTag == null) {
       throw AppException.legalTagDoesNotExistError(newLegalTag.getName());
@@ -625,5 +626,15 @@ public class LegalTagService {
       }
     }
     return didItMatch;
+  }
+  private void  validateExpirationDate(Date expirationDate)
+  {
+    if(expirationDate != null) {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+      String yearString = sdf.format(expirationDate);
+      if (yearString.length() != 4) {
+        throw new AppException(400, "BadRequest", String.format("Expiration Date has invalid year %s.", yearString));
+      }
+    }
   }
 }
