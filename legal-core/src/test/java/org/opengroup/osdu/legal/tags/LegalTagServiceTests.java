@@ -502,6 +502,38 @@ public class LegalTagServiceTests {
     }
 
     @Test
+    public void should_notCreateLegalTag_when_ExpirationDateIsInvalid() throws Exception {
+        LegalTagDto legalTagDto = LegalTestUtils.createValidLegalTagDto("mylegaltag");
+        long expirationDate = 5555555555555555L;
+        legalTagDto.getProperties().setExpirationDate(new Date(expirationDate)) ;
+        LegalTagService testService = createSut();
+
+        AppException thrown = assertThrows(AppException.class, () -> {
+            testService.create(legalTagDto, "tenant2");
+        });
+
+        // Assert: Check if the exception has the expected status code, error type, and message.
+        assertEquals("Expected 400 BadRequest error code", 400, thrown.getError().getCode());
+        assertEquals("Expected BadRequest error type", "BadRequest", thrown.getError().getReason());
+    }
+
+    @Test
+    public void should_notUpdateLegalTag_when_ExpirationDateIsInvalid() throws Exception {
+        UpdateLegalTag updateLegalTagDto = LegalTestUtils.createUpdateLegalTag("mylegaltag");
+        long expirationDate = 5555555555555555L;
+        updateLegalTagDto.setExpirationDate(new Date(expirationDate)) ;
+        LegalTagService testService = createSut();
+
+        AppException thrown = assertThrows(AppException.class, () -> {
+            testService.update(updateLegalTagDto, "tenant2");
+        });
+
+        // Assert: Check if the exception has the expected status code, error type, and message.
+        assertEquals("Expected 400 BadRequest error code", 400, thrown.getError().getCode());
+        assertEquals("Expected BadRequest error type", "BadRequest", thrown.getError().getReason());
+    }
+
+    @Test
     public void should_returnLegalTag_when_givenExistingNames() {
         sut = createSut();
 
