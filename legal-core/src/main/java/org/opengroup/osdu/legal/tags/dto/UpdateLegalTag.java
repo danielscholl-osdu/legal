@@ -2,13 +2,17 @@ package org.opengroup.osdu.legal.tags.dto;
 
 import  java.sql.Date;
 import java.util.Map;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.opengroup.osdu.core.common.model.legal.validation.ValidDescription;
 import org.opengroup.osdu.core.common.model.legal.validation.ValidName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.opengroup.osdu.core.common.model.legal.serialization.ExpirationDateDeserializer;
+
+import static org.opengroup.osdu.core.common.util.SerializationUtils.EXPIRATION_DATE_FORMAT;
 
 /**
  * If any class variable changed here,
@@ -32,6 +36,8 @@ public class UpdateLegalTag {
     private String description = "";
 
     @Schema(description = "The optional expiration date of the contract in the format YYYY-MM-DD", example = "2025-12-25")
+    @JsonDeserialize(using = ExpirationDateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = EXPIRATION_DATE_FORMAT)
     private Date expirationDate;
 
     @Schema(description = "The optional object field to attach any company specific attributes.")
