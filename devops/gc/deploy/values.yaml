@@ -1,0 +1,57 @@
+# Default values for legal-deploy.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  domain: ""
+  limitsEnabled: true
+  logLevel: "ERROR"
+  tier: ""
+  autoscaling: true
+
+data:
+  # configmaps
+  logLevel: ""
+  acceptHttp: "true"
+  entitlementsHost: "http://entitlements"
+  defaultLegalTag: "default-data-tag"
+  legalHost: "http://legal"
+  partitionHost: "http://partition"
+  # deployments
+  requestsCpu: "25m"
+  requestsMemory: "512Mi"
+  limitsCpu: "1"
+  limitsMemory: "1G"
+  legalStatusUpdateImage: ""
+  cronJobServiceAccountName: ""
+  serviceAccountName: "legal"
+  imagePullPolicy: "IfNotPresent"
+  image: ""
+
+conf:
+  configmap: "legal-config"
+  appName: "legal"
+  replicas: 2
+
+istio:
+  proxyCPU: "5m"
+  proxyCPULimit: "500m"
+  proxyMemory: "50Mi"
+  proxyMemoryLimit: "512Mi"
+
+hpa:
+  minReplicas: 6
+  maxReplicas: 15
+  targetType: "AverageValue"
+  targetValue: 40
+  behaviorScaleUpStabilizationWindowSeconds: 10
+  behaviorScaleUpPoliciesValue: 50
+  behaviorScaleUpPoliciesPeriodSeconds: 15
+  behaviorScaleDownStabilizationWindowSeconds: 60
+  behaviorScaleDownPoliciesValue: 25
+  behaviorScaleDownPoliciesPeriodSeconds: 60
+
+limits:
+  maxTokens: 30
+  tokensPerFill: 30
+  fillInterval: "1s"
