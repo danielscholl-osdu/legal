@@ -16,17 +16,23 @@
 
 package org.opengroup.osdu.legal.aws.tags.dataaccess;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperFactory;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
 import org.opengroup.osdu.core.aws.dynamodb.QueryPageResult;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
-import org.opengroup.osdu.core.common.model.legal.LegalTag;
-
 import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.legal.LegalTag;
+import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +40,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.context.annotation.RequestScope;
 
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+
 import jakarta.inject.Inject;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
 
 @ConditionalOnProperty(prefix = "repository", name = "implementation",havingValue = "dynamodb",
         matchIfMissing = true)
@@ -157,11 +163,16 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
                     e.getMessage());
         }
 
-        if(docs != null) {
+        if (docs != null) {
             docs.forEach(legalDoc -> {
-                if (legalDoc.getIsValid() == args.getIsValid()) tags.add(createLegalTagFromDoc(legalDoc));
+                if (Objects.equals(legalDoc.getIsValid(), args.getIsValid())) {
+                    tags.add(createLegalTagFromDoc(legalDoc));
+                }
             });
         }
+        
+        
+        
 
         return tags;
     }

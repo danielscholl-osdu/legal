@@ -95,7 +95,7 @@ class LegalTagPublisherImplTest {
     } 
 
     @Test
-    public void testPubish(){
+    void testPubish(){
 
         try (MockedConstruction<PublishRequestBuilder> k8sParameterProvider = Mockito.mockConstruction(PublishRequestBuilder.class,
                                                                                                            (mock, context) -> {
