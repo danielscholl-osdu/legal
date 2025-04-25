@@ -16,36 +16,54 @@
 
 package org.opengroup.osdu.legal.aws.tags.dataaccess;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 
-import java.io.IOException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PropertiesTypeConverter implements DynamoDBTypeConverter<String, Properties> {
+import software.amazon.awssdk.enhanced.dynamodb.AttributeConverter;
+import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
+import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
+public class PropertiesTypeConverter implements AttributeConverter<Properties> {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     @Override
-    public String convert(Properties properties) {
-        String propString = "";
-        ObjectMapper objectMapper = new ObjectMapper();
+    public AttributeValue transformFrom(Properties input) {
+        if (input == null) {
+            return AttributeValue.builder().nul(true).build();
+        }
         try {
-            propString = objectMapper.writeValueAsString(properties);
+            String json = MAPPER.writeValueAsString(input);
+            return AttributeValue.builder().s(json).build();
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Unable to convert properties to JSON string", e);
         }
-        return propString;
     }
 
     @Override
-    public Properties unconvert(String propString) {
-        Properties properties = new Properties();
-        ObjectMapper objectMapper = new ObjectMapper();
+    public Properties transformTo(AttributeValue input) {
+        if (input == null || Boolean.TRUE.equals(input.nul())) {
+            return null;
+        }        
+        String json = input.s();
         try {
-            properties = objectMapper.readValue(propString, new TypeReference<Properties>(){});
-        } catch (IOException e) {
-            e.printStackTrace();
+            return MAPPER.readValue(json, Properties.class);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Unable to convert JSON string to Properties", e);
         }
-        return properties;
     }
+
+    @Override
+    public EnhancedType<Properties> type() {
+        return EnhancedType.of(Properties.class);
+    }
+
+    @Override
+    public AttributeValueType attributeValueType() {
+        return AttributeValueType.S;
+    }
+
 }

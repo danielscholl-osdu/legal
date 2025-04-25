@@ -16,53 +16,49 @@
 
 package org.opengroup.osdu.legal.util;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 
-
-@DynamoDBTable(tableName = "LegalRepository") // DynamoDB table name (without environment prefix)
+@DynamoDbBean
 public class LegalDoc {
 
-    @DynamoDBHashKey(attributeName = "Id")
     private String id;
-
-    @DynamoDBRangeKey(attributeName = "dataPartitionId")
     private String dataPartitionId;
-
-    @DynamoDBAttribute(attributeName = "Name")
     private String name;
-
-    @DynamoDBAttribute(attributeName = "Description")
     private String description;
-
-    @DynamoDBTypeConverted(converter = PropertiesTypeConverter.class)
-    @DynamoDBAttribute(attributeName = "Properties")
     private Properties properties;
-
-    @DynamoDBAttribute(attributeName = "IsValid")
     private boolean isValid;
 
-    // setters and getters, avoiding lombok to reduce code dependencies
-    public String getId(){
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("Id")
+    public String getId() {
         return id;
     }
 
-    public void setId(String id){
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getDataPartitionId(){
+    @DynamoDbSortKey
+    @DynamoDbAttribute("dataPartitionId")
+    public String getDataPartitionId() {
         return dataPartitionId;
     }
 
-    public void setDataPartitionId(String tenant){
+    public void setDataPartitionId(String tenant) {
         this.dataPartitionId = tenant;
+    }
+
+    @DynamoDbAttribute("Name")
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    @DynamoDbAttribute("Description")
     public String getDescription() {
         return description;
     }
@@ -71,6 +67,8 @@ public class LegalDoc {
         this.description = description;
     }
 
+    @DynamoDbAttribute("Properties")
+    @DynamoDbConvertedBy(PropertiesTypeConverter.class)
     public Properties getProperties() {
         return properties;
     }
@@ -79,16 +77,13 @@ public class LegalDoc {
         this.properties = properties;
     }
 
+    @DynamoDbAttribute("IsValid")
     public boolean getIsValid() {
         return isValid;
     }
 
     public void setIsValid(boolean isValid) {
         this.isValid = isValid;
-    }
-
-    public String getName(){
-        return name;
     }
 }
 

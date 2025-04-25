@@ -16,25 +16,27 @@
 
 package org.opengroup.osdu.legal.util;
 
-import com.amazonaws.services.s3.AmazonS3;
-import org.opengroup.osdu.core.aws.cognito.AWSCognitoClient;
-import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
-import org.opengroup.osdu.core.aws.s3.S3Config;
-import org.opengroup.osdu.core.common.model.legal.LegalTag;
-
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opengroup.osdu.core.aws.v2.cognito.AWSCognitoClient;
+import org.opengroup.osdu.core.aws.v2.configurationsetup.ConfigSetup;
+import org.opengroup.osdu.core.aws.v2.dynamodb.DynamoDBConfig;
+import org.opengroup.osdu.core.aws.v2.dynamodb.DynamoDBQueryHelper;
+import org.opengroup.osdu.core.aws.v2.s3.S3Config;
+
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
 public class AwsLegalTagUtils extends LegalTagUtils {
     private static final String FILE_NAME = "Legal_COO.json";
     private static final String BUCKET_NAME_AWS = System.getProperty("S3_LEGAL_CONFIG_BUCKET", System.getenv("S3_LEGAL_CONFIG_BUCKET"));
-
-    private static final String COGNITO_CLIENT_ID_PROPERTY = "AWS_COGNITO_CLIENT_ID";
-    private static final String COGNITO_AUTH_FLOW_PROPERTY = "AWS_COGNITO_AUTH_FLOW";
-    private static final String COGNITO_AUTH_PARAMS_USER_PROPERTY = "AWS_COGNITO_AUTH_PARAMS_USER";
-    private static final String COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY = "AWS_COGNITO_AUTH_PARAMS_PASSWORD";
 
     private static final String TABLE_PREFIX = "TABLE_PREFIX";
     private static final String DYNAMO_DB_REGION = "DYNAMO_DB_REGION";
@@ -50,10 +52,18 @@ public class AwsLegalTagUtils extends LegalTagUtils {
         String dataPartitionId = System.getProperty("MY_TENANT", System.getenv("MY_TENANT"));
 
         S3Config s3Config = new S3Config(amazonS3Endpoint, amazonS3Region);
-        AmazonS3 s3Client = s3Config.amazonS3();
+        S3Client s3Client = s3Config.amazonS3();
 
         try {
-            s3Client.putObject(BUCKET_NAME_AWS, String.format("%s/%s", dataPartitionId, FILE_NAME), readTestFile("TenantConfigTestingPurpose.json"));
+            String key = String.format("%s/%s", dataPartitionId, FILE_NAME);
+            byte[] fileContent = readTestFile("TenantConfigTestingPurpose.json").getBytes();
+            
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(BUCKET_NAME_AWS)
+                .key(key)
+                .build();
+                
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -62,12 +72,8 @@ public class AwsLegalTagUtils extends LegalTagUtils {
     @Override
     public synchronized String accessToken() throws Exception {
         if (bearerToken.equals("")) {
-            String clientId = System.getProperty(COGNITO_CLIENT_ID_PROPERTY, System.getenv(COGNITO_CLIENT_ID_PROPERTY));
-            String authFlow = System.getProperty(COGNITO_AUTH_FLOW_PROPERTY, System.getenv(COGNITO_AUTH_FLOW_PROPERTY));
-            String user = System.getProperty(COGNITO_AUTH_PARAMS_USER_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_USER_PROPERTY));
-            String password = System.getProperty(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY, System.getenv(COGNITO_AUTH_PARAMS_PASSWORD_PROPERTY));
-
-            AWSCognitoClient client = new AWSCognitoClient(clientId, authFlow, user, password);
+            // Using the no-arg constructor which will get values from environment variables
+            AWSCognitoClient client = new AWSCognitoClient();
             bearerToken = client.getToken();
         }
         return "Bearer " + bearerToken;
@@ -90,16 +96,35 @@ public class AwsLegalTagUtils extends LegalTagUtils {
 
         String dynamoDbRegion = System.getenv(DYNAMO_DB_REGION);
         String dynamoDbEndpoint = System.getenv(DYNAMO_DB_ENDPOINT);
+        String tableName = String.format("%s-shared-LegalRepository", System.getenv(TABLE_PREFIX));
 
-        String table = String.format("%s-shared-LegalRepository", System.getenv(TABLE_PREFIX));
-        DynamoDBQueryHelperV2 queryHelper = new DynamoDBQueryHelperV2(dynamoDbEndpoint, dynamoDbRegion, table);
+        // Create DynamoDB config
+        DynamoDBConfig dynamoDBConfig = DynamoDBConfig.builder()
+            .region(dynamoDbRegion)
+            .endpoint(dynamoDbEndpoint)
+            .configSetup(ConfigSetup.setUpConfig())
+            .build();
 
-        // delete legal tag if it exists
-        if (queryHelper.keyExistsInTable(LegalDoc.class, doc)) {
-            queryHelper.deleteByPrimaryKey(LegalDoc.class, doc.getId(), doc.getDataPartitionId());
-        }
+        // Create enhanced client
+        DynamoDbEnhancedClient enhancedClient = dynamoDBConfig.dynamoDbEnhancedClient();
+        
+        // Create table mapping
+        TableSchema<LegalDoc> schema = TableSchema.fromBean(LegalDoc.class);
+        DynamoDbTable<LegalDoc> table = enhancedClient.table(tableName, schema);
+        
+        // Create query helper
+        DynamoDBQueryHelper<LegalDoc> queryHelper = DynamoDBQueryHelper.<LegalDoc>builder()
+            .client(enhancedClient)
+            .table(table)
+            .itemType(LegalDoc.class)
+            .build();
 
-        queryHelper.save(doc);
+        // Check if legal tag exists and delete it
+        queryHelper.getItem(doc.getId(), doc.getDataPartitionId())
+            .ifPresent(existingDoc -> queryHelper.deleteItem(doc.getId(), doc.getDataPartitionId()));
+
+        // Save the new document
+        queryHelper.putItem(doc);
     }
 
     private org.opengroup.osdu.core.common.model.legal.Properties getLegalTagProperties(){

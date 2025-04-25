@@ -16,40 +16,53 @@
 
 package org.opengroup.osdu.legal.aws.tags.dataaccess;
 
-import org.junit.Assert;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperFactory;
-import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
-import org.opengroup.osdu.core.aws.dynamodb.QueryPageResult;
-import org.opengroup.osdu.core.aws.exceptions.InvalidCursorException;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.opengroup.osdu.core.aws.v2.dynamodb.DynamoDBQueryHelper;
+import org.opengroup.osdu.core.aws.v2.dynamodb.interfaces.IDynamoDBQueryHelperFactory;
+import org.opengroup.osdu.core.aws.v2.dynamodb.model.QueryPageResult;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.common.model.legal.LegalTag;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
-
-
-
+@ExtendWith(MockitoExtension.class)
 class LegalTagRepositoryImplTest {
-
-    @InjectMocks
-    private LegalTagRepositoryImpl repo;
+    private static final String DATA_PARTITION_ID = "data-partition-id";
+    private static final String LEGAL_TABLE_PATH = "legal-table";
+    
+    @Mock
+    private IDynamoDBQueryHelperFactory queryHelperFactory;
 
     @Mock
-    private DynamoDBQueryHelperV2 queryHelper;
+    private DynamoDBQueryHelper<LegalDoc> queryHelper;
 
     @Mock
     private DpsHeaders headers;
@@ -57,183 +70,162 @@ class LegalTagRepositoryImplTest {
     @Mock
     private JaxRsDpsLog log;
 
-    @Mock
-    private DynamoDBQueryHelperFactory dynamoDBQueryHelperFactory;
-
-    @Mock
-    private ListLegalTagArgs args;
-
-    private final String testPartition = "test-partition";
+    private LegalTagRepositoryImpl sut;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        when(dynamoDBQueryHelperFactory.getQueryHelperForPartition(eq(testPartition), any()))
-                .thenReturn(queryHelper);
-        when(headers.getPartitionId())
-                .thenReturn(testPartition);
-        args = new ListLegalTagArgs();
-        args.setIsValid(true);
-        args.setCursor("{{\"title\"={\"S\":\"Monster on the Campus\",}},{\"title\":{\"S\":\"+1\",}},}}}");
+        when(queryHelperFactory.createQueryHelper(
+                headers,
+                LEGAL_TABLE_PATH,
+                LegalDoc.class)).thenReturn(queryHelper);
+        sut = new LegalTagRepositoryImpl(queryHelperFactory, LEGAL_TABLE_PATH, headers, log);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldCreateLegalTagSuccessfully() {
+        // Given
+        long id = 1234;
+        LegalTag legalTag = getLegalTagWithId(id);
+
+        doNothing().when(queryHelper).putItem(any(PutItemEnhancedRequest.class));
+        // When
+        Long savedId = sut.create(legalTag);
+
+        // Then
+        assertEquals(id, savedId);
+        verify(queryHelper).putItem(any(PutItemEnhancedRequest.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldThrowAppExceptionWhenCreatingDuplicateLegalTag() {
+        // Given
+        long id = 1234;
+        LegalTag legalTag = getLegalTagWithId(id);
+
+        doThrow(ConditionalCheckFailedException.class)
+                .when(queryHelper)
+                .putItem(any(PutItemEnhancedRequest.class));
+        // When & Then
+        AppException exception = assertThrows(AppException.class, () -> sut.create(legalTag));
+        assertEquals(409, exception.getError().getCode());
     }
 
     @Test
-    void testSetTenantInfo() {
-        // arrange
-        TenantInfo tenantInfo = new TenantInfo();
-        // act
-        repo.setTenantInfo(tenantInfo);
-
-        // assert
-        Assert.assertEquals(tenantInfo, repo.getTenantInfo());
-    }
-
-    @Test
-    void testGetTenantInfo() {
-        // arrange
-        TenantInfo tenantInfo = new TenantInfo();
-        repo.setTenantInfo(tenantInfo);
-
-        // act
-        TenantInfo result = repo.getTenantInfo();
-
-        // assert
-        Assert.assertEquals(tenantInfo, result);
-    }
-
-    @Test
-    void testCreate_Success(){
-        LegalTag tag = new LegalTag();
-        tag.setId(-100L);
-
-        when(queryHelper.keyExistsInTable(eq(LegalDoc.class), any())).thenReturn(false);
-        doNothing().when(queryHelper).save(any());
-
-        repo.create(tag);
-
-        verify(queryHelper, times(1)).save(any());
-    }
-
-    @Test
-    void testCreate_Failure_TagAlreadyExists() {
-        LegalTag tag = new LegalTag();
-        tag.setId(-100L);
-        when(queryHelper.keyExistsInTable(eq(LegalDoc.class), any())).thenReturn(true);
-
-        assertThrows(AppException.class, () -> {
-            repo.create(tag);
-        });
-    }
-
-    @Test
-    void testGet(){
-        // arrange
-        long[] ids = new long[]{
-            1L, 2L, 3L
-        };
-
-        // act
-        repo.get(ids);
-
-        // assert
-        verify(queryHelper, times(1)).loadByPrimaryKey(any(), eq("1"), any());
-        verify(queryHelper, times(1)).loadByPrimaryKey(any(), eq("2"), any());
-        verify(queryHelper, times(1)).loadByPrimaryKey(any(), eq("3"), any());
-    }
-
-    @Test
-    void testGetldNull() {
-        long[] ids = new long[]{
-            1L, 2L, 3L
-        };
-        when(queryHelper.loadByPrimaryKey(eq(LegalDoc.class), anyString(), any())).thenReturn(null);
-        Collection<LegalTag> tags = repo.get(ids);
-        // assert
-        Assert.assertEquals(0, tags.size());
-    }
-
-    @Test
-    void testDelete(){
-        // arrange
-        LegalTag tag = new LegalTag();
-        tag.setId(-100L);
-
-        repo.delete(tag);
-
-        verify(queryHelper, times(1)).deleteByPrimaryKey(any(), eq("-100"), any());
-    }
-
-    @Test
-    void testDeleteThrowsException() {
-        // arrange
-        LegalTag tag = new LegalTag();
-        tag.setId(-100L);
-
-        doThrow(new RuntimeException("Simulated exception")).when(queryHelper).deleteByPrimaryKey(any(), anyString(), any());
-
-        assertSame(false, repo.delete(tag));
-    }
-
-    @Test
-    void testUpdate(){
-        LegalTag tag = new LegalTag();
-        tag.setId(-100L);
-        doNothing().when(queryHelper).save(any(LegalDoc.class));
-
-        repo.update(tag);
-
-        verify(queryHelper, times(1)).save(any(LegalDoc.class));
-    }
-
-    @Test
-    void testList() throws InvalidCursorException, UnsupportedEncodingException {
-        args.setLimit(100);
-        LegalDoc ld = new LegalDoc();
-        ld.setId(String.valueOf(-100L));
-        ld.setName("test-name");
-        ld.setDescription("test-desc");
-        ld.setIsValid(true);
-        List<LegalDoc> listLd = new ArrayList<>();
-        listLd.add(ld);
-        QueryPageResult<LegalDoc> page = new QueryPageResult<LegalDoc>(null, listLd);
-
-
-        when(queryHelper.scanPage(eq(LegalDoc.class), eq(100),any(), any(), any()))
-                    .thenReturn(page);
-
-
-        // act
-        ArrayList<LegalTag> tags = (ArrayList)repo.list(args);
-        Long tagId = tags.get(0).getId();
-
-        // assert
-        Assert.assertEquals((long)tagId, -100L);
-    }
-
-    @Test
-    void testListThrowsException() throws UnsupportedEncodingException {
-        args.setLimit(0);
-
-        when(queryHelper.scanTable(eq(LegalDoc.class), anyString(), any())).thenAnswer(invocation -> {
-            throw new UnsupportedEncodingException("Simulated exception");
-        });
-
-        assertThrows(AppException.class, () -> {
-            repo.list(args);
-        });
-    }
-
-
-    @Test
-    void testListReturnsNull(){
-        // arrange
+    void shouldGetLegalTagsSuccessfully() {
+        long[] ids = {1234L, 5678L};
+        List<LegalDoc> docs = List.of(
+                createLegalDoc(ids[0], true),
+                createLegalDoc(ids[1], true));
         
-        args.setLimit(100);
+        // Set tenant's data partition.
+        TenantInfo tenant = new TenantInfo();
+        tenant.setDataPartitionId(DATA_PARTITION_ID);
+        sut.setTenantInfo(tenant);
+        
+        // Stub queryHelper to return our dummy LegalDocs when called with any list.
+        when(queryHelper.batchLoadByCompositePrimaryKey(any())).thenReturn(docs);
 
-        // act
-        ArrayList<LegalTag> tags = (ArrayList)repo.list(args);
+        // When
+        Collection<LegalTag> results = sut.get(ids);
 
-        // assert
-        Assert.assertEquals(0, tags.size());
+        // Then
+        assertEquals(2, results.size());
+        verify(queryHelper).batchLoadByCompositePrimaryKey(any());
+    }
+
+    @Test
+    void shouldDeleteLegalTagSuccessfully() {
+        // Given
+        long id = 1234;
+        LegalTag legalTag = getLegalTagWithId(id);
+
+        doNothing().when(queryHelper).deleteItem(any(LegalDoc.class));
+
+        // When
+        Boolean result = sut.delete(legalTag);
+
+        // Then
+        assertTrue(result);
+        verify(queryHelper).deleteItem(any(LegalDoc.class));
+    }
+
+    @Test
+    void shouldThrowAppExceptionWhenDeleteFails() {
+        // Given
+        long id = 1234;
+        LegalTag legalTag = getLegalTagWithId(id);
+
+        doThrow(DynamoDbException.class)
+                .when(queryHelper).deleteItem(any(LegalDoc.class));
+
+        // When & Then
+        AppException exception = assertThrows(AppException.class,
+                () -> sut.delete(legalTag));
+        assertEquals(500, exception.getError().getCode());
+    }
+
+    @Test
+    void shouldListLegalTagsSuccessfully() {
+        // Given
+        String VALID_CURSOR_JSON = "{\"dummyKey\":{\"S\":\"dummyValue\"}}";
+        String ENCODED_CURSOR = URLEncoder.encode(VALID_CURSOR_JSON, StandardCharsets.UTF_8);
+        ListLegalTagArgs args = new ListLegalTagArgs();
+        args.setLimit(2);
+        args.setIsValid(true);
+        args.setCursor(ENCODED_CURSOR);
+
+        List<LegalDoc> docs = List.of(
+                createLegalDoc(1234L, true),
+                createLegalDoc(9876L, false));
+                Map<String, AttributeValue> lastEvaluatedKey = new HashMap<>();
+                lastEvaluatedKey.put("id", AttributeValue.builder().s("lastId").build());
+        
+        
+        QueryPageResult<LegalDoc> queryPageResult = new QueryPageResult<>(docs, lastEvaluatedKey);
+        when(queryHelper.scanPage(any(ScanEnhancedRequest.class)))
+                .thenReturn(queryPageResult);
+
+        // When
+        Collection<LegalTag> results = sut.list(args);
+
+        // Then
+        assertEquals(1, results.size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldUpdateLegalTagSuccessfully() {
+        // Given
+        long id = 1234;
+        LegalTag legalTag = getLegalTagWithId(id);
+
+        doNothing().when(queryHelper).putItem(any(PutItemEnhancedRequest.class));
+
+        // When
+        LegalTag result = sut.update(legalTag);
+
+        // Then
+        assertEquals(legalTag.getId(), result.getId());
+        verify(queryHelper).putItem(any(PutItemEnhancedRequest.class));
+    }
+
+    private LegalTag getLegalTagWithId(long id) {
+        LegalTag tag = new LegalTag();
+        tag.setId(id);
+        tag.setName("Test Tag");
+        tag.setDescription("Test Description");
+        return tag;
+    }
+
+    private LegalDoc createLegalDoc(long id, boolean isValid) {
+        LegalDoc doc = new LegalDoc();
+        doc.setId(String.valueOf(id));
+        doc.setDataPartitionId(DATA_PARTITION_ID);
+        doc.setName("Test Tag");
+        doc.setDescription("Test Description");
+        doc.setIsValid(isValid);
+        return doc;
     }
 }

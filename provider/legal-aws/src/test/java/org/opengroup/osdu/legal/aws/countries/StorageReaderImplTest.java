@@ -16,30 +16,40 @@
 
 package org.opengroup.osdu.legal.aws.countries;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.opengroup.osdu.core.aws.s3.IS3ClientFactory;
-import org.opengroup.osdu.core.aws.s3.S3ClientWithBucket;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.opengroup.osdu.core.aws.v2.s3.IS3ClientFactory;
+import org.opengroup.osdu.core.aws.v2.s3.S3ClientWithBucket;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.opengroup.osdu.core.common.model.http.AppException;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
+@ExtendWith(MockitoExtension.class)
 class StorageReaderImplTest {
-
-    @InjectMocks
-    private StorageReaderImpl storageReader;
 
     @Mock
     private DpsHeaders dpsHeaders;
@@ -51,64 +61,82 @@ class StorageReaderImplTest {
     private S3ClientWithBucket s3ClientWithBucket;
 
     @Mock
-    private AmazonS3 s3Client;
+    private ResponseBytes<GetObjectResponse> responseBytes;
 
-    private final String bucketName = "testBucket";
-    private final String partitionId = "testPartition";
-    private final String legalConfigFileName = "testLegalConfigFileName";
-    private final String content = "[...]";  // Dummy JSON for Country array
+    @Mock
+    private S3Client s3Client;
+
+    @InjectMocks
+    private StorageReaderImpl storageReaderImpl;
+
+    // common test data
+    private final String partitionId = "test-partition";
+    private final String bucketName = "test-bucket";
+    private final String legalConfigFileName = "legal-config.json";
+    private final String key = String.format("%s/%s", partitionId, legalConfigFileName);
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        when(dpsHeaders.getPartitionId()).thenReturn(partitionId);
+        when(dpsHeaders.getPartitionIdWithFallbackToAccountId()).thenReturn(partitionId);
+
+        ReflectionTestUtils.setField(storageReaderImpl, "s3ConfigBucketParameterRelativePath", bucketName);
+        ReflectionTestUtils.setField(storageReaderImpl, "legalConfigFileName", legalConfigFileName);
+
+        when(s3ClientFactory.getS3ClientForPartition(partitionId, bucketName))
+                .thenReturn(s3ClientWithBucket);
         when(s3ClientWithBucket.getS3Client()).thenReturn(s3Client);
         when(s3ClientWithBucket.getBucketName()).thenReturn(bucketName);
-        when(dpsHeaders.getPartitionIdWithFallbackToAccountId()).thenReturn(partitionId);
-        when(dpsHeaders.getPartitionId()).thenReturn(partitionId);
-        when(s3ClientFactory.getS3ClientForPartition(anyString(), any())).thenReturn(s3ClientWithBucket);
-        ReflectionTestUtils.setField(storageReader, "legalConfigFileName", legalConfigFileName);
     }
 
     @Test
     void testGetConfigFile_HappyPath() {
-        when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenReturn(content);
-        String result = storageReader.getConfigFile();
-        assertEquals(content, result);
+        String expectedContent = "{\"countries\":[]}";
+        when(responseBytes.asUtf8String()).thenReturn(expectedContent);
+        when(s3Client.getObjectAsBytes((GetObjectRequest) any())).thenReturn(responseBytes);
+
+        String result = storageReaderImpl.getConfigFile();
+
+        ArgumentCaptor<GetObjectRequest> captor = ArgumentCaptor.forClass(GetObjectRequest.class);
+        verify(s3Client).getObjectAsBytes(captor.capture());
+        GetObjectRequest capturedRequest = captor.getValue();
+
+        assertEquals(bucketName, capturedRequest.bucket());
+        assertEquals(key, capturedRequest.key());
+        assertEquals(expectedContent, result);
     }
 
     @Test
-    void testReadAllBytes(){
-        when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenReturn(content);
-        byte[] result = storageReader.readAllBytes();
-        assertArrayEquals(content.getBytes(), result);
+    void testReadAllBytes() {
+        String expectedContent = "{\"countries\":[]}";
+        when(s3Client.getObjectAsBytes((GetObjectRequest) any())).thenReturn(responseBytes);
+        when(responseBytes.asUtf8String()).thenReturn(expectedContent);
+
+        byte[] resultBytes = storageReaderImpl.readAllBytes();
+        assertArrayEquals(expectedContent.getBytes(StandardCharsets.UTF_8), resultBytes);
     }
 
     @Test
-    void testGetConfigFile_WhenAmazonS3ExceptionWithStatus404() {
-        AmazonS3Exception exception = mock(AmazonS3Exception.class);
-        when(exception.getStatusCode()).thenReturn(404);
-        when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenThrow(exception);
-        String result = storageReader.getConfigFile();
+    void testGetConfigFile_NotFound_UsesDefault() {
+        AwsServiceException notFoundException = S3Exception.builder().statusCode(404).message("Not Found").build();
+        when(s3Client.getObjectAsBytes((GetObjectRequest) any())).thenThrow(notFoundException);
+
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(PutObjectResponse.builder().build());
+
+        String result = storageReaderImpl.getConfigFile();
         assertEquals("[]", result);
     }
 
     @Test
-    void testGetConfigFile_WhenAmazonS3ExceptionWithStatusOtherThan404() {
-        AmazonS3Exception exception = mock(AmazonS3Exception.class);
-        when(exception.getStatusCode()).thenReturn(500);
-        when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenThrow(exception);
-        assertThrows(AppException.class, () -> storageReader.getConfigFile());
-    }
+    void testGetConfigFile_ServerError_ThrowsAppException() {
+        AwsServiceException serverError = S3Exception.builder()
+                .statusCode(500)
+                .message("Internal Server Error")
+                .build();
+        when(s3Client.getObjectAsBytes((GetObjectRequest) any())).thenThrow(serverError);
 
-    @Test
-    void testGetConfigFile_WhenAmazonServiceExceptionThrown() {
-        when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenThrow(AmazonServiceException.class);
-        assertThrows(AppException.class, () -> storageReader.getConfigFile());
-    }
-
-    @Test
-    void testGetConfigFile_WhenSdkClientExceptionThrown() {
-        when(s3Client.getObjectAsString(bucketName, partitionId + "/" + legalConfigFileName)).thenThrow(SdkClientException.class);
-        assertThrows(AppException.class, () -> storageReader.getConfigFile());
+        AppException ex = assertThrows(AppException.class, () -> storageReaderImpl.getConfigFile());
+        assertTrue(ex.getMessage().contains("Internal Server Error"));
     }
 }

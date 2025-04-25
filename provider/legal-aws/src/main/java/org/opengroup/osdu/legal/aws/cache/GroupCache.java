@@ -28,21 +28,25 @@ import org.springframework.stereotype.Component;
 public class GroupCache<K,V> extends DefaultCache<K,V> {
     static final String KEY_NAMESPACE = "groupCache";
 
-    // overloaded constructor for testing
+    private static <K, V> ICache<K, V> createInternalCache(String redisEndpoint, String redisPort, String redisPassword) {
+        CacheParameters<String, V> cacheParams = CacheParameters.<String, V>builder()
+                                                                .expTimeSeconds(300)
+                                                                .maxSize(1000)
+                                                                .defaultHost(redisEndpoint)
+                                                                .defaultPort(redisPort)
+                                                                .defaultPassword(redisPassword)
+                                                                .keyNamespace(KEY_NAMESPACE)
+                                                                .build()
+                                                                .initFromLocalParameters(String.class, (Class<V>) Groups.class);
+        return (ICache<K, V>) new NameSpacedCache<>(cacheParams);
+    }
+
     public GroupCache(
         @Value("${aws.elasticache.cluster.endpoint:null}") String redisEndpoint,
         @Value("${aws.elasticache.cluster.port:null}") String redisPort,
         @Value("${aws.elasticache.cluster.key:null}") String redisPassword
     ) {
-        super((ICache<K, V>) new NameSpacedCache<>(CacheParameters.<String, V>builder()
-                                                                  .expTimeSeconds(60)
-                                                                  .maxSize(10)
-                                                                  .defaultHost(redisEndpoint)
-                                                                  .defaultPort(redisPort)
-                                                                  .defaultPassword(redisPassword)
-                                                                  .keyNamespace(KEY_NAMESPACE)
-                                                                  .build()
-                                                                  .initFromLocalParameters(String.class, (Class<V>) Groups.class)));
+        super(createInternalCache(redisEndpoint, redisPort, redisPassword));
     }
 
 

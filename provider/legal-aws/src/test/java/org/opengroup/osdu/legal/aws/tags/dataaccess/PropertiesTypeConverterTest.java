@@ -16,87 +16,182 @@
 
 package org.opengroup.osdu.legal.aws.tags.dataaccess;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.opengroup.osdu.core.common.model.legal.DataTypeValues;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import java.sql.Date;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+@ExtendWith(MockitoExtension.class)
 class PropertiesTypeConverterTest {
 
-    private PropertiesTypeConverter converter = new PropertiesTypeConverter();
+    private PropertiesTypeConverter converter;
+    private Properties testProperties;
 
-    private static MockedConstruction<Properties> propertiesConstructor;
+    @BeforeEach
+    void setUp() {
+        converter = new PropertiesTypeConverter();
+        testProperties = createValidProperties();
+    }
 
-    private Properties properties = new Properties();
+    private Properties createValidProperties() {
+        Properties properties = new Properties();
+        properties.setCountryOfOrigin(Arrays.asList("US", "UK"));
+        properties.setOriginator("TestCompany");
+        properties.setContractId("Contract-123");
+        properties.setDataType("Transferred Data");
+        properties.setPersonalData("Personally Identifiable");
+        properties.setSecurityClassification("Confidential");
+        properties.setExportClassification("EAR99");
+        properties.setExpirationDate(new Date(System.currentTimeMillis() + 86400000)); // tomorrow
 
-    private String jsonString = "{\"originator\":\"John\",\"contractId\":\"ABC123\"}";
+        Map<String, Object> extensionProperties = new LinkedHashMap<>();
+        extensionProperties.put("EffectiveDate", "2024-01-01T00:00:00");
+        extensionProperties.put("AffiliateEnablementIndicator", true);
+        properties.setExtensionProperties(extensionProperties);
 
-    @BeforeAll
-    static void setUp() {
-        propertiesConstructor = Mockito.mockConstruction(Properties.class, (mock, context) -> {
-            when(mock.getOriginator()).thenReturn("John");
-            when(mock.getContractId()).thenReturn("ABC123");
-        });
+        return properties;
     }
 
     @Test
-    void testConvert() throws JsonProcessingException {
-        try (MockedConstruction<ObjectMapper> mocked = Mockito.mockConstruction(ObjectMapper.class, (mock, context) -> {
-           when(mock.writeValueAsString(Mockito.any())).thenReturn(jsonString);
-        })) {
-            String convertedString = converter.convert(properties);
-            assertEquals(jsonString, convertedString);
-        }
+    void transformFrom_ValidProperties_ReturnsAttributeValue() {
+        // Act
+        AttributeValue result = converter.transformFrom(testProperties);
+
+        // Assert
+        assertNotNull(result);
+        String jsonString = result.s();
+        assertTrue(jsonString.contains("\"countryOfOrigin\":[\"US\",\"UK\"]"));
+        assertTrue(jsonString.contains("\"originator\":\"TestCompany\""));
+        assertTrue(jsonString.contains("\"contractId\":\"Contract-123\""));
     }
 
     @Test
-    void testConvertThrowsException() throws JsonProcessingException {
-        try (MockedConstruction<ObjectMapper> mocked = Mockito.mockConstruction(ObjectMapper.class, (mock, context) -> {
-           when(mock.writeValueAsString(properties)).thenThrow(JsonProcessingException.class);
-        })) {
-            String convertedString = converter.convert(properties);
-            assertEquals("", convertedString);
-        }
+    void transformTo_ValidJson_ReturnsProperties() {
+        // Arrange
+        AttributeValue attributeValue = converter.transformFrom(testProperties);
+
+        // Act
+        Properties result = converter.transformTo(attributeValue);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(Arrays.asList("US", "UK"), result.getCountryOfOrigin());
+        assertEquals("TestCompany", result.getOriginator());
+        assertEquals("Contract-123", result.getContractId());
+        assertEquals("Transferred Data", result.getDataType());
+        assertEquals("Personally Identifiable", result.getPersonalData());
+        assertEquals("Confidential", result.getSecurityClassification());
+        assertEquals("EAR99", result.getExportClassification());
+        assertNotNull(result.getExtensionProperties());
+        assertEquals("2024-01-01T00:00:00", result.getExtensionProperties().get("EffectiveDate"));
     }
 
     @Test
-    void testUnconvert() throws JsonMappingException, JsonProcessingException {
-        try (MockedConstruction<ObjectMapper> mocked = Mockito.mockConstruction(ObjectMapper.class, (mock, context) -> {
-           when(mock.readValue(eq(jsonString), any(TypeReference.class))).thenReturn(properties);
-        })) {
-            Properties unconvertedProperties = converter.unconvert(jsonString);
-            assertEquals(properties, unconvertedProperties);
-        }
+    void transformFrom_NullProperties_ReturnsNullAttributeValue() {
+        // Act
+        AttributeValue result = converter.transformFrom(null);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.nul());
     }
 
     @Test
-    void testUnconvertThrowsJsonParseException() throws JsonParseException, JsonProcessingException {
-        try (MockedConstruction<ObjectMapper> mocked = Mockito.mockConstruction(ObjectMapper.class, (mock, context) -> {
-           when(mock.readValue(eq(jsonString), any(TypeReference.class))).thenThrow(JsonParseException.class);
-        })) {
-            Properties unconvertedProperties = converter.unconvert(jsonString);
-            assertEquals("John", unconvertedProperties.getOriginator());
-            assertEquals("ABC123", unconvertedProperties.getContractId());   
-        }
-    }
-    
-    @AfterAll
-    static void tearDown() {
-        propertiesConstructor.close();
+    void transformTo_NullAttributeValue_ReturnsNull() {
+        // Act
+        Properties result = converter.transformTo(null);
+
+        // Assert
+        assertNull(result);
     }
 
+    @Test
+    void testCountryOfOriginUpperCase() {
+        // Arrange
+        Properties properties = new Properties();
+        properties.setCountryOfOrigin(Arrays.asList("us", "uk"));
+
+        // Act
+        AttributeValue attributeValue = converter.transformFrom(properties);
+        Properties result = converter.transformTo(attributeValue);
+
+        // Assert
+        assertEquals(Arrays.asList("US", "UK"), result.getCountryOfOrigin());
+    }
+
+    @Test
+    void testDefaultValues() {
+        // Arrange
+        Properties properties = new Properties();
+
+        // Assert
+        assertTrue(properties.getCountryOfOrigin().isEmpty());
+        assertEquals("", properties.getDataType());
+        assertEquals("", properties.getSecurityClassification());
+        assertEquals("", properties.getPersonalData());
+        assertEquals("", properties.getExportClassification());
+        assertEquals("", properties.getOriginator());
+        assertEquals("", properties.getContractId());
+        assertEquals(Properties.DEFAULT_EXPIRATIONDATE, properties.getExpirationDate());
+    }
+
+    @Test
+    void testContractIdValidation() {
+        // Test valid contract ID
+        testProperties.setContractId("Contract-123");
+        assertTrue(testProperties.hasContractId());
+
+        // Test unknown contract ID
+        testProperties.setContractId(Properties.UNKNOWN_CONTRACT_ID);
+        assertFalse(testProperties.hasContractId());
+
+        // Test invalid contract ID
+        testProperties.setContractId("C@ntract");
+        assertFalse(testProperties.hasContractId());
+    }
+
+    @Test
+    void testExpirationDateLogic() {
+        // Test future date
+        Date futureDate = new Date(System.currentTimeMillis() + 86400000); // tomorrow
+        testProperties.setExpirationDate(futureDate);
+        assertFalse(testProperties.hasExpired());
+
+        // Test past date
+        Date pastDate = new Date(System.currentTimeMillis() - 86400000); // yesterday
+        testProperties.setExpirationDate(pastDate);
+        assertTrue(testProperties.hasExpired());
+
+        // Test default date
+        testProperties.setExpirationDate(Properties.DEFAULT_EXPIRATIONDATE);
+        assertTrue(testProperties.isDefaultExpirationDate());
+    }
+
+    @Test
+    void testDataTypeChecks() {
+        // Test third party data
+        testProperties.setDataType(DataTypeValues.THIRD_PARTY_DATA);
+        assertTrue(testProperties.hasThirdPartyDataType());
+        assertFalse(testProperties.hasSecondPartyDataType());
+
+        // Test second party data
+        testProperties.setDataType(DataTypeValues.SECOND_PARTY_DATA);
+        assertTrue(testProperties.hasSecondPartyDataType());
+        assertFalse(testProperties.hasThirdPartyDataType());
+    }
 }

@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.opengroup.osdu.core.aws</groupId>
             <artifactId>os-core-lib-aws</artifactId>
-            <version>4.0.0</version>
+            <version>master-sdk-v2-SNAPSHOT</version>
         </dependency>
 
         <!-- third party Apache 2.0 license packages -->

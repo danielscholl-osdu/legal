@@ -16,57 +16,39 @@
 
 package org.opengroup.osdu.legal.aws.jobs;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
-import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
-import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
-import org.opengroup.osdu.core.aws.ssm.K8sParameterNotFoundException;
+import org.opengroup.osdu.core.aws.v2.sns.PublishRequestBuilder;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
-import org.springframework.test.util.ReflectionTestUtils;
-import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.model.PublishRequest;
+
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
 
 @ExtendWith(MockitoExtension.class)
 class LegalTagPublisherImplTest {
-    
-    @InjectMocks
+
     private LegalTagPublisherImpl legalTagPublisherImpl;
 
     @Mock
-    private AmazonSNSConfig snsConfig;
-
-    @Mock
-    private K8sLocalParameterProvider k8sLocalParameterProvider;
-
-    @Mock
-    private AmazonSNS snsClient;
+    private SnsClient snsClient;
 
     @Mock
     private DpsHeaders headers;
-
-    @Mock
-    private PublishRequestBuilder<AwsStatusChangedTag> publishRequestBuilder;
 
     @Mock
     private StatusChangedTags tags;
@@ -77,38 +59,29 @@ class LegalTagPublisherImplTest {
     @Mock
     private JaxRsDpsLog log;
 
-    private final String testTopic = "testTopic";
-    private final String testRegion = "testRegion";
-    
+    private final String amazonSNSTopic = "amazon-sns-topic";
+    private final String osduLegalTopic = "osdu-legal-topic";
+
     @BeforeEach
-    void setup() throws K8sParameterNotFoundException {
-        MockitoAnnotations.openMocks(this);
+    void setup() {
+        legalTagPublisherImpl = new LegalTagPublisherImpl(snsClient, amazonSNSTopic, osduLegalTopic, log);
     }
 
     @Test
-    void testInit() throws K8sParameterNotFoundException{
-        
-        when(k8sLocalParameterProvider.getParameterAsString("legal-sns-topic-arn"))
-                .thenReturn(testTopic);
-        ReflectionTestUtils.setField(legalTagPublisherImpl, "amazonSNSRegion", testRegion);
-        assertDoesNotThrow(() -> legalTagPublisherImpl.init());
-    } 
+    void testPublish() {
+        when(headers.getPartitionId()).thenReturn("test-partition");
+        when(tags.getStatusChangedTags()).thenReturn(List.of(tag));
 
-    @Test
-    void testPubish(){
+        try (MockedConstruction<PublishRequestBuilder> mockedBuilder = mockConstruction(PublishRequestBuilder.class,
+                (mock, context) -> {
+                    when(mock.generatePublishRequest(eq(osduLegalTopic), eq(amazonSNSTopic),
+                            any(AwsStatusChangedTags.class)))
+                            .thenReturn(PublishRequest.builder().topicArn(osduLegalTopic).build());
+                })) {
 
-        try (MockedConstruction<PublishRequestBuilder> k8sParameterProvider = Mockito.mockConstruction(PublishRequestBuilder.class,
-                                                                                                           (mock, context) -> {
-                                                                                                               when(mock.generatePublishRequest(anyString(),anyString(), any())).thenReturn(new PublishRequest());
-                                                                                                           })) {
-            
-            List<StatusChangedTag> tagList = new ArrayList<StatusChangedTag>();
-            tagList.add(tag);
-            when(tags.getStatusChangedTags()).thenReturn(tagList);
             legalTagPublisherImpl.publish("projectId", headers, tags);
-            verify(snsClient, times(1)).publish(any());
+            verify(snsClient, times(1)).publish(any(PublishRequest.class));
         }
-    }     
 
+    }
 }
-

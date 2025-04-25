@@ -16,34 +16,28 @@
 
 package org.opengroup.osdu.legal.aws.jobs;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
-import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
-import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
-import org.opengroup.osdu.core.aws.ssm.K8sParameterNotFoundException;
+import org.opengroup.osdu.core.aws.v2.sns.AmazonSNSConfig;
+import org.opengroup.osdu.core.aws.v2.sns.PublishRequestBuilder;
+import org.opengroup.osdu.core.aws.v2.ssm.K8sLocalParameterProvider;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTag;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
+
 
 @ExtendWith(MockitoExtension.class)
 class AboutToExpireLegalTagPublisherImplTest {
@@ -58,7 +52,7 @@ class AboutToExpireLegalTagPublisherImplTest {
     private K8sLocalParameterProvider k8sLocalParameterProvider;
 
     @Mock
-    private AmazonSNS snsClient;
+    private SnsClient snsClient;
 
     @Mock
     private DpsHeaders headers;
@@ -75,30 +69,13 @@ class AboutToExpireLegalTagPublisherImplTest {
     @Mock
     private JaxRsDpsLog log;
 
-    private final String testTopic = "testTopic";
-    private final String testRegion = "testRegion";
-
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void testInit() throws K8sParameterNotFoundException{
-        
-        when(k8sLocalParameterProvider.getParameterAsString("legal-sns-topic-arn"))
-                .thenReturn(testTopic);
-        ReflectionTestUtils.setField(aboutToExpireLegalTagPublisherImpl, "amazonSNSRegion", testRegion);
-        assertDoesNotThrow(() -> aboutToExpireLegalTagPublisherImpl.init());
-    }  
 
     @Test
     void testPublish() {
-                                                                                                          
-        List<AboutToExpireLegalTag> tagList = new ArrayList<AboutToExpireLegalTag>();
-        tagList.add(tag);
-        when(tags.getLegalTags()).thenReturn(tagList);
+        List<AboutToExpireLegalTag> tagList = List.of(tag);
+        when(tags.getLegalTags()).thenReturn(tagList);                                                                           
         aboutToExpireLegalTagPublisherImpl.publish("projectId", headers, tags);
+        
         verify(snsClient, times(1)).publish(any(PublishRequest.class));
 
     }       

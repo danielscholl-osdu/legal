@@ -1,57 +1,35 @@
 package org.opengroup.osdu.legal.aws.jobs;
 
-import com.amazonaws.services.sns.model.PublishRequest;
-import com.amazonaws.services.sns.AmazonSNS;
-import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
-import org.opengroup.osdu.core.aws.ssm.K8sParameterNotFoundException;
+import java.util.List;
+
+import org.opengroup.osdu.core.aws.v2.sns.PublishRequestBuilder;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
-import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
-import org.opengroup.osdu.legal.provider.interfaces.IAboutToExpireLegalTagPublisher;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTag;
 import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
-
+import org.opengroup.osdu.legal.provider.interfaces.IAboutToExpireLegalTagPublisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
-
-import java.util.List;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
 
 @Service
 public class AboutToExpireLegalTagPublisherImpl implements IAboutToExpireLegalTagPublisher {
-    private String amazonSNSTopic;
 
-    @Value("${aws.sns.region}")
-    private String amazonSNSRegion;
-
-    private AmazonSNS snsClient;
-
-    private K8sLocalParameterProvider k8sLocalParameterProvider;
-
-    @Value("${OSDU_ABOUT_TO_EXPIRE_LEGALTAG_TOPIC}")
-    private String osduAboutToExpireLegalTagTopic;
-
+    private final SnsClient snsClient;
+    private final String amazonSNSTopic;
     private final JaxRsDpsLog log;
+    private final String osduAboutToExpireLegalTagTopic;
 
-    public AboutToExpireLegalTagPublisherImpl(JaxRsDpsLog log) {
+    public AboutToExpireLegalTagPublisherImpl(SnsClient snsClient,
+                                              String amazonSNSTopic,
+                                              @Value("${OSDU_ABOUT_TO_EXPIRE_LEGALTAG_TOPIC}") String osduAboutToExpireLegalTagTopic,
+                                              JaxRsDpsLog log) {
+        this.snsClient = snsClient;
+        this.amazonSNSTopic = amazonSNSTopic;
+        this.osduAboutToExpireLegalTagTopic = osduAboutToExpireLegalTagTopic;
         this.log = log;
-    }
-
-    public void setK8sLocalParameterProvider(K8sLocalParameterProvider k8sLocalParameterProvider) {
-        this.k8sLocalParameterProvider = k8sLocalParameterProvider;
-    }
-
-    @PostConstruct
-    public void init() throws K8sParameterNotFoundException {
-        if (this.k8sLocalParameterProvider == null) {
-            this.k8sLocalParameterProvider = new K8sLocalParameterProvider(); 
-        }
-
-        AmazonSNSConfig snsConfig = new AmazonSNSConfig(amazonSNSRegion);
-        snsClient = snsConfig.AmazonSNS();
-        amazonSNSTopic = k8sLocalParameterProvider.getParameterAsString("legal-sns-topic-arn");
     }
 
     @Override
