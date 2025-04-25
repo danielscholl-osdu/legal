@@ -41,7 +41,7 @@ public class LegalTagRepositoryFactoryAwsImpl implements ILegalTagRepositoryFact
 
 
 	private TenantInfo tenantInfo;
-	private ITenantFactory tenantFactory;
+	private final ITenantFactory tenantFactory;
 
 	@Inject
 	LegalTagRepositoryImpl repoImpl;

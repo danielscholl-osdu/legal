@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.opengroup.osdu.legal.util.Constants.DATA_PARTITION_ID;
 
-import com.amazonaws.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.Message;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.*;
 import org.opengroup.osdu.legal.util.AwsLegalTagUtils;

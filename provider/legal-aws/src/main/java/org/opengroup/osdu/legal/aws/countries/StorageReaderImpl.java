@@ -16,72 +16,83 @@
 
 package org.opengroup.osdu.legal.aws.countries;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import org.opengroup.osdu.core.aws.s3.IS3ClientFactory;
-import org.opengroup.osdu.core.aws.s3.S3ClientWithBucket;
+import org.opengroup.osdu.core.aws.v2.s3.IS3ClientFactory;
+import org.opengroup.osdu.core.aws.v2.s3.S3ClientWithBucket;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jakarta.inject.Inject;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Component
 public class StorageReaderImpl implements IStorageReader {
 
-    @Inject
-    private DpsHeaders dpsHeaders;
+    private final DpsHeaders dpsHeaders;
+    private final IS3ClientFactory s3ClientFactory;
+    private final String s3ConfigBucketParameterRelativePath;
+    private final String legalConfigFileName;
 
-    @Inject
-    private IS3ClientFactory s3ClientFactory;
-
-    @Value("${aws.s3.configbucket.ssm.relativePath}")
-    private String s3ConfigBucketParameterRelativePath;
-
-    @Value("${aws.s3.legal.config.file-name}")
-    private String legalConfigFileName;
+    @Autowired
+    public StorageReaderImpl(DpsHeaders dpsHeaders,
+            IS3ClientFactory s3ClientFactory,
+            @Value("${aws.s3.configbucket.ssm.relativePath}") String s3ConfigBucketParameterRelativePath,
+            @Value("${aws.s3.legal.config.file-name}") String legalConfigFileName) {
+        this.dpsHeaders = dpsHeaders;
+        this.s3ClientFactory = s3ClientFactory;
+        this.s3ConfigBucketParameterRelativePath = s3ConfigBucketParameterRelativePath;
+        this.legalConfigFileName = legalConfigFileName;
+    }
 
     @Override
     public byte[] readAllBytes() {
-        return getConfigFile().getBytes(); //should return a json format of an array of Country class
+        return getConfigFile().getBytes(); // should return a json format of an array of Country class
     }
 
-    public String getConfigFile(){
+    public String getConfigFile() {
         S3ClientWithBucket s3ClientWithBucket = s3ClientFactory.getS3ClientForPartition(
                 dpsHeaders.getPartitionIdWithFallbackToAccountId(), s3ConfigBucketParameterRelativePath);
-        AmazonS3 s3 = s3ClientWithBucket.getS3Client();
+        S3Client s3 = s3ClientWithBucket.getS3Client();
         String legalConfigBucketName = s3ClientWithBucket.getBucketName();
+        String key = String.format("%s/%s", dpsHeaders.getPartitionId(), legalConfigFileName);
+        String contents;
 
-        String contents = "";
         try {
-            contents = s3.getObjectAsString(legalConfigBucketName, String.format("%s/%s", dpsHeaders.getPartitionId(), legalConfigFileName));
-        } catch (AmazonS3Exception e){
-            if(e.getStatusCode() == 404){
-                contents = createDefaultConfigFile(s3, legalConfigBucketName);
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(legalConfigBucketName)
+                    .key(key)
+                    .build();
+            ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(getObjectRequest);
+            contents = objectBytes.asUtf8String();
+        } catch (S3Exception e) {
+            if (e.statusCode() == 404) {
+                contents = createDefaultConfigFile(s3, legalConfigBucketName, key);
             } else {
-                throw new AppException(500, "Amazon service exception getting config file", e.getMessage());
+                throw new AppException(500, "Amazon S3 exception getting config file", e.getMessage());
             }
-        }
-        catch (AmazonServiceException e) {
-            throw new AppException(500, "Amazon service exception getting config file", e.getMessage());
-        } catch (SdkClientException e) {
-            throw new AppException(500, "Amazon Sdk client exception getting config file", e.getMessage());
         }
         return contents;
     }
 
-    private String createDefaultConfigFile(AmazonS3 s3, String legalConfigBucketName){
-        String contents = "[]";
+    private String createDefaultConfigFile(S3Client s3, String legalConfigBucketName, String key) {
+        String defaultContents = "[]";
         try {
-            s3.putObject(legalConfigBucketName, String.format("%s/%s",
-                    dpsHeaders.getPartitionId(), legalConfigFileName), contents);
-        } catch (Exception e){
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(legalConfigBucketName)
+                    .key(key)
+                    .build();
+            s3.putObject(putObjectRequest, RequestBody.fromString(defaultContents));
+        } catch (S3Exception e) {
             throw new AppException(500, "Exception creating default config file", e.getMessage());
         }
-        return contents;
+        return defaultContents;
     }
 }

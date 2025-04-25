@@ -16,43 +16,60 @@
 
 package org.opengroup.osdu.legal.util;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.PurgeQueueRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 
+import org.opengroup.osdu.core.aws.v2.sqs.AmazonSQSConfig;
+
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 
 import java.util.List;
 
 public class AwsSqsHelper {
-    public static List<Message> getMessages(){
+    private static final String REGION = "us-east-1";
+    
+    public static List<Message> getMessages() {
         String amazonSqsEndpoint = System.getenv("LEGAL_QUEUE");
-        AmazonSQS sqs = AmazonSQSClientBuilder.standard().withRegion("us-east-1").build();
-        return sqs.receiveMessage(amazonSqsEndpoint).getMessages();
+        SqsClient sqsClient = new AmazonSQSConfig(REGION).AmazonSQS();
+        
+        ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
+                .queueUrl(amazonSqsEndpoint)
+                .build();
+                
+        ReceiveMessageResponse response = sqsClient.receiveMessage(receiveRequest);
+        return response.messages();
     }
 
-    public static void purgeQueue(){
+    public static void purgeQueue() {
         String amazonSqsEndpoint = System.getenv("LEGAL_QUEUE");
-        AmazonSQS sqs = AmazonSQSClientBuilder.standard().withRegion("us-east-1").build();
-        PurgeQueueRequest request = new PurgeQueueRequest();
-        request.setQueueUrl(amazonSqsEndpoint);
-        sqs.purgeQueue(request);
+        SqsClient sqsClient = new AmazonSQSConfig(REGION).AmazonSQS();
+        
+        PurgeQueueRequest purgeRequest = PurgeQueueRequest.builder()
+                .queueUrl(amazonSqsEndpoint)
+                .build();
+                
+        sqsClient.purgeQueue(purgeRequest);
     }
 
     public static boolean checkLegalTagNameSent(Message message, String name) throws Exception {
-        if(message == null)
+        if (message == null)
             return false;
+            
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode root = objectMapper.readTree(message.getBody());
+        JsonNode root = objectMapper.readTree(message.body());
         String data = root.path("Message").toString();
+        
         // comes wrapped in non-escaped double quotes
         data = data.substring(1);
         data = data.substring(0, data.length() - 1);
+        
         String dataCheck = "{\"statusChangedTags\":[{\"dataPartitionId\":\"" + TestUtils.getMyDataPartition() + "\",\"changedTagName\":\"" + name + "\",\"changedTagStatus\":\"incompliant\"}]}";
         dataCheck = dataCheck.replace("\"", "\\\\\"");
+        
         return data.equals(dataCheck);
     }
 }
