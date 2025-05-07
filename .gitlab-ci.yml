@@ -109,7 +109,7 @@ azure_deploy:
     AZURE_COVERAGE_THRESHOLD: 80
 
 azure_containerize:
-  needs: [ "azure-compile-and-unit-test" ]
+  needs: ["azure-compile-and-unit-test"]
 
 azure_code_coverage:
   variables:
