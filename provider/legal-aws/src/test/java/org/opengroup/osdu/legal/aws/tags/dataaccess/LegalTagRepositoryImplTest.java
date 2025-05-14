@@ -75,10 +75,15 @@ class LegalTagRepositoryImplTest {
     @BeforeEach
     void setUp() {
         when(queryHelperFactory.createQueryHelper(
-                headers,
+                DATA_PARTITION_ID,
                 LEGAL_TABLE_PATH,
                 LegalDoc.class)).thenReturn(queryHelper);
         sut = new LegalTagRepositoryImpl(queryHelperFactory, LEGAL_TABLE_PATH, headers, log);
+        
+        // Set up tenant info
+        TenantInfo tenant = new TenantInfo();
+        tenant.setDataPartitionId(DATA_PARTITION_ID);
+        sut.setTenantInfo(tenant);
     }
 
     @SuppressWarnings("unchecked")
@@ -118,11 +123,6 @@ class LegalTagRepositoryImplTest {
         List<LegalDoc> docs = List.of(
                 createLegalDoc(ids[0], true),
                 createLegalDoc(ids[1], true));
-        
-        // Set tenant's data partition.
-        TenantInfo tenant = new TenantInfo();
-        tenant.setDataPartitionId(DATA_PARTITION_ID);
-        sut.setTenantInfo(tenant);
         
         // Stub queryHelper to return our dummy LegalDocs when called with any list.
         when(queryHelper.batchLoadByCompositePrimaryKey(any())).thenReturn(docs);
