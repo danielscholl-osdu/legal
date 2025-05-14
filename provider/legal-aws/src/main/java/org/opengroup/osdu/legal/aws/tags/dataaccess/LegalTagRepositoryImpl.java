@@ -59,7 +59,6 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
     private final IDynamoDBQueryHelperFactory queryHelperFactory;
     private final DpsHeaders headers;
     private final String legalRepositoryTableParameterRelativePath;
-    private final DynamoDBQueryHelper<LegalDoc> queryHelper;
     private final JaxRsDpsLog log;
 
     @Autowired
@@ -70,7 +69,6 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
         this.headers = headers;
         this.legalRepositoryTableParameterRelativePath = legalRepositoryTableParameterRelativePath;
         this.log = log;
-        this.queryHelper = getLegalRepositoryQueryHelper();
     }
 
     public void setTenantInfo(TenantInfo tenantInfo) {
@@ -85,8 +83,10 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
         return tenantInfo.getDataPartitionId();
     }
 
-    private DynamoDBQueryHelper<LegalDoc> getLegalRepositoryQueryHelper() {
-        return queryHelperFactory.createQueryHelper(headers, legalRepositoryTableParameterRelativePath, LegalDoc.class);
+    // Added a method to get a fresh query helper for each request
+    private DynamoDBQueryHelper<LegalDoc> getCurrentQueryHelper() {
+        String dataPartitionId = getDataPartitionId();
+        return queryHelperFactory.createQueryHelper(dataPartitionId, legalRepositoryTableParameterRelativePath, LegalDoc.class);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
                 .toList();
 
         try {
-            List<LegalDoc> docs = queryHelper.batchLoadByCompositePrimaryKey(compositeKeys);
+            List<LegalDoc> docs = getCurrentQueryHelper().batchLoadByCompositePrimaryKey(compositeKeys);
             return docs.stream()
                     .map(this::createLegalTagFromDoc)
                     .toList();
@@ -131,7 +131,7 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
     @Override
     public Boolean delete(LegalTag legalTag) {
         try {
-            queryHelper.deleteItem(createLegalDocFromTag(legalTag));
+            getCurrentQueryHelper().deleteItem(createLegalDocFromTag(legalTag));
             return true;
         } catch (InternalServerErrorException e) {
             throw new AppException(HttpStatus.SC_SERVICE_UNAVAILABLE, "Service error occurred",
@@ -167,10 +167,10 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
         List<LegalDoc> docs;
 
         if (args.getLimit() <= 0) {
-            docs = queryHelper.scanTable();
+            docs = getCurrentQueryHelper().scanTable();
         } else {
             ScanEnhancedRequest request = buildScanRequest(args);
-            QueryPageResult<LegalDoc> pageResult = queryHelper.scanPage(request);
+            QueryPageResult<LegalDoc> pageResult = getCurrentQueryHelper().scanPage(request);
             docs = (pageResult != null) ? pageResult.getItems() : Collections.emptyList();
         }
 
@@ -198,7 +198,7 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
         if (legalDoc == null) {
             return -1L;
         }
-        queryHelper.putItem(request);
+        getCurrentQueryHelper().putItem(request);
 
         return Long.valueOf(legalDoc.getId());
     }
