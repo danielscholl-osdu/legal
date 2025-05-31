@@ -1,166 +1,48 @@
-# Fork Management Template
+# OSDU Legal Service
 
-## 🔄 Repository Status: Initialization Required
+Official documentation is located at [https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/](https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/)
 
-**This repository was created from a template and needs to be initialized.**
+## os-legal-azure
 
-➡️ **[Complete Initialization Here](../../issues?q=is%3Aissue+is%3Aopen+label%3Ainitialization)** ⬅️
+The steps for running `os-legal-azure` can be found in the [Azure Implementation README.md file](./provider/legal-azure/README.md).
 
----
+## os-legal-aws
 
+Instructions for running and testing this service can be found in the [AWS README.md file](./provider/legal-aws/README.md)
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GitHub Issues](https://img.shields.io/github/issues/danielscholl-osdu/osdu-fork-template)](https://github.com/danielscholl-osdu/osdu-fork-template/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/danielscholl-osdu/osdu-fork-template/pulls)
+# os-legal-gcp
 
-## 🤖 AI-Driven Development
+## Running integration tests
+Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
 
-[![Claude Ready](https://img.shields.io/badge/Claude%20Code-Ready-orange?logo=anthropic)](https://github.com/danielscholl/pr-generator-agent/blob/main/CLAUDE.md)
-[![Copilot-Ready](https://img.shields.io/badge/Copilot%20Agent-Ready-8A2BE2?logo=github)](https://github.com/danielscholl-osdu/osdu-fork-template/blob/main/.github/copilot-instructions.md)
+### Open API 3.0 - Swagger
+- Swagger UI : https://host/context-path/swagger (will redirect to https://host/context-path/swagger-ui/index.html)
+- api-docs (JSON) : https://host/context-path/api-docs
+- api-docs (YAML) : https://host/context-path/api-docs.yaml
 
-This project follows an AI-driven development workflow:
-- 🤖 **Built with AI** - Developed and maintained using Claude Code and GitHub Copilot
-- 📋 **AI Task Assignment** - Issues labeled with `copilot` are designed for AI implementation
-- 📚 **AI-Friendly Documentation** - Comprehensive guides for AI agents in [CLAUDE.md](CLAUDE.md)
-- 🔄 **Automated Workflows** - GitHub Actions with AI-enhanced PR descriptions and conflict resolution
-- 🎯 **AI-First Architecture** - Designed with clear patterns for AI understanding and modification
+All the Swagger and OpenAPI related common properties are managed here [swagger.properties](./legal-core/src/main/resources/swagger.properties)
 
-This repository provides an automated template for managing long-lived forks of upstream repositories, ensuring controlled synchronization and release management. For detailed design and requirements, see the [Product Requirements Document](doc/prd.md).
+#### Server Url(full path vs relative path) configuration
+- `api.server.fullUrl.enabled=true` It will generate full server url in the OpenAPI swagger
+- `api.server.fullUrl.enabled=false` It will generate only the contextPath only
+- default value is false (Currently only in Azure it is enabled)
+[Reference]:(https://springdoc.org/faq.html#_how_is_server_url_generated) 
 
-## Features
+### Google Cloud
 
-This template automates the process of maintaining a fork while keeping it updated with upstream changes. When you create a repository from this template, it will:
+Instructions for running the Google Cloud integration tests can be found [here](./provider/legal-gc/README.md).
 
-- Set up a structured branch strategy for controlled upstream synchronization
-- Configure automated workflows to handle syncing, validation, and releases
-- Enforce branch protection rules to maintain repository integrity
-- Manage releases with semantic versioning and upstream tracking
+## License
+Copyright 2017-2019, Schlumberger
 
-## Prerequisites
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at 
 
-Before starting, ensure you have:
-- GitHub account with repository creation permissions
-- (Optional) Personal Access Token (PAT) for full automation:
-  - Create a secret named `GH_TOKEN` in your repository
-  - Required scopes: `repo`, `workflow`, `admin:repo_hook`
-  - Without PAT: Manual configuration of branch protection and secrets required
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-## Quick Start
-
-### 1. Create New Repository
-1. Click the "Use this template" button above
-2. Choose a name and owner for your new repository
-3. Create repository
-
-### 2. Initialize Repository
-1. Go to Actions → Select "Initialize Fork" → Click "Run workflow" (if not already running)
-2. An initialization issue will appear in the Issues tab
-3. Follow the instructions in the issue from the bot to complete setup
-
-## Branch Structure
-
-The permanent branches control how upstream updates flow through validation before reaching the main branch:
-
-```
-             ┌────────────────────────┐
-             │ fork_upstream          │
-             │ (Tracks Upstream)      │
-             └────────────────────────┘
-                      ↓
-             ┌───────────────────────┐
-             │ fork_integration      │
-             │ (Conflict Resolution) │
-             └───────────────────────┘
-                      ↓
-             ┌───────────────────────┐
-             │ main                  │
-             │ (Stable)              │
-             └───────────────────────┘
-              ↑                     ↑
-        Feature Branches       Certified Tags
-        (Feature1, etc.)      (Downstream Pull)
-```
-
-## Automated Workflows
-
-These workflows keep your fork in sync, enforce validation rules, and manage releases automatically:
-
-### 1. Upstream Sync
-- Scheduled automatic sync from upstream repository
-- Manual sync available via Actions tab
-- Automated conflict detection and notification
-- [Details →](doc/sync-workflow.md)
-
-### 2. Validation
-- Enforces commit format and branch status
-- Prevents merging of invalid PRs
-- Ensures code quality and consistency
-- [Details →](doc/validation-workflow.md)
-
-### 3. Release Management
-- Automated versioning and changelogs
-- Tracks upstream versions with release tags
-- [Details →](doc/release-workflow.md)
-
-## Development Workflow
-
-```mermaid
-gitGraph
-    checkout main
-    commit id: "Init Repo" tag: "0.0.0"
-
-    branch upstream
-    checkout upstream
-    commit id: "Upstream Sync 1" tag: "upstream-v1.0.0"
-
-    checkout main
-    branch integration
-    checkout integration
-
-
-    merge upstream 
-
-
-    commit id: "Bugfix 1"
-
-    checkout upstream
-    commit id: "Upstream Sync 2" tag: "upstream-v2.0.0"
-
-    checkout integration
-    merge upstream
-
-
-    commit id: "Bugfix 2"
-
-    checkout main
-    commit id: "Feature Work 1" tag: "0.0.1"
-    commit id: "Feature Work 2" tag: "0.1.0"
-
-    merge integration tag: "2.0.0"
-
-    commit id: "Feature Work 3" tag: "2.1.1"
-    commit id: "Feature Work 4" tag: "2.1.2"
-
-```
-
-### 1. Feature Development
-1. Branch from main: `git checkout -b feature/my-feature main`
-2. Make changes and test
-3. Use conventional commits:
-   ```
-   feat: new feature
-   fix: bug fix
-   feat!: breaking change
-   ```
-4. Create PR → Review → Merge
-
-### 2. Upstream Sync Process
-1. Auto-sync PR created daily
-2. Review changes
-3. Resolve conflicts if needed
-4. Merge sync PR
-
-### 3. Release Process
-1. Merge to main with conventional commits
-2. Release Please handles versioning and changelog
-3. Release includes upstream version tracking
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
