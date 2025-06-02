@@ -27,7 +27,7 @@ import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.aws.v2.dynamodb.DynamoDBQueryHelper;
 import org.opengroup.osdu.core.aws.v2.dynamodb.interfaces.IDynamoDBQueryHelperFactory;
 import org.opengroup.osdu.core.aws.v2.dynamodb.model.QueryPageResult;
-import org.opengroup.osdu.core.aws.v2.dynamodb.util.RequestBuilderUtil;
+import org.opengroup.osdu.core.aws.v2.dynamodb.util.RequestBuilderUtil.ScanRequestBuilder;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -86,7 +86,8 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
     // Added a method to get a fresh query helper for each request
     private DynamoDBQueryHelper<LegalDoc> getCurrentQueryHelper() {
         String dataPartitionId = getDataPartitionId();
-        return queryHelperFactory.createQueryHelper(dataPartitionId, legalRepositoryTableParameterRelativePath, LegalDoc.class);
+        return queryHelperFactory.createQueryHelper(dataPartitionId, legalRepositoryTableParameterRelativePath,
+                LegalDoc.class);
     }
 
     @Override
@@ -166,31 +167,45 @@ public class LegalTagRepositoryImpl implements ILegalTagRepository {
     public Collection<LegalTag> list(ListLegalTagArgs args) {
         List<LegalDoc> docs;
 
+        // Build the scan request with proper filtering
+        ScanEnhancedRequest request = buildScanRequest(args);
+
+        // Choose the appropriate scan method based on limit
         if (args.getLimit() <= 0) {
-            docs = getCurrentQueryHelper().scanTable();
+            docs = getCurrentQueryHelper().scanTable(request);
         } else {
-            ScanEnhancedRequest request = buildScanRequest(args);
             QueryPageResult<LegalDoc> pageResult = getCurrentQueryHelper().scanPage(request);
             docs = (pageResult != null) ? pageResult.getItems() : Collections.emptyList();
         }
 
+        // No need to filter by isValid here since it's done in the database query
         return docs.stream()
-                .filter(doc -> doc.getIsValid() == args.getIsValid())
                 .map(this::createLegalTagFromDoc)
                 .toList();
     }
 
     private ScanEnhancedRequest buildScanRequest(ListLegalTagArgs args) {
-        String filterExpression = "dataPartitionId = :partitionId";
-        AttributeValue partitionValue = AttributeValue.builder().s(getDataPartitionId()).build();
-        Map<String, AttributeValue> expressionValues = new HashMap<>();
-        expressionValues.put(":partitionId", partitionValue);
+        // Create a filter expression that includes both dataPartitionId and isValid
+        String filterExpression = "dataPartitionId = :partitionId AND IsValid = :isValid";
 
-        return RequestBuilderUtil.ScanRequestBuilder.forScan(LegalDoc.class)
-                .filterExpression(filterExpression, expressionValues)
-                .limit(args.getLimit())
-                .cursor(args.getCursor() == null ? "" : args.getCursor())
-                .build();
+        // Set up the expression values
+        Map<String, AttributeValue> expressionValues = new HashMap<>();
+        expressionValues.put(":partitionId", AttributeValue.builder().s(getDataPartitionId()).build());
+        expressionValues.put(":isValid", AttributeValue.builder().bool(args.getIsValid()).build());
+
+        // Build the scan request
+        ScanRequestBuilder<LegalDoc> builder = ScanRequestBuilder.forScan(LegalDoc.class)
+                .filterExpression(filterExpression, expressionValues);
+
+        // Add limit if positive
+        if (args.getLimit() > 0) {
+            builder.limit(args.getLimit());
+        }
+
+        // Handle cursor
+        builder.cursor(args.getCursor() == null ? "" : args.getCursor());
+
+        return builder.build();
     }
 
     private Long save(PutItemEnhancedRequest<LegalDoc> request) {

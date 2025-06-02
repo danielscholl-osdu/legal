@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -47,6 +46,7 @@ import org.opengroup.osdu.core.common.model.legal.LegalTag;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -57,7 +57,7 @@ import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 class LegalTagRepositoryImplTest {
     private static final String DATA_PARTITION_ID = "data-partition-id";
     private static final String LEGAL_TABLE_PATH = "legal-table";
-    
+
     @Mock
     private IDynamoDBQueryHelperFactory queryHelperFactory;
 
@@ -79,7 +79,7 @@ class LegalTagRepositoryImplTest {
                 LEGAL_TABLE_PATH,
                 LegalDoc.class)).thenReturn(queryHelper);
         sut = new LegalTagRepositoryImpl(queryHelperFactory, LEGAL_TABLE_PATH, headers, log);
-        
+
         // Set up tenant info
         TenantInfo tenant = new TenantInfo();
         tenant.setDataPartitionId(DATA_PARTITION_ID);
@@ -119,11 +119,11 @@ class LegalTagRepositoryImplTest {
 
     @Test
     void shouldGetLegalTagsSuccessfully() {
-        long[] ids = {1234L, 5678L};
+        long[] ids = { 1234L, 5678L };
         List<LegalDoc> docs = List.of(
                 createLegalDoc(ids[0], true),
                 createLegalDoc(ids[1], true));
-        
+
         // Stub queryHelper to return our dummy LegalDocs when called with any list.
         when(queryHelper.batchLoadByCompositePrimaryKey(any())).thenReturn(docs);
 
@@ -176,16 +176,38 @@ class LegalTagRepositoryImplTest {
         args.setIsValid(true);
         args.setCursor(ENCODED_CURSOR);
 
-        List<LegalDoc> docs = List.of(
-                createLegalDoc(1234L, true),
-                createLegalDoc(9876L, false));
-                Map<String, AttributeValue> lastEvaluatedKey = new HashMap<>();
-                lastEvaluatedKey.put("id", AttributeValue.builder().s("lastId").build());
-        
-        
+        LegalDoc validDoc = createLegalDoc(1234L, true);
+
+        List<LegalDoc> docs = List.of(validDoc);
+        Map<String, AttributeValue> lastEvaluatedKey = new HashMap<>();
+        lastEvaluatedKey.put("id", AttributeValue.builder().s("lastId").build());
+
         QueryPageResult<LegalDoc> queryPageResult = new QueryPageResult<>(docs, lastEvaluatedKey);
+
+        // Mock the database to return only the matching document and capture the scan
+        // request
         when(queryHelper.scanPage(any(ScanEnhancedRequest.class)))
-                .thenReturn(queryPageResult);
+                .thenAnswer(invocation -> {
+                    ScanEnhancedRequest scanRequest = invocation.getArgument(0);
+
+                    // Get the filter expression from the scan request
+                    Expression filterExpression = scanRequest.filterExpression();
+
+                    // Verify that the filter expression contains both isValid and dataPartitionId conditions
+                    String expressionString = filterExpression.expression();
+                    Map<String, AttributeValue> expressionValues = filterExpression.expressionValues();
+
+                    assertTrue(expressionString.contains("dataPartitionId = :partitionId"));
+                    assertTrue(expressionString.contains("IsValid = :isValid"));
+
+                    // Verify the expression values
+                    assertTrue(expressionValues.containsKey(":partitionId"));
+                    assertTrue(expressionValues.containsKey(":isValid"));
+                    assertEquals(args.getIsValid(), expressionValues.get(":isValid").bool());
+                    assertEquals(DATA_PARTITION_ID, expressionValues.get(":partitionId").s());
+
+                    return queryPageResult;
+                });
 
         // When
         Collection<LegalTag> results = sut.list(args);
