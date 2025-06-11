@@ -182,7 +182,7 @@ class LegalTagRepositoryImplTest {
         Map<String, AttributeValue> lastEvaluatedKey = new HashMap<>();
         lastEvaluatedKey.put("id", AttributeValue.builder().s("lastId").build());
 
-        QueryPageResult<LegalDoc> queryPageResult = new QueryPageResult<>(docs, lastEvaluatedKey);
+        QueryPageResult<LegalDoc> queryPageResult = new QueryPageResult<>(docs, lastEvaluatedKey, null);
 
         // Mock the database to return only the matching document and capture the scan
         // request
