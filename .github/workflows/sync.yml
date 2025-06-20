@@ -226,7 +226,8 @@ jobs:
             --head "$SYNC_BRANCH" \
             --title "⬆️ Sync with upstream $UPSTREAM_VERSION" \
             --body "$PR_DESCRIPTION" \
-            --label "upstream-sync")
+            --label "upstream-sync,human-required" \
+            --assignee "${{ github.repository_owner }}")
           
           echo "PR created: $PR_URL"
           
@@ -241,12 +242,52 @@ jobs:
           echo "$PR_DESCRIPTION" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      - name: Create human notification issue
+        if: steps.sync-changes.outputs.has_changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          PR_URL="${{ steps.create-pr.outputs.pr-url }}"
+          PR_NUMBER="${{ steps.create-pr.outputs.pr-number }}"
+          UPSTREAM_VERSION="${{ env.UPSTREAM_VERSION }}"
+          
+          # Get commit count for the notification
+          COMMIT_COUNT=$(git rev-list --count fork_upstream..${{ env.SYNC_BRANCH }})
+          
+          NOTIFICATION_BODY="## 📥 Upstream Sync Ready for Review
+          
+          New upstream changes are available and ready for review.
+          
+          **Sync Details:**
+          - **PR:** $PR_URL  
+          - **Upstream Version:** $UPSTREAM_VERSION
+          - **Commits:** $COMMIT_COUNT new commits from upstream
+          - **Branch:** \`${{ env.SYNC_BRANCH }}\` → \`fork_upstream\`
+          
+          **Next Steps:**
+          1. 🔍 **Review the sync PR** for any breaking changes or conflicts
+          2. ✅ **Merge the PR** when satisfied with the changes  
+          3. 🚀 **Automatic cascade** will begin once merged to integrate changes
+          
+          **Timeline:**
+          - Sync detected: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          - Action required: Human review and approval
+          
+          @${{ github.repository_owner }}"
+          
+          gh issue create \
+            --title "📥 Upstream Sync Ready for Review - $(date +%Y-%m-%d)" \
+            --body "$NOTIFICATION_BODY" \
+            --label "upstream-sync,human-required" \
+            --assignee "${{ github.repository_owner }}"
+
       - name: Log sync completion
         if: steps.sync-changes.outputs.has_changes == 'true'
         run: |
           PR_URL="${{ steps.create-pr.outputs.pr-url }}"
           PR_NUMBER="${{ steps.create-pr.outputs.pr-number }}"
           echo "✅ Sync PR created successfully: $PR_URL"
+          echo "✅ Human notification issue created"
           echo "The PR can be reviewed and merged to integrate upstream changes."
 
       - name: Handle Failure
