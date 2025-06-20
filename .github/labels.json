@@ -124,6 +124,26 @@
       "name": "claude",
       "description": "Suitable for Claude AI implementation",
       "color": "CC5500"
+    },
+    {
+      "name": "human-required",
+      "description": "Requires human action or approval",
+      "color": "fbca04"
+    },
+    {
+      "name": "upstream-held",
+      "description": "Upstream changes held due to integration in progress",
+      "color": "f9d71c"
+    },
+    {
+      "name": "integration-blocked",
+      "description": "Integration pipeline blocked by ongoing process",
+      "color": "d93f0b"
+    },
+    {
+      "name": "validated",
+      "description": "Passed all validation checks",
+      "color": "0e8a16"
     }
   ]
 }
