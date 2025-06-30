@@ -39,3 +39,6 @@ build/
 # Environment configuration
 *.env
 .envrc
+
+# Other
+**/custom-values.yaml
