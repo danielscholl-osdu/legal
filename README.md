@@ -1,63 +1,48 @@
-# OSDU SPI Fork Management Template
+# OSDU Legal Service
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GitHub Issues](https://img.shields.io/github/issues/danielscholl-osdu/osdu-fork-template)](https://github.com/danielscholl-osdu/osdu-fork-template/issues)
-[![Documentation](https://img.shields.io/badge/Documentation-Live-blue?logo=gitbook)](https://danielscholl-osdu.github.io/osdu-fork-template/)
+Official documentation is located at [https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/](https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/)
 
-> **Automated management for long-lived forks with AI-enhanced workflows**
+## os-legal-azure
 
-## What This Template Provides
+The steps for running `os-legal-azure` can be found in the [Azure Implementation README.md file](./provider/legal-azure/README.md).
 
-- 🔄 Automated upstream synchronization with conflict detection
-- 🤖 AI-enhanced PR descriptions and conflict guidance
-- 🛡️ Three-branch safety strategy
-- 📈 Release correlation tracking
-- 🎯 Zero-maintenance operations
+## os-legal-aws
 
-**Perfect for**: OSDU teams needing Azure SPI customizations while staying current with upstream.
+Instructions for running and testing this service can be found in the [AWS README.md file](./provider/legal-aws/README.md)
 
-## Quick Start
+# os-legal-gcp
 
-### 1. Create Your Fork Repository
+## Running integration tests
+Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
 
-Click **"Use this template"** → Choose repository name → **Create repository**
+### Open API 3.0 - Swagger
+- Swagger UI : https://host/context-path/swagger (will redirect to https://host/context-path/swagger-ui/index.html)
+- api-docs (JSON) : https://host/context-path/api-docs
+- api-docs (YAML) : https://host/context-path/api-docs.yaml
 
-### 2. Initialize Your Fork
+All the Swagger and OpenAPI related common properties are managed here [swagger.properties](./legal-core/src/main/resources/swagger.properties)
 
-1. Go to **Actions** → **"Repository Initialization"** → **"Run workflow"**
-2. Follow the setup instructions in the automatically created issue
-3. Provide your upstream repository URL when prompted
-4. Wait 2-5 minutes for complete setup
+#### Server Url(full path vs relative path) configuration
+- `api.server.fullUrl.enabled=true` It will generate full server url in the OpenAPI swagger
+- `api.server.fullUrl.enabled=false` It will generate only the contextPath only
+- default value is false (Currently only in Azure it is enabled)
+[Reference]:(https://springdoc.org/faq.html#_how_is_server_url_generated) 
 
-### 3. Configure Secrets (Optional but Recommended)
+### Google Cloud
 
-For full automation, add these secrets in **Settings** → **Secrets and variables** → **Actions**:
-
-| Secret | Purpose | Required |
-|--------|---------|----------|
-| `GH_TOKEN` | Repository automation | For branch protection & full automation |
-| `ANTHROPIC_API_KEY` | AI-enhanced PR descriptions | Optional but recommended |
-
-### 4. Start Using
-
-- **Daily sync** happens automatically at midnight UTC
-- **Manual sync** available in Actions → "Upstream Synchronization"  
-- **Conflicts** create detailed issues with resolution guidance
-- **Releases** are automatically versioned and correlated with upstream
-
-## Support and Contributing
-
-📚 **[Complete Documentation](https://danielscholl-osdu.github.io/osdu-fork-template/)** - Comprehensive guides covering system concepts, architecture, workflows, and AI integration.
-
-- **Issues**: [Report bugs or request features](https://github.com/danielscholl-osdu/osdu-fork-template/issues)
-- **Discussions**: [Community support and questions](https://github.com/danielscholl-osdu/osdu-fork-template/discussions)
-- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines
-- **Security**: Report security issues privately via [GitHub security advisories](https://github.com/danielscholl-osdu/osdu-fork-template/security/advisories)
+Instructions for running the Google Cloud integration tests can be found [here](./provider/legal-gc/README.md).
 
 ## License
+Copyright 2017-2019, Schlumberger
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at 
 
----
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-**Need help?** Check the [documentation](https://danielscholl-osdu.github.io/osdu-fork-template/) or [open an issue](https://github.com/danielscholl-osdu/osdu-fork-template/issues/new).
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
