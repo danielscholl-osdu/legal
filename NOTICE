@@ -19,6 +19,7 @@ The following software have components provided under the terms of this license:
 
 - AMQP 1.0 JMS Spring Boot AutoConfiguration (from https://repo1.maven.org/maven2/org/amqphub/spring/amqp-10-jms-spring-boot-autoconfigure)
 - AMQP 1.0 JMS Spring Boot Starter (from https://repo1.maven.org/maven2/org/amqphub/spring/amqp-10-jms-spring-boot-starter)
+- ASM Core (from http://asm.ow2.io/, http://asm.ow2.org/)
 - ASM based accessors helper used by json-smart (from https://urielch.github.io/)
 - AWS Cryptographic Material Providers Library (from https://github.com/aws/aws-cryptographic-material-providers-library)
 - AWS Database Encryption SDK for DynamoDB (from https://github.com/aws/aws-database-encryption-sdk-dynamodb)
@@ -523,6 +524,13 @@ The following software have components provided under the terms of this license:
 - webjars-locator-lite (from https://webjars.org)
 
 ========================================================================
+SPL-1.0
+========================================================================
+The following software have components provided under the terms of this license:
+
+- Checker Qual (from https://checkerframework.org)
+
+========================================================================
 WTFPL
 ========================================================================
 The following software have components provided under the terms of this license:
@@ -556,6 +564,7 @@ unknown
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- JUnit (from http://junit.org)
 - System Rules (from http://stefanbirkner.github.com/system-rules/, http://stefanbirkner.github.io/system-rules/)
 
 ========================================================================
