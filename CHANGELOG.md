@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.1](https://github.com/danielscholl-osdu/legal/compare/v1.0.0...v1.0.1) (2025-08-06)
+
+
+### 🐛 Bug Fixes
+
+* Cve and spring boot version bump ([d36f796](https://github.com/danielscholl-osdu/legal/commit/d36f796a4790a44feb007745170c8f047a54ec6e))
+* Cve and spring boot version bump ([ff47afc](https://github.com/danielscholl-osdu/legal/commit/ff47afc5a5b2ea749672c5f7f79b40610ab2f57f))
+
+
+### 🔧 Miscellaneous
+
+* Sync template updates ([a7a2baf](https://github.com/danielscholl-osdu/legal/commit/a7a2baf9f6e517e048fdb368e1033cd5d9fb4bf0))
+
+
+### 🔨 Build System
+
+* **deps:** Upgrade Spring Boot to 3.3.11 and Tomcat to 10.1.42 ([cceb1dc](https://github.com/danielscholl-osdu/legal/commit/cceb1dce7933946da4a132f0762cfe1e5e339654))
+
 ## 1.0.0 (2025-07-19)
 
 
