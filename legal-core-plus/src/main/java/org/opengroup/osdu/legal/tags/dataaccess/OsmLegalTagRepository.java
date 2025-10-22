@@ -80,7 +80,7 @@ public class OsmLegalTagRepository implements ILegalTagRepository {
               "A LegalTag already exists for the given name",
               "A LegalTag already exists for the given name");
         } else {
-          LegalTag result = context.createAndGet(legalTag, getDestination());
+          LegalTag result = context.createAndGet(getDestination(), legalTag);
           txn.commitIfActive();
           return result.getId();
         }
@@ -124,7 +124,7 @@ public class OsmLegalTagRepository implements ILegalTagRepository {
     if (Objects.nonNull(newLegalTag)) {
       Transaction txn = context.beginTransaction(getDestination());
       try {
-        legalTag = context.upsertAndGet(newLegalTag, getDestination());
+        legalTag = context.upsertAndGet(getDestination(), newLegalTag);
         txn.commitIfActive();
       } finally {
         txn.rollbackIfActive();
