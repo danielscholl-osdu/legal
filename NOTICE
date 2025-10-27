@@ -118,6 +118,9 @@ The following software have components provided under the terms of this license:
 - J2ObjC Annotations (from https://github.com/google/j2objc/)
 - JBoss Logging 3 (from http://www.jboss.org)
 - JCIP Annotations under Apache License (from http://stephenc.github.com/jcip-annotations)
+- JJWT :: API (from https://repo1.maven.org/maven2/io/jsonwebtoken/jjwt-api)
+- JJWT :: Extensions :: Jackson (from https://repo1.maven.org/maven2/io/jsonwebtoken/jjwt-jackson)
+- JJWT :: Impl (from https://repo1.maven.org/maven2/io/jsonwebtoken/jjwt-impl)
 - JJWT :: Legacy Transitive Dependency Jar (from https://repo1.maven.org/maven2/io/jsonwebtoken/jjwt)
 - JMES Path Query library (from https://aws.amazon.com/sdkforjava)
 - JSON Small and Fast Parser (from https://repo1.maven.org/maven2/net/minidev/json-smart, https://urielch.github.io/)
@@ -253,6 +256,7 @@ The following software have components provided under the terms of this license:
 - org.opentest4j:opentest4j (from https://github.com/ota4j-team/opentest4j)
 - org.xmlunit:xmlunit-core (from http://www.xmlunit.org/, https://www.xmlunit.org/)
 - proto-google-common-protos (from https://github.com/googleapis/api-client-staging, https://github.com/googleapis/googleapis, https://github.com/googleapis/java-iam/proto-google-common-protos, https://github.com/googleapis/sdk-platform-java)
+- redis-authx-core (from https://github.com/redis/redis-authx-core)
 - resilience4j (from https://github.com/resilience4j/resilience4j, https://resilience4j.readme.io, ttps://resilience4j.readme.io)
 - spring-boot-loader (from https://spring.io/projects/spring-boot)
 - spring-security-oauth2-client (from http://spring.io/spring-security, https://spring.io/projects/spring-security, https://spring.io/spring-security)
@@ -346,6 +350,7 @@ CDDL-1.0
 The following software have components provided under the terms of this license:
 
 - Apache Log4j Core (from https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core)
+- Streaming API for XML (from https://repo1.maven.org/maven2/javax/xml/stream/stax-api)
 - javax.annotation API (from http://jcp.org/en/jsr/detail?id=250)
 
 ========================================================================
@@ -395,6 +400,7 @@ The following software have components provided under the terms of this license:
 - JUnit Jupiter Params (from http://junit.org/junit5/, https://junit.org/junit5/)
 - JUnit Platform Commons (from http://junit.org/junit5/, https://junit.org/junit5/)
 - JUnit Platform Engine API (from http://junit.org/junit5/, https://junit.org/junit5/)
+- JUnit Platform Launcher (from https://junit.org/)
 - Jakarta Activation API (from https://github.com/eclipse-ee4j/jaf, https://github.com/jakartaee/jaf-api, https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
 - Jakarta Dependency Injection (from https://github.com/eclipse-ee4j/injection-api)
@@ -513,6 +519,7 @@ The following software have components provided under the terms of this license:
 - System Stubs Core (from https://repo1.maven.org/maven2/uk/org/webcompere/system-stubs-core)
 - adal4j (from https://github.com/AzureAD/azure-activedirectory-library-for-java)
 - javamsalruntime (from https://github.com/AzureAD/microsoft-authentication-library-for-cpp)
+- jwks-rsa-java (from https://github.com/auth0/jwks-rsa-java)
 - micrometer-commons (from https://github.com/micrometer-metrics/micrometer)
 - micrometer-core (from https://github.com/micrometer-metrics/micrometer)
 - mockito-inline (from http://mockito.org, https://github.com/mockito/mockito)
@@ -520,6 +527,7 @@ The following software have components provided under the terms of this license:
 - msal4j (from https://github.com/AzureAD/microsoft-authentication-library-for-java)
 - msal4j-brokers (from https://github.com/AzureAD/microsoft-authentication-library-for-java)
 - msal4j-persistence-extension (from https://github.com/AzureAD/microsoft-authentication-extensions-for-java, https://github.com/AzureAD/microsoft-authentication-library-for-java)
+- redis-authx-core (from https://github.com/redis/redis-authx-core)
 - webjars-locator-lite (from https://webjars.org)
 
 ========================================================================
@@ -541,6 +549,7 @@ cc-pd
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Guava: Google Core Libraries for Java (from http://code.google.com/p/guava-libraries, https://github.com/google/guava, https://repo1.maven.org/maven2/com/google/guava/guava)
 - Netty/Codec (from https://repo1.maven.org/maven2/io/netty/netty-codec)
 
 ========================================================================
