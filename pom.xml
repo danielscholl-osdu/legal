@@ -51,7 +51,7 @@
     <resilience4jVersion>1.7.0</resilience4jVersion>
     <jackson.version>2.16.1</jackson.version>
     <gson.version>2.10.1</gson.version>
-    <commons-beanutils.version>1.9.4</commons-beanutils.version>
+    <commons-beanutils.version>1.11.0</commons-beanutils.version>
     <openapi.version>2.3.0</openapi.version>
 
     <!-- Plugin Versions -->
