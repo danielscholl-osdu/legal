@@ -18,6 +18,8 @@ package org.opengroup.osdu.legal.tags.dataaccess;
 
 
 import static org.opengroup.osdu.core.osm.core.model.where.predicate.Eq.eq;
+import static org.opengroup.osdu.core.osm.core.translate.ExceptionClassifier.ExceptionClassification.ALREADY_EXISTS;
+import static org.opengroup.osdu.core.osm.core.translate.ExceptionClassifier.ExceptionClassification.CONFLICT;
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_SINGLETON;
 
 import com.google.common.base.Preconditions;
@@ -26,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -39,6 +40,9 @@ import org.opengroup.osdu.core.osm.core.model.Namespace;
 import org.opengroup.osdu.core.osm.core.model.query.GetQuery;
 import org.opengroup.osdu.core.osm.core.service.Context;
 import org.opengroup.osdu.core.osm.core.service.Transaction;
+import org.opengroup.osdu.core.osm.core.translate.ExceptionClassifier;
+import org.opengroup.osdu.core.osm.core.translate.ExceptionClassifier.ExceptionClassification;
+import org.opengroup.osdu.core.osm.core.translate.TranslatorRuntimeException;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -49,11 +53,12 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class OsmLegalTagRepository implements ILegalTagRepository {
 
+  public static final String REASON = "A LegalTag already exists for the given name";
   private final Context context;
   private final TenantInfo tenantInfo;
+  private final ExceptionClassifier exceptionClassifier;
 
   public static final Kind LEGAL_TAGS_ENTITY_NAME = new Kind("LegalTagOsm");
-  private ReentrantLock lock = new ReentrantLock();
 
   private Destination getDestination() {
     return Destination.builder().partitionId(tenantInfo.getDataPartitionId())
@@ -65,34 +70,38 @@ public class OsmLegalTagRepository implements ILegalTagRepository {
     Preconditions.checkNotNull(legalTag, "Legal tag is null!");
     Preconditions.checkNotNull(legalTag.getId(), "Legal tag's id is null!");
 
-    Long id = -1L;
-    if (Objects.nonNull(legalTag)) {
+    Destination destination = getDestination();
 
-      Transaction txn = null;
-      GetQuery<LegalTag> query = new GetQuery<>(LegalTag.class, getDestination(),
-          eq("name", legalTag.getName()));
-      try {
-        txn = context.beginTransaction(getDestination());
-        lock.lock();
-        if (context.findOne(query).isPresent()) {
-          txn.rollbackIfActive();
-          throw new AppException(409,
-              "A LegalTag already exists for the given name",
-              "A LegalTag already exists for the given name");
-        } else {
-          LegalTag result = context.createAndGet(getDestination(), legalTag);
-          txn.commitIfActive();
-          return result.getId();
-        }
-      } finally {
-        lock.unlock();
-        if (Objects.nonNull(txn)) {
-          txn.rollbackIfActive();
-        }
+    GetQuery<LegalTag> query = new GetQuery<>(
+        LegalTag.class,
+        destination,
+        eq("name", legalTag.getName())
+    );
 
+    Transaction txn = null;
+    try {
+      txn = context.beginTransaction(destination);
+      if (context.findOne(query).isPresent()) {
+        txn.rollbackIfActive();
+        throw new AppException(409,
+            REASON,
+            REASON);
+      }
+      LegalTag result = context.createAndGet(destination, legalTag);
+      txn.commitIfActive();
+      return result.getId();
+    } catch (TranslatorRuntimeException e) {
+      ExceptionClassification classification = exceptionClassifier.classifyException(e);
+      if (classification == ALREADY_EXISTS || classification == CONFLICT) {
+        throw new AppException(409, REASON, e.getMessage());
+      } else {
+        throw e;
+      }
+    } finally {
+      if (Objects.nonNull(txn)) {
+        txn.rollbackIfActive();
       }
     }
-    return id;
   }
 
   @Override
