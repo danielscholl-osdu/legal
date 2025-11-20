@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>legal-gc</artifactId>
-  <version>0.29.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
   <name>legal-gc</name>
   <description>Legal service for Google Cloud</description>
