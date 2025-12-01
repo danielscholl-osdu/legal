@@ -120,6 +120,12 @@ public final class QueryLegalTagsApiAcceptanceTests extends AcceptanceBaseTest {
     }
 
     @Test
+    public void should_return200_when_giving_empty_operatorList() throws Exception {
+        ClientResponse response = send("{\"queryList\":[\"name=test\"],\"operatorList\":[]}", "?valid=true", TestUtils.getMyDataPartition());
+        assertTrue(OK_VALUES.contains(response.getStatus()));
+    }
+
+    @Test
     public void should_return200_with_match_name_operator_union() throws Exception {
         ClientResponse response = send("{\"queryList\":[\"name=test\"],\"operatorList\":[\"union\"]}", "?valid=true", TestUtils.getMyDataPartition());
         assertTrue(OK_VALUES.contains(response.getStatus()));
