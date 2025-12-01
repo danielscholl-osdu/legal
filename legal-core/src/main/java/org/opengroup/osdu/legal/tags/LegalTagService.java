@@ -319,11 +319,11 @@ public class LegalTagService {
 
     String extractedSearchQuery = null;
 
-    if (null == operatorList) {
+    if (operatorList == null || operatorList.isEmpty()) {
       intersection = false;
       union = true;
       first = LEGAL_QUERY_API_UNION_OPERATOR;
-      log.debug("null operator");
+      log.debug("empty operator");
     } else {
       first = operatorList.iterator().next();
       if (StringUtils.containsAnyIgnoreCase(first, LEGAL_QUERY_API_INTERSECTION_OPERATOR)) {

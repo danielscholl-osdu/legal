@@ -692,6 +692,18 @@ public class LegalTagServiceTests {
         test_properties("[name=opendes-osdu-testing-1]", true, "add");
     }
 
+    @Test
+    public void test_operators_empty()
+    {
+        sut = createSutWithExtensionProperties_test1();
+        QueryLegalTag searchLegalTag = new QueryLegalTag();
+        searchLegalTag.setQueryList(Collections.singletonList("[name=opendes-osdu-testing-1]"));
+        searchLegalTag.setOperatorList(Collections.emptyList());
+
+        LegalTagDtos resultDto = sut.queryLegalTag(searchLegalTag, true, "tenant1");
+        assertFalse("collection size > 0", resultDto.getLegalTags().isEmpty());
+    }
+
     private LegalTagService createSutWithExtensionProperties_test1() {
         LegalTag output = new LegalTag();
         output.setName("opendes-osdu-testing-1");
