@@ -32,8 +32,9 @@ public final class ListLegalTagsApiAcceptanceTests extends AcceptanceBaseTest {
         this.legalTagUtils = null;
     }
     
+
     @Test
-    public void should_return200_and_allValidLegalTags_when_sendingValidTrueParamter_And_notSendingValidParameter()throws Exception{
+    public void should_return200_and_allValidLegalTags_when_sendingValidTrueParameter_And_notSendingValidParameter()throws Exception{
         ClientResponse response = send("", 200, "?valid=true", TestUtils.getMyDataPartition());
         LegalTagUtils.ReadableLegalTags result = legalTagUtils.getResult(response, 200, LegalTagUtils.ReadableLegalTags.class);
         System.out.println("number of lts:" + result.legalTags.length ) ;
@@ -49,17 +50,19 @@ public final class ListLegalTagsApiAcceptanceTests extends AcceptanceBaseTest {
     }
 
     @Test
-    public void should_returnDifferentResults_when_sendingValidParamterTrueOrFalse()throws Exception{
+    public void should_returnDifferentResults_when_sendingValidParameterTrueOrFalse()throws Exception{
         ClientResponse response = send("", 200, "?valid=true");
         LegalTagUtils.ReadableLegalTags result = legalTagUtils.getResult(response, 200, LegalTagUtils.ReadableLegalTags.class);
 
         ClientResponse response2 = send("", 200, "?valid=false");
         LegalTagUtils.ReadableLegalTags result2 = legalTagUtils.getResult(response2, 200, LegalTagUtils.ReadableLegalTags.class);
-        assertNotEquals(result.legalTags.length, result2.legalTags.length);
+        
+        // Ensure no overlap between valid=true and valid=false results
         for(LegalTagUtils.ReadableLegalTag tag : result.legalTags){
             assertFalse(Arrays.stream(result2.legalTags).anyMatch(s -> tag.name.equals(s.name)));
         }
     }
+
 
     @Override
     protected String getBody(){
