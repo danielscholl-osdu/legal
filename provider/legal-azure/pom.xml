@@ -30,10 +30,10 @@
   </parent>
 
   <properties>
-    <core-lib-azure.version>2.2.6</core-lib-azure.version>
+    <core-lib-azure.version>2.3.0</core-lib-azure.version>
     <gson.version>2.11.0</gson.version>
     <!-- Plugin Versions -->
-    <surefire-plugin.version>3.0.0</surefire-plugin.version>
+    <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
   </properties>
 
