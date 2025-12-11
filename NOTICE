@@ -576,10 +576,3 @@ The following software have components provided under the terms of this license:
 
 - JUnit (from http://junit.org)
 - System Rules (from http://stefanbirkner.github.com/system-rules/, http://stefanbirkner.github.io/system-rules/)
-
-========================================================================
-xpp
-========================================================================
-The following software have components provided under the terms of this license:
-
-- Plexus Common Utilities (from http://plexus.codehaus.org/plexus-utils, https://codehaus-plexus.github.io/plexus-utils/, https://repo1.maven.org/maven2/org/codehaus/plexus/plexus-utils)
