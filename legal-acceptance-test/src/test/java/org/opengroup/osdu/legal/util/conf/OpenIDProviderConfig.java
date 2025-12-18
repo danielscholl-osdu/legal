@@ -32,7 +32,7 @@ public class OpenIDProviderConfig {
     private String clientId;
     private String clientSecret;
     private String url;
-    private final String[] scopes = {"openid"};
+    private String[] scopes = {"openid"};
     private static final OpenIDProviderConfig openIDProviderConfig = new OpenIDProviderConfig();
     private static OIDCProviderMetadata providerMetadata;
 
@@ -44,6 +44,11 @@ public class OpenIDProviderConfig {
 					System.getenv(TEST_OPENID_PROVIDER_CLIENT_SECRET));
 			openIDProviderConfig.url = System.getProperty(TEST_OPENID_PROVIDER_URL,
 					System.getenv(TEST_OPENID_PROVIDER_URL));
+            // Override default scope if provided
+            String scopeEnv = System.getProperty("PRIVILEGED_USER_OPENID_PROVIDER_SCOPE", System.getenv("PRIVILEGED_USER_OPENID_PROVIDER_SCOPE"));
+            if (scopeEnv != null && !scopeEnv.isEmpty()) {
+                openIDProviderConfig.scopes = new String[]{scopeEnv};
+            }
 
             Issuer issuer = new Issuer(openIDProviderConfig.url);
             OIDCProviderConfigurationRequest request = new OIDCProviderConfigurationRequest(issuer);
