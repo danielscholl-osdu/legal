@@ -13,14 +13,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-apiVersion: networking.istio.io/v1
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{ .Values.conf.appName | quote }}
-  namespace: {{ .Release.Namespace | quote }}
+  name: { { .Values.conf.appName | quote } }
+  namespace: { { .Release.Namespace | quote } }
 spec:
   hosts:
-    - {{ .Values.global.domain | quote }}
+    - { { .Values.global.domain | quote } }
   gateways:
     - service-gateway
   http:
@@ -31,4 +31,9 @@ spec:
         - destination:
             port:
               number: 80
-            host: {{ printf "%s.%s.svc.cluster.local" .Values.conf.appName .Release.Namespace | quote }}
+            host:
+              {
+                {
+                  printf "%s.%s.svc.cluster.local" .Values.conf.appName .Release.Namespace | quote,
+                },
+              }
