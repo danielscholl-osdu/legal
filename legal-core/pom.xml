@@ -49,17 +49,10 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-		    <groupId>org.yaml</groupId>
-		    <artifactId>snakeyaml</artifactId>
-		    <version>2.5</version>
-		</dependency>
-		<dependency>
 			<groupId>jakarta.inject</groupId>
 			<artifactId>jakarta.inject-api</artifactId>
 			<version>2.0.1.MR</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.google.api.grpc/proto-google-common-protos -->
 		<dependency>
 			<groupId>com.google.api.grpc</groupId>
 			<artifactId>proto-google-common-protos</artifactId>
@@ -78,24 +71,10 @@
 			<artifactId>jackson-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>0.9.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-databind</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-circuitbreaker -->
-		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-circuitbreaker</artifactId>
 			<version>${resilience4jVersion}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-retry -->
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-retry</artifactId>
@@ -105,12 +84,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>1.15.0</version>
-		</dependency>
-
-		<!--explicitly load latest compatible version with security fix in it-->
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-codec</artifactId>
 		</dependency>
 
 		<!-- Test Dependencies -->
@@ -143,14 +116,12 @@
 			<artifactId>junit-vintage-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2 -->
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-mockito2</artifactId>
 			<version>2.0.2</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4</artifactId>
@@ -165,17 +136,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-utils</artifactId>
-			<version>4.0.0</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.github.stefanbirkner/system-rules -->
-		<dependency>
 			<groupId>com.github.stefanbirkner</groupId>
 			<artifactId>system-rules</artifactId>
-			<version>1.2.0</version>
+			<version>1.19.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
