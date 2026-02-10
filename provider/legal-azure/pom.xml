@@ -30,8 +30,9 @@
   </parent>
 
   <properties>
-    <core-lib-azure.version>2.3.0</core-lib-azure.version>
+    <core-lib-azure.version>2.4.1</core-lib-azure.version>
     <gson.version>2.11.0</gson.version>
+
     <!-- Plugin Versions -->
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
@@ -64,7 +65,6 @@
     </dependency>
 
     <!-- Spring Dependencies -->
-    <!-- Versions managed by parent pom -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
@@ -88,7 +88,6 @@
     <dependency>
       <groupId>com.azure.spring</groupId>
       <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
-      <!-- Version managed by azure core library -->
     </dependency>
     <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -97,7 +96,6 @@
     </dependency>
 
     <!-- Test Scoped Dependencies -->
-    <!-- Versions managed by parent pom unless otherwise specified -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

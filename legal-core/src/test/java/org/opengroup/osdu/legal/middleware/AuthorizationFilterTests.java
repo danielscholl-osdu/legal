@@ -45,11 +45,16 @@ public class AuthorizationFilterTests {
     @Test
     public void should_authenticateRequest_when_resourceIsRolesAllowedAnnotated() {
         final String USER_EMAIL = "test@test.com";
-        AuthorizationResponse authorizationResponse = AuthorizationResponse.builder().user(USER_EMAIL).build();
+        final String AUTHORIZED_GROUP = "service.legal.admin";
+        AuthorizationResponse authorizationResponse = AuthorizationResponse.builder()
+                .user(USER_EMAIL)
+                .userAuthorizedGroupName(AUTHORIZED_GROUP)
+                .build();
         when(this.authorizationService.authorizeAny(any(), eq(ROLE1), eq(ROLE2))).thenReturn(authorizationResponse);
 
         assertTrue(this.sut.hasPermission(ROLE1, ROLE2));
         verify(headers).put(DpsHeaders.USER_EMAIL, USER_EMAIL);
+        verify(headers).put(DpsHeaders.USER_AUTHORIZED_GROUP_NAME, AUTHORIZED_GROUP);
     }
 
     @Test(expected = AppException.class)
