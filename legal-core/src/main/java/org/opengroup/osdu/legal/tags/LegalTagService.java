@@ -28,6 +28,7 @@ import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.jobs.LegalTagCompliance;
 import org.opengroup.osdu.legal.logging.AuditLogger;
+import org.opengroup.osdu.legal.service.LegalServiceRole;
 import org.opengroup.osdu.legal.FeatureFlagController;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
@@ -95,7 +96,7 @@ public class LegalTagService {
     legalTag.setIsValid(true);
     exceptionMapper.run(legalTagRepository::create, legalTag, "Error creating LegalTag.");
 
-    auditLogger.createdLegalTagSuccess(singletonList(legalTag.toString()));
+    auditLogger.createdLegalTagSuccess(singletonList(legalTag.toString()), LegalServiceRole.OPS_EDITORS);
 
     return LegalTagDto.convertTo(legalTag);
   }
@@ -112,7 +113,7 @@ public class LegalTagService {
     Boolean result = exceptionMapper.run(legalTagRepository::delete, legalTag, "Error deleting LegalTag.");
     if (Boolean.TRUE.equals(result)) {
       publishMessageToPubSubOnDeletion(projectId, legalTag, requestHeaders);
-      auditLogger.deletedLegalTagSuccess(singletonList(legalTag.toString()));
+      auditLogger.deletedLegalTagSuccess(singletonList(legalTag.toString()), LegalServiceRole.OPS_ADMIN_ONLY);
     }
     return result;
   }
@@ -125,7 +126,7 @@ public class LegalTagService {
     if (tags == null || tags.getLegalTags() == null || tags.getLegalTags().isEmpty())
       return null;
     else {
-      auditLogger.readLegalTagSuccess(Collections.singletonList(name));
+      auditLogger.readLegalTagSuccess(Collections.singletonList(name), LegalServiceRole.OPS_READERS);
       return Iterables.get(tags.getLegalTags(), 0);
     }
   }
@@ -141,7 +142,7 @@ public class LegalTagService {
     Collection<LegalTag> tags = listLegalTag(valid, tenantName);
     LegalTagDtos outputs = legalTagsToReadableLegalTags(tags);
     List<String> names = outputs.getLegalTags().stream().map(x -> x.getName()).toList();
-    auditLogger.readLegalTagSuccess(names);
+    auditLogger.readLegalTagSuccess(names, LegalServiceRole.OPS_READERS);
     return outputs;
   }
 
@@ -150,7 +151,7 @@ public class LegalTagService {
       return null;
 
     Collection<LegalTag> legalTags = getLegalTags(names, tenantName);
-    auditLogger.readLegalTagSuccess(Collections.singletonList(String.join(", ", names)));
+    auditLogger.readLegalTagSuccess(Collections.singletonList(String.join(", ", names)), LegalServiceRole.OPS_READERS);
     return legalTagsToReadableLegalTags(legalTags);
   }
 
@@ -158,7 +159,7 @@ public class LegalTagService {
     List<InvalidTagWithReason> invalidTagsWithReason = new ArrayList<>();
 
     if (names == null || names.length == 0) {
-      auditLogger.validateLegalTagSuccess();
+      auditLogger.validateLegalTagSuccess(LegalServiceRole.OPS_READERS);
       return new InvalidTagsWithReason(invalidTagsWithReason);
     }
 
@@ -183,7 +184,7 @@ public class LegalTagService {
         generateInvalidTagsWithReason(invalidTagsWithReason, notFoundName, "LegalTag not found");
     }
 
-    auditLogger.validateLegalTagSuccess();
+    auditLogger.validateLegalTagSuccess(LegalServiceRole.OPS_READERS);
 
     return new InvalidTagsWithReason(invalidTagsWithReason);
   }
@@ -203,7 +204,7 @@ public class LegalTagService {
     currentLegalTag.setDescription(newLegalTag.getDescription());
     validator.isValidThrows(currentLegalTag);
 
-    auditLogger.updatedLegalTagSuccess(Collections.singletonList(currentLegalTag.toString()));
+    auditLogger.updatedLegalTagSuccess(Collections.singletonList(currentLegalTag.toString()), LegalServiceRole.OPS_EDITORS);
 
     return update(currentLegalTag, tenantName);
   }
@@ -227,7 +228,7 @@ public class LegalTagService {
 
     if (output == null)
       return null;
-    auditLogger.updatedLegalTagSuccess(singletonList(currentLegalTag.toString()));
+    auditLogger.updatedLegalTagSuccess(singletonList(currentLegalTag.toString()), LegalServiceRole.OPS_EDITORS);
     return LegalTagDto.convertTo(output);
   }
 
@@ -298,7 +299,7 @@ public class LegalTagService {
 
     outputs = legalTagsToReadableLegalTags(matchedTags);
     List<String> names = outputs.getLegalTags().stream().map(x -> x.getName()).toList();
-    auditLogger.readLegalTagSuccess(names);
+    auditLogger.readLegalTagSuccess(names, LegalServiceRole.OPS_READERS);
 
     return outputs;
   }

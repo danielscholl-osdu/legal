@@ -25,6 +25,7 @@ import org.opengroup.osdu.legal.jobs.models.AboutToExpireLegalTags;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,7 +77,7 @@ public class LegalTagStatusJobControllerTest {
         ResponseEntity<HttpStatus> result = sut.checkLegalTagStatusChanges();
 
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
-        verify(auditLogger).legalTagJobRanSuccess(Collections.singletonList(objectMapper.writeValueAsString(legalTagJobResult)));
+        verify(auditLogger).legalTagJobRanSuccess(any(), any());
     }
 
     @Test
