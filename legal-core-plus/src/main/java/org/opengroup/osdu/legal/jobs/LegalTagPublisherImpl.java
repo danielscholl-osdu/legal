@@ -31,7 +31,6 @@ import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 import org.opengroup.osdu.legal.config.AppServiceConfig;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagPublisher;
-import org.opengroup.osdu.legal.service.LegalServiceRole;
 import org.opengroup.osdu.oqm.core.OqmDriver;
 import org.opengroup.osdu.oqm.core.model.OqmDestination;
 import org.opengroup.osdu.oqm.core.model.OqmMessage;
@@ -72,8 +71,7 @@ public class LegalTagPublisherImpl implements ILegalTagPublisher {
     driver.publish(oqmMessage, oqmTopic, oqmDestination);
 
     auditLogger.publishedStatusChangeSuccess(
-        asList(Long.toString(Instant.now().getEpochSecond()), statusChangedTags.toString()),
-        LegalServiceRole.OPS_CRON);
+        asList(Long.toString(Instant.now().getEpochSecond()), statusChangedTags.toString()));
 
   }
 
