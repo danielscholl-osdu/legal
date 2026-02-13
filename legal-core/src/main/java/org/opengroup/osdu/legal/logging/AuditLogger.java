@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.logging.audit.AuditPayload;
+import org.opengroup.osdu.core.common.logging.audit.AuditStatus;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.util.IpAddressUtil;
 import org.springframework.stereotype.Component;
@@ -31,64 +32,64 @@ public class AuditLogger {
 		return this.events;
 	}
 
-	public void createdLegalTagSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getCreateLegalTagEventSuccess(resources, requiredGroupsForAction));
+	public void createdLegalTagSuccess(List<String> resources) {
+		this.writeLog(this.getEvents().getCreateLegalTagEventSuccess(AuditStatus.SUCCESS, resources));
 	}
 
-	public void deletedLegalTagSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getDeleteLegalTagEventSuccess(resources, requiredGroupsForAction));
+	public void deletedLegalTagSuccess(List<String> resources) {
+		this.writeLog(this.getEvents().getDeleteLegalTagEventSuccess(AuditStatus.SUCCESS, resources));
 	}
 
-	public void publishedStatusChangeSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getPublishStatusEventSuccess(resources, requiredGroupsForAction));
+	public void publishedStatusChangeSuccess(List<String> resources) {
+		this.writeLog(this.getEvents().getPublishStatusEventSuccess(AuditStatus.SUCCESS, resources));
 	}
 
-	public void readLegalTagSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getReadLegalTagEventSuccess(resources, requiredGroupsForAction));
+	public void readLegalTagSuccess(List<String> resources) {
+		this.writeLog(this.getEvents().getReadLegalTagEventSuccess(AuditStatus.SUCCESS, resources));
 	}
 
-	public void readLegalTagFail(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getReadLegalTagEventFail(resources, requiredGroupsForAction));
+	public void readLegalTagFail(List<String> resources) {
+		this.writeLog(this.getEvents().getReadLegalTagEventFail(AuditStatus.FAILURE, resources));
 	}
 
-	public void updatedLegalTagSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getUpdateLegalTagEventSuccess(resources, requiredGroupsForAction));
+	public void updatedLegalTagSuccess(List<String> resources) {
+		this.writeLog(this.getEvents().getUpdateLegalTagEventSuccess(AuditStatus.SUCCESS, resources));
 	}
 
-	public void updatedLegalTagFail(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getUpdateLegalTagEventFail(resources, requiredGroupsForAction));
+	public void updatedLegalTagFail(List<String> resources) {
+		this.writeLog(this.getEvents().getUpdateLegalTagEventFail(AuditStatus.FAILURE, resources));
 	}
 
-	public void legalTagJobRanSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getLegalTagStatusJobEventSuccess(resources, requiredGroupsForAction));
+	public void legalTagJobRanSuccess(List<String> resources) {
+		this.writeLog(this.getEvents().getLegalTagStatusJobEventSuccess(AuditStatus.SUCCESS, resources));
 	}
 
-	public void legalTagJobRanFail(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getLegalTagStatusJobEventFail(resources, requiredGroupsForAction));
+	public void legalTagJobRanFail(List<String> resources) {
+		this.writeLog(this.getEvents().getLegalTagStatusJobEventFail(AuditStatus.FAILURE, resources));
 	}
 
-	public void readLegalPropertiesSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getReadLegalPropertiesEventSuccess(resources, requiredGroupsForAction));
+	public void readLegalPropertiesSuccess(List<String> resources) {
+		this.writeLog(this.getEvents().getReadLegalPropertiesEventSuccess(AuditStatus.SUCCESS, resources));
 	}
 
-	public void readLegalPropertiesFail(List<String> resources, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getReadLegalPropertiesEventFail(resources, requiredGroupsForAction));
+	public void readLegalPropertiesFail(List<String> resources) {
+		this.writeLog(this.getEvents().getReadLegalPropertiesEventFail(AuditStatus.FAILURE, resources));
 	}
 
-	public void validateLegalTagSuccess(List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getValidateLegalTagEventSuccess(requiredGroupsForAction));
+	public void validateLegalTagSuccess() {
+		this.writeLog(this.getEvents().getValidateLegalTagEventSuccess(AuditStatus.SUCCESS));
 	}
 
-	public void validateLegalTagFail(List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getValidateLegalTagEventFail(requiredGroupsForAction));
+	public void validateLegalTagFail() {
+		this.writeLog(this.getEvents().getValidateLegalTagEventFail(AuditStatus.FAILURE));
 	}
 
-	public void legalTagsBackup(String tenant, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getLegalTagBackupEvent(tenant, requiredGroupsForAction));
+	public void legalTagsBackup(String tenant) {
+		this.writeLog(this.getEvents().getLegalTagBackupEvent(tenant));
 	}
 
-	public void legalTagRestored(String tenant, List<String> requiredGroupsForAction) {
-		this.writeLog(this.getEvents().getLegalTagRestoreEvent(tenant, requiredGroupsForAction));
+	public void legalTagRestored(String tenant) {
+		this.writeLog(this.getEvents().getLegalTagRestoreEvent(tenant));
 	}
 
 	private void writeLog(AuditPayload log) {

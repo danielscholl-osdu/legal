@@ -9,7 +9,6 @@ import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.legal.api.LegalTagStatusJobApi;
 import org.opengroup.osdu.legal.jobs.LegalTagStatusJob;
 import org.opengroup.osdu.legal.logging.AuditLogger;
-import org.opengroup.osdu.legal.service.LegalServiceRole;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +53,7 @@ public class LegalTagStatusJobController implements LegalTagStatusJobApi {
         boolean success = true;
         try {
             LegalTagJobResult result = legalTagStatusJob.run(tenantInfo.getProjectId(), convertedHeaders, tenantInfo.getName());
-            auditLogger.legalTagJobRanSuccess(singletonList(this.objectMapper.writeValueAsString(result)), LegalServiceRole.OPS_CRON);
+            auditLogger.legalTagJobRanSuccess(singletonList(this.objectMapper.writeValueAsString(result)));
         } catch (Exception e) {
             success = false;
             log.error( "Error running check LegalTag compliance job on tenant " + convertedHeaders.getPartitionIdWithFallbackToAccountId(), e);
