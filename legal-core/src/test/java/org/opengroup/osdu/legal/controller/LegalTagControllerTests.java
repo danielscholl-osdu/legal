@@ -289,7 +289,7 @@ public class LegalTagControllerTests {
     public void shouldCreateAuditLogs_when_getLegalTagProperties() {
         sut.getLegalTagProperties();
 
-        verify(auditLogger).readLegalPropertiesSuccess(any(), any());
+        verify(auditLogger).readLegalPropertiesSuccess(any());
     }
 
     @Test

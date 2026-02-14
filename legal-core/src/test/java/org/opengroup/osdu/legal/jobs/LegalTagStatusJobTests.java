@@ -150,7 +150,7 @@ public class LegalTagStatusJobTests {
 
         legalTagStatusJob.run("project1", headers, "tenant");
 
-        verify(auditLogger, never()).publishedStatusChangeSuccess(any(), any());
+        verify(auditLogger, never()).publishedStatusChangeSuccess(any());
     }
 
     @Test

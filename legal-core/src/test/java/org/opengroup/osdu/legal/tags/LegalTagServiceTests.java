@@ -96,7 +96,7 @@ public class LegalTagServiceTests {
 
         testService.create(legalTagDto, "tenant2");
 
-        verify(auditLogger).createdLegalTagSuccess(any(), any());
+        verify(auditLogger).createdLegalTagSuccess(any());
     }
 
     @Test
@@ -339,7 +339,7 @@ public class LegalTagServiceTests {
 
         sut.updateStatus("name", true, "tenant2");
 
-        verify(auditLogger).updatedLegalTagSuccess(any(), any());
+        verify(auditLogger).updatedLegalTagSuccess(any());
     }
 
     @Test
@@ -366,7 +366,7 @@ public class LegalTagServiceTests {
         String[] input = new String[]{"abc", "123"};
         LegalTagDtos result = sut.getBatch(input, "tenant2");
         assertEquals(2, result.getLegalTags().size());
-        verify(auditLogger).readLegalTagSuccess(any(), any());
+        verify(auditLogger).readLegalTagSuccess(any());
     }
 
     @Test
@@ -381,7 +381,7 @@ public class LegalTagServiceTests {
         for (LegalTagDto lt : result.getLegalTags()) {
             assertEquals("kind2", lt.getName());
         }
-        verify(auditLogger).readLegalTagSuccess(any(), any());
+        verify(auditLogger).readLegalTagSuccess(any());
     }
 
     @Test
@@ -415,7 +415,7 @@ public class LegalTagServiceTests {
         InvalidTagsWithReason result = sut.validate(input, "tenant1");
 
         assertEquals(0, result.getInvalidLegalTags().size());
-        verify(auditLogger).validateLegalTagSuccess(any());
+        verify(auditLogger).validateLegalTagSuccess();
     }
 
     @Test
@@ -467,7 +467,7 @@ public class LegalTagServiceTests {
         LegalTagDtos result = sut.list(true, "tenant1");
 
         assertEquals(2, result.getLegalTags().size());
-        verify(auditLogger).readLegalTagSuccess(any(), any());
+        verify(auditLogger).readLegalTagSuccess(any());
     }
 
     @Test
@@ -482,7 +482,7 @@ public class LegalTagServiceTests {
 
         sut.delete("project1", "name", standardHeaders, "tenant1");
         verify(messagePublisherMock, times(1)).publish(any(), any(), any());
-        verify(auditLogger).deletedLegalTagSuccess(any(), any());
+        verify(auditLogger).deletedLegalTagSuccess(any());
     }
 
     @Test
