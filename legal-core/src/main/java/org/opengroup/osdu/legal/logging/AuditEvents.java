@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.common.base.Strings;
 import org.opengroup.osdu.core.common.logging.audit.AuditAction;
 import org.opengroup.osdu.core.common.logging.audit.AuditPayload;
+import org.opengroup.osdu.core.common.logging.audit.AuditPayload.AuditPayloadBuilder;
 import org.opengroup.osdu.core.common.logging.audit.AuditStatus;
 
 public class AuditEvents {
@@ -55,228 +56,134 @@ public class AuditEvents {
 		this.userAuthorizedGroupName = Strings.isNullOrEmpty(userAuthorizedGroupName) ? UNKNOWN : userAuthorizedGroupName;
 	}
 
-	public AuditPayload getPublishStatusEventSuccess(List<String> resources, List<String> requiredGroupsForAction) {
+	private AuditPayloadBuilder createAuditPayloadBuilder(List<String> requiredGroupsForAction, AuditStatus status, String actionId) {
 		return AuditPayload.builder()
-				.action(AuditAction.PUBLISH)
-				.status(AuditStatus.SUCCESS)
+				.status(status)
 				.user(this.user)
-				.actionId(PUBLISH_ACTION_ID)
+				.actionId(actionId)
+				.requiredGroupsForAction(requiredGroupsForAction)
+				.userIpAddress(this.userIpAddress)
+				.userAgent(this.userAgent)
+				.userAuthorizedGroupName(this.userAuthorizedGroupName);
+	}
+
+	public AuditPayload getPublishStatusEventSuccess(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.PUBLISH_STATUS_CHANGE.getRequiredGroups(), status, PUBLISH_ACTION_ID)
+				.action(AuditAction.PUBLISH)
 				.message(PUBLISH_MESSAGE_SUCCESS)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getReadLegalTagEventSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getReadLegalTagEventSuccess(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.READ_LEGAL_TAG.getRequiredGroups(), status, READ_ACTION_ID)
 				.action(AuditAction.READ)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(READ_ACTION_ID)
 				.message(READ_MESSAGE_SUCCESS)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getReadLegalTagEventFail(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getReadLegalTagEventFail(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.READ_LEGAL_TAG.getRequiredGroups(), status, READ_ACTION_ID)
 				.action(AuditAction.READ)
-				.status(AuditStatus.FAILURE)
-				.user(this.user)
-				.actionId(READ_ACTION_ID)
 				.message(READ_MESSAGE_FAILURE)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getReadLegalPropertiesEventSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getReadLegalPropertiesEventSuccess(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.READ_LEGAL_PROPERTIES.getRequiredGroups(), status, READ_ACTION_ID)
 				.action(AuditAction.READ)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(READ_ACTION_ID)
 				.message(READ_MESSAGE_SUCCESS)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getReadLegalPropertiesEventFail(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getReadLegalPropertiesEventFail(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.READ_LEGAL_PROPERTIES.getRequiredGroups(), status, READ_ACTION_ID)
 				.action(AuditAction.READ)
-				.status(AuditStatus.FAILURE)
-				.user(this.user)
-				.actionId(READ_ACTION_ID)
 				.message(READ_MESSAGE_FAILURE)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getCreateLegalTagEventSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getCreateLegalTagEventSuccess(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.CREATE_LEGAL_TAG.getRequiredGroups(), status, CREATE_ACTION_ID)
 				.action(AuditAction.CREATE)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(CREATE_ACTION_ID)
 				.message(CREATE_MESSAGE_SUCCESS)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getDeleteLegalTagEventSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getDeleteLegalTagEventSuccess(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.DELETE_LEGAL_TAG.getRequiredGroups(), status, DELETE_ACTION_ID)
 				.action(AuditAction.DELETE)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(DELETE_ACTION_ID)
 				.message(DELETE_MESSAGE_SUCCESS)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getUpdateLegalTagEventSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getUpdateLegalTagEventSuccess(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.UPDATE_LEGAL_TAG.getRequiredGroups(), status, UPDATE_ACTION_ID)
 				.action(AuditAction.UPDATE)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(UPDATE_ACTION_ID)
 				.message(UPDATE_MESSAGE_SUCCESS)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getUpdateLegalTagEventFail(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getUpdateLegalTagEventFail(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.UPDATE_LEGAL_TAG.getRequiredGroups(), status, UPDATE_ACTION_ID)
 				.action(AuditAction.UPDATE)
-				.status(AuditStatus.FAILURE)
-				.user(this.user)
-				.actionId(UPDATE_ACTION_ID)
 				.message(UPDATE_MESSAGE_FAILURE)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getLegalTagStatusJobEventSuccess(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getLegalTagStatusJobEventSuccess(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.LEGAL_TAG_STATUS_JOB.getRequiredGroups(), status, RUN_JOB_ACTION_ID)
 				.action(AuditAction.JOB_RUN)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(RUN_JOB_ACTION_ID)
 				.message(RUN_JOB_MESSAGE_SUCCESS)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getLegalTagStatusJobEventFail(List<String> resources, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getLegalTagStatusJobEventFail(AuditStatus status, List<String> resources) {
+		return createAuditPayloadBuilder(AuditOperation.LEGAL_TAG_STATUS_JOB.getRequiredGroups(), status, RUN_JOB_ACTION_ID)
 				.action(AuditAction.JOB_RUN)
-				.status(AuditStatus.FAILURE)
-				.user(this.user)
-				.actionId(RUN_JOB_ACTION_ID)
 				.message(RUN_JOB_MESSAGE_FAILURE)
 				.resources(resources)
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getValidateLegalTagEventSuccess(List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getValidateLegalTagEventSuccess(AuditStatus status) {
+		return createAuditPayloadBuilder(AuditOperation.VALIDATE_LEGAL_TAG.getRequiredGroups(), status, READ_ACTION_ID)
 				.action(AuditAction.READ)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(READ_ACTION_ID)
 				.message(READ_MESSAGE_SUCCESS)
 				.resources(singletonList(PROPERTY_VALUE))
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getValidateLegalTagEventFail(List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getValidateLegalTagEventFail(AuditStatus status) {
+		return createAuditPayloadBuilder(AuditOperation.VALIDATE_LEGAL_TAG.getRequiredGroups(), status, READ_ACTION_ID)
 				.action(AuditAction.READ)
-				.status(AuditStatus.FAILURE)
-				.user(this.user)
-				.actionId(READ_ACTION_ID)
 				.message(READ_MESSAGE_FAILURE)
 				.resources(singletonList(PROPERTY_VALUE))
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getLegalTagBackupEvent(String tenant, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getLegalTagBackupEvent(String tenant) {
+		return createAuditPayloadBuilder(AuditOperation.LEGAL_TAG_BACKUP.getRequiredGroups(), AuditStatus.SUCCESS, LEGALTAG_BACKUP_ACTION_ID)
 				.action(AuditAction.READ)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(LEGALTAG_BACKUP_ACTION_ID)
 				.message(LEGALTAG_BACKUP_ACTION_MESSAGE)
 				.resources(singletonList("LegalTags backup for tenant: " + tenant))
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 
-	public AuditPayload getLegalTagRestoreEvent(String tenant, List<String> requiredGroupsForAction) {
-		return AuditPayload.builder()
+	public AuditPayload getLegalTagRestoreEvent(String tenant) {
+		return createAuditPayloadBuilder(AuditOperation.LEGAL_TAG_RESTORE.getRequiredGroups(), AuditStatus.SUCCESS, LEGALTAG_RESTORE_ACTION_ID)
 				.action(AuditAction.READ)
-				.status(AuditStatus.SUCCESS)
-				.user(this.user)
-				.actionId(LEGALTAG_RESTORE_ACTION_ID)
 				.message(LEGALTAG_RESTORE_ACTION_MESSAGE)
 				.resources(singletonList("LegalTags restored for tenant: " + tenant))
-				.requiredGroupsForAction(requiredGroupsForAction)
-				.userIpAddress(this.userIpAddress)
-				.userAgent(this.userAgent)
-				.userAuthorizedGroupName(this.userAuthorizedGroupName)
 				.build();
 	}
 }
