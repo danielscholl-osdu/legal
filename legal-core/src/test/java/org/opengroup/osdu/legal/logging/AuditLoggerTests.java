@@ -4,7 +4,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
@@ -14,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.logging.audit.AuditStatus;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,7 +23,6 @@ public class AuditLoggerTests {
     private static final String TEST_IP = "192.168.1.100";
     private static final String TEST_USER_AGENT = "TestAgent/1.0";
     private static final String TEST_AUTHORIZED_GROUP = "users.datalake.viewers";
-    private static final List<String> TEST_REQUIRED_GROUPS = Arrays.asList("users.datalake.editors", "service.legal.admin");
 
     @Mock
     private JaxRsDpsLog log;
@@ -55,107 +54,107 @@ public class AuditLoggerTests {
 
     @Test
     public void should_writeLegaltagCreatedEventSuccess() {
-        sut.createdLegalTagSuccess(resources, TEST_REQUIRED_GROUPS);
+        sut.createdLegalTagSuccess(resources);
 
-        verify(log).audit(auditEvents.getCreateLegalTagEventSuccess(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getCreateLegalTagEventSuccess(AuditStatus.SUCCESS, resources));
     }
 
     @Test
     public void should_writeLegaltagDeleteSuccessEvent() {
-        sut.deletedLegalTagSuccess(resources, TEST_REQUIRED_GROUPS);
+        sut.deletedLegalTagSuccess(resources);
 
-        verify(log).audit(auditEvents.getDeleteLegalTagEventSuccess(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getDeleteLegalTagEventSuccess(AuditStatus.SUCCESS, resources));
     }
 
     @Test
     public void should_writeLegaltagJobRunSuccessEvent() {
-        sut.legalTagJobRanSuccess(resources, TEST_REQUIRED_GROUPS);
+        sut.legalTagJobRanSuccess(resources);
 
-        verify(log).audit(auditEvents.getLegalTagStatusJobEventSuccess(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getLegalTagStatusJobEventSuccess(AuditStatus.SUCCESS, resources));
     }
 
     @Test
     public void should_writeLegalTagJobRunFailEvent() {
-        sut.legalTagJobRanFail(resources, TEST_REQUIRED_GROUPS);
+        sut.legalTagJobRanFail(resources);
 
-        verify(log).audit(auditEvents.getLegalTagStatusJobEventFail(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getLegalTagStatusJobEventFail(AuditStatus.FAILURE, resources));
     }
 
     @Test
     public void should_writeLegaltagPublishedStatusSuccessEvent() {
-        sut.publishedStatusChangeSuccess(resources, TEST_REQUIRED_GROUPS);
+        sut.publishedStatusChangeSuccess(resources);
 
-        verify(log).audit(auditEvents.getPublishStatusEventSuccess(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getPublishStatusEventSuccess(AuditStatus.SUCCESS, resources));
     }
 
     @Test
     public void should_writeLegalTagReadPropertiesSuccessEvent() {
-        sut.readLegalPropertiesSuccess(resources, TEST_REQUIRED_GROUPS);
+        sut.readLegalPropertiesSuccess(resources);
 
-        verify(log).audit(auditEvents.getReadLegalPropertiesEventSuccess(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getReadLegalPropertiesEventSuccess(AuditStatus.SUCCESS, resources));
     }
 
     @Test
     public void should_writeLegalTagReadPropertiesFailEvent() {
-        sut.readLegalPropertiesFail(resources, TEST_REQUIRED_GROUPS);
+        sut.readLegalPropertiesFail(resources);
 
-        verify(log).audit(auditEvents.getReadLegalPropertiesEventFail(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getReadLegalPropertiesEventFail(AuditStatus.FAILURE, resources));
     }
 
     @Test
     public void should_writeLegalTagUpdateSuccessEvent() {
-        sut.updatedLegalTagSuccess(resources, TEST_REQUIRED_GROUPS);
+        sut.updatedLegalTagSuccess(resources);
 
-        verify(log).audit(auditEvents.getUpdateLegalTagEventSuccess(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getUpdateLegalTagEventSuccess(AuditStatus.SUCCESS, resources));
     }
 
     @Test
     public void should_writeLegalTagUpdateFailEvent() {
-        sut.updatedLegalTagFail(resources, TEST_REQUIRED_GROUPS);
+        sut.updatedLegalTagFail(resources);
 
-        verify(log).audit(auditEvents.getUpdateLegalTagEventFail(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getUpdateLegalTagEventFail(AuditStatus.FAILURE, resources));
     }
 
     @Test
     public void should_writeLegalTagReadSuccessEvent() {
-        sut.readLegalTagSuccess(resources, TEST_REQUIRED_GROUPS);
+        sut.readLegalTagSuccess(resources);
 
-        verify(log).audit(auditEvents.getReadLegalTagEventSuccess(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getReadLegalTagEventSuccess(AuditStatus.SUCCESS, resources));
     }
 
     @Test
     public void should_writeLegalTagReadFailEvent() {
-        sut.readLegalTagFail(resources, TEST_REQUIRED_GROUPS);
+        sut.readLegalTagFail(resources);
 
-        verify(log).audit(auditEvents.getReadLegalTagEventFail(resources, TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getReadLegalTagEventFail(AuditStatus.FAILURE, resources));
     }
 
     @Test
     public void should_writeLegalTagValidateSuccessEvent() {
-        sut.validateLegalTagSuccess(TEST_REQUIRED_GROUPS);
+        sut.validateLegalTagSuccess();
 
-        verify(log).audit(auditEvents.getValidateLegalTagEventSuccess(TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getValidateLegalTagEventSuccess(AuditStatus.SUCCESS));
     }
 
     @Test
     public void should_writeLegalTagValidateFailEvent() {
-        sut.validateLegalTagFail(TEST_REQUIRED_GROUPS);
+        sut.validateLegalTagFail();
 
-        verify(log).audit(auditEvents.getValidateLegalTagEventFail(TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getValidateLegalTagEventFail(AuditStatus.FAILURE));
     }
 
     @Test
     public void should_writeLegalTag_whenLegalTagsBackup() {
-        sut.legalTagsBackup("tenant", TEST_REQUIRED_GROUPS);
+        sut.legalTagsBackup("tenant");
 
-        verify(log).audit(auditEvents.getLegalTagBackupEvent("tenant", TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getLegalTagBackupEvent("tenant"));
     }
 
     @Test
     public void should_writeLegalTag_whenLegalTagRestored() {
-        sut.legalTagRestored("tenant", TEST_REQUIRED_GROUPS);
+        sut.legalTagRestored("tenant");
 
-        verify(log).audit(auditEvents.getLegalTagRestoreEvent("tenant", TEST_REQUIRED_GROUPS));
+        verify(log).audit(auditEvents.getLegalTagRestoreEvent("tenant"));
     }
 
     @Test
@@ -163,10 +162,10 @@ public class AuditLoggerTests {
         when(headers.getUserEmail()).thenReturn("");
 
         // Should not throw - uses "unknown" fallback for user
-        sut.validateLegalTagSuccess(TEST_REQUIRED_GROUPS);
+        sut.validateLegalTagSuccess();
 
         // Verify audit was logged with fallback values
         AuditEvents fallbackEvents = new AuditEvents("", TEST_IP, TEST_USER_AGENT, TEST_AUTHORIZED_GROUP);
-        verify(log).audit(fallbackEvents.getValidateLegalTagEventSuccess(TEST_REQUIRED_GROUPS));
+        verify(log).audit(fallbackEvents.getValidateLegalTagEventSuccess(AuditStatus.SUCCESS));
     }
 }

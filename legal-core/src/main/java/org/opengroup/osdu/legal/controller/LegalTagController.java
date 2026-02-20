@@ -8,7 +8,6 @@ import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
 import org.opengroup.osdu.legal.FeatureFlagController;
 import org.opengroup.osdu.legal.api.LegalTagApi;
-import org.opengroup.osdu.legal.service.LegalServiceRole;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
 import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.legal.tags.LegalTagService;
@@ -119,7 +118,7 @@ public class LegalTagController implements LegalTagApi {
     output.setPersonalDataTypes(allowedLegaltagPropertyValues.getPersonalDataType());
     output.setSecurityClassifications(allowedLegaltagPropertyValues.getSecurityClassifications());
     output.setDataTypes(allowedLegaltagPropertyValues.getDataTypes());
-    auditLogger.readLegalPropertiesSuccess(Collections.singletonList(output.toString()), LegalServiceRole.OPS_READERS);
+    auditLogger.readLegalPropertiesSuccess(Collections.singletonList(output.toString()));
 
     return new ResponseEntity<>(output, HttpStatus.OK);
   }
