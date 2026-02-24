@@ -42,15 +42,15 @@
     <os-core-common.version>5.1.0</os-core-common.version>
 
     <!-- Spring Versions -->
-    <spring-boot.version>3.5.9</spring-boot.version>
-    <spring-security.version>6.5.7</spring-security.version>
-    <spring-framework-version>6.2.15</spring-framework-version>
+    <spring-boot.version>3.5.11</spring-boot.version>
+    <spring-security.version>6.5.8</spring-security.version>
+    <spring-framework-version>6.2.16</spring-framework-version>
 
     <!-- Project Versions-->
     <json-smart.version>2.6.0</json-smart.version>
     <resilience4jVersion>1.7.1</resilience4jVersion>
     <commons-beanutils.version>1.11.0</commons-beanutils.version>
-    <openapi.version>2.8.6</openapi.version>
+    <openapi.version>2.8.15</openapi.version>
 
     <!-- Plugin Versions -->
     <spring-boot-maven-plugin.version>3.5.9</spring-boot-maven-plugin.version>
