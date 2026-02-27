@@ -42,9 +42,11 @@ public class GroupRedisCacheConfig {
     @Value("${redis.command.timeout:5}")
     private int commandTimeout;
 
+    @Value("${redis.principal.id}")
+    private String redisPrincipalId;
+
     @Bean
     public RedisAzureCache<String, Groups> groupCache() {
-        return new RedisAzureCache<>(String.class, Groups.class, new RedisAzureConfiguration(database, groupRedisTtl, port, timeout, commandTimeout));
+        return new RedisAzureCache<>(String.class, Groups.class, new RedisAzureConfiguration(database, groupRedisTtl, port, timeout, commandTimeout, redisPrincipalId));
     }
-
 }
