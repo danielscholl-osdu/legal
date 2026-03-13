@@ -34,8 +34,8 @@ import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.obm.core.Driver;
-import org.opengroup.osdu.core.obm.core.model.Blob;
-import org.opengroup.osdu.core.obm.core.model.Bucket;
+import org.opengroup.osdu.core.obm.core.model.ObmBlob;
+import org.opengroup.osdu.core.obm.core.model.ObmBucket;
 import org.opengroup.osdu.core.obm.core.persistence.ObmDestination;
 import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 
@@ -92,9 +92,9 @@ public class StorageReaderImplTests {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
     when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
     when(tenantInfo.getProjectId()).thenReturn(TENANT_1);
-    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new Bucket(TENANT_1));
+    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new ObmBucket(TENANT_1));
     when(storage.getBlob(BUCKET_FULL_NAME, FILE_NAME, getDestination()))
-        .thenReturn(Blob.builder().build());
+        .thenReturn(ObmBlob.builder().build());
     byte[] expectedBytes = CONTENT.getBytes();
     when(storage.getBlobContent(BUCKET_FULL_NAME, FILE_NAME, getDestination()))
         .thenReturn(expectedBytes);
@@ -120,9 +120,9 @@ public class StorageReaderImplTests {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
     when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
     when(tenantInfo.getProjectId()).thenReturn(TENANT_1);
-    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new Bucket(TENANT_1));
+    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new ObmBucket(TENANT_1));
     when(storage.getBlob(BUCKET_FULL_NAME, FILE_NAME, getDestination()))
-        .thenReturn(Blob.builder().build());
+        .thenReturn(ObmBlob.builder().build());
     when(storage.getBlobContent(BUCKET_FULL_NAME, FILE_NAME, getDestination())).thenReturn(null);
 
     byte[] bytes = sut.readAllBytes();
@@ -151,7 +151,7 @@ public class StorageReaderImplTests {
     when(tenantInfo.getName()).thenReturn(TENANT_1);
     when(tenantInfo.getDataPartitionId()).thenReturn(TENANT_1);
     when(tenantInfo.getProjectId()).thenReturn(TENANT_1);
-    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new Bucket(TENANT_1));
+    when(storage.getBucket(BUCKET_FULL_NAME, getDestination())).thenReturn(new ObmBucket(TENANT_1));
     when(legalCOOCache.get(tenantInfo.getDataPartitionId())).thenReturn(expected);
 
     StorageReaderImpl storageReader =
