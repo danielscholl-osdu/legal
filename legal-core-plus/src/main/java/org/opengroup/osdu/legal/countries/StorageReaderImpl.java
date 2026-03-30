@@ -25,7 +25,7 @@ import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.obm.core.Driver;
 import org.opengroup.osdu.core.obm.core.ObmDriverRuntimeException;
-import org.opengroup.osdu.core.obm.core.model.Blob;
+import org.opengroup.osdu.core.obm.core.model.ObmBlob;
 import org.opengroup.osdu.core.obm.core.persistence.ObmDestination;
 import org.opengroup.osdu.legal.config.PartitionPropertyNames;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
@@ -70,7 +70,7 @@ public class StorageReaderImpl implements IStorageReader {
       }
       String dataPartitionId = tenantInfo.getDataPartitionId();
       if (Objects.isNull(legalCOOCache.get(dataPartitionId))) {
-        Blob blob = storage.getBlob(tenantBucketName, FILE_NAME, destination);
+        ObmBlob blob = storage.getBlob(tenantBucketName, FILE_NAME, destination);
         if (Objects.isNull(blob)) {
           log.warn("File %s in bucket %s is not existing.".formatted(FILE_NAME, tenantBucketName));
         } else {
