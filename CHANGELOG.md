@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.2.0](https://github.com/danielscholl-osdu/legal/compare/v1.1.0...v1.2.0) (2026-03-30)
+
+
+### ✨ Features
+
+* **azure:** Switch Redis authentication from password to MSI ([55e49e0](https://github.com/danielscholl-osdu/legal/commit/55e49e024b98e3aeabe69c42724750e84f5c97fe))
+* **azure:** Switch Redis authentication from password to MSI ([7ee7c60](https://github.com/danielscholl-osdu/legal/commit/7ee7c60d90630d5d32e1975b4bb61334087472b9))
+* **legal-azure:** Add Redis principal ID support for MSI authentication ([e556cfe](https://github.com/danielscholl-osdu/legal/commit/e556cfe79ddc22220b5b36503b2065f4de7d026f))
+
+
+### 🔧 Miscellaneous
+
+* Sync template updates ([9d193ca](https://github.com/danielscholl-osdu/legal/commit/9d193ca1c8fc1d166255047f187ba84a5e76735b))
+
+
+### 🔨 Build System
+
+* **deps:** Upgrade OBM to 0.30.0 and os-core-common to 5.4.1 ([dbad906](https://github.com/danielscholl-osdu/legal/commit/dbad906dcfaf95db507590793268c61922e91a23))
+
 ## [1.1.0](https://github.com/danielscholl-osdu/legal/compare/v1.0.0...v1.1.0) (2026-02-20)
 
 
