@@ -42,11 +42,27 @@ public class GroupRedisCacheConfig {
     @Value("${redis.command.timeout:5}")
     private int commandTimeout;
 
-    @Value("${redis.principal.id}")
+    @Value("${redis.principal.id:#{null}}")
     private String redisPrincipalId;
 
+    @Value("${redis.hostname:#{null}}")
+    private String redisHostname;
+
+    @Value("${redis.backupHostname:#{null}}")
+    private String redisBackupHostname;
+
+    @Value("${azure.is.backup:false}")
+    private boolean isBackup;
+
     @Bean
-    public RedisAzureCache<String, Groups> groupCache() {
-        return new RedisAzureCache<>(String.class, Groups.class, new RedisAzureConfiguration(database, groupRedisTtl, port, timeout, commandTimeout, redisPrincipalId));
+    public RedisAzureCache<Groups> groupCache() {
+        return new RedisAzureCache<>(Groups.class, new RedisAzureConfiguration(
+            database,
+            groupRedisTtl,
+            port,
+            timeout,
+            commandTimeout,
+            redisPrincipalId,
+            isBackup ? redisBackupHostname : redisHostname));
     }
 }
