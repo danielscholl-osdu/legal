@@ -48,12 +48,6 @@ public class GroupRedisCacheConfig {
     @Value("${redis.hostname:#{null}}")
     private String redisHostname;
 
-    @Value("${redis.backupHostname:#{null}}")
-    private String redisBackupHostname;
-
-    @Value("${azure.is.backup:false}")
-    private boolean isBackup;
-
     @Bean
     public RedisAzureCache<Groups> groupCache() {
         return new RedisAzureCache<>(Groups.class, new RedisAzureConfiguration(
@@ -63,6 +57,6 @@ public class GroupRedisCacheConfig {
             timeout,
             commandTimeout,
             redisPrincipalId,
-            isBackup ? redisBackupHostname : redisHostname));
+            redisHostname));
     }
 }
