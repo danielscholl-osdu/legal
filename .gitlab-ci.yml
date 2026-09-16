@@ -37,21 +37,13 @@ include:
     file: "cloud-providers/azure.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/gc-global.yml"
-
-  - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/cimpl-global.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure-one-pipeline.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/gc-one-pipeline.yml"
-
-  - project: "osdu/platform/ci-cd-pipelines"
     file: "reporting/schemathesis.yml"
-
-  - local: "devops/gc/pipeline/override-stages.yml"
 
   - local: "devops/core-plus/pipeline/override-stages.yml"
 
@@ -88,7 +80,7 @@ azure_deploy:
     AZURE_COVERAGE_THRESHOLD: 80
 
 azure_containerize:
-  needs: [ "azure-compile-and-unit-test" ]
+  needs: ["azure-compile-and-unit-test"]
 
 azure_code_coverage:
   variables:
