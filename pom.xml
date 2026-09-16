@@ -199,12 +199,6 @@
       </modules>
     </profile>
     <profile>
-      <id>gc</id>
-      <modules>
-        <module>provider/legal-gc</module>
-      </modules>
-    </profile>
-    <profile>
       <id>Default</id>
       <activation>
         <property>
