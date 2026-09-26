@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.1](https://github.com/danielscholl-osdu/legal/compare/v1.2.0...v1.2.1) (2026-09-26)
+
+
+### 📚 Documentation
+
+* Add CONTRIBUTING.md and update infrastructure link ([f91ce0a](https://github.com/danielscholl-osdu/legal/commit/f91ce0a4d4392fb89fdd744cbc626f48afce4257))
+* Add CONTRIBUTING.md and update infrastructure link ([63ab153](https://github.com/danielscholl-osdu/legal/commit/63ab15348351b0fe7489f3f5e7bb907f5b28616d))
+
+
+### 🔧 Miscellaneous
+
+* Sync template updates ([353ecec](https://github.com/danielscholl-osdu/legal/commit/353ecec99ac5057571dfbbbdf316d89ef02bf8e2))
+* **template-sync:** Sync template updates (updated 2026-09-26) ([fa6c0ee](https://github.com/danielscholl-osdu/legal/commit/fa6c0ee6d065ee51da0305528832c9ff043ab77e))
+
 ## [1.2.0](https://github.com/danielscholl-osdu/legal/compare/v1.1.0...v1.2.0) (2026-09-23)
 
 
