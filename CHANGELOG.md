@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.3.0](https://github.com/danielscholl-osdu/legal/compare/v1.2.0...v1.3.0) (2026-09-29)
+
+
+### ✨ Features
+
+* Declare the Azure integration suite for spi test ([fbed900](https://github.com/danielscholl-osdu/legal/commit/fbed900dda133d77eb7747971d9b7e49f8d5a678))
+
+
+### 📚 Documentation
+
+* Add CONTRIBUTING.md and update infrastructure link ([f91ce0a](https://github.com/danielscholl-osdu/legal/commit/f91ce0a4d4392fb89fdd744cbc626f48afce4257))
+* Add CONTRIBUTING.md and update infrastructure link ([63ab153](https://github.com/danielscholl-osdu/legal/commit/63ab15348351b0fe7489f3f5e7bb907f5b28616d))
+
+
+### 🔧 Miscellaneous
+
+* Sync template updates ([353ecec](https://github.com/danielscholl-osdu/legal/commit/353ecec99ac5057571dfbbbdf316d89ef02bf8e2))
+* **template-sync:** Sync template updates (updated 2026-09-26) ([fa6c0ee](https://github.com/danielscholl-osdu/legal/commit/fa6c0ee6d065ee51da0305528832c9ff043ab77e))
+
+
+### 🧪 Tests
+
+* **azure:** Support token-based integration test runs ([975c23d](https://github.com/danielscholl-osdu/legal/commit/975c23d30fdfdcc6e0a594acacf3adad4ced55de))
+
+
+### 🔨 Build System
+
+* **deps:** Bump netty-all to 4.1.138.Final in legal-test-azure ([a6d94e0](https://github.com/danielscholl-osdu/legal/commit/a6d94e0a000ffa2f169e255eba6a8494479599a4))
+
 ## [1.2.0](https://github.com/danielscholl-osdu/legal/compare/v1.1.0...v1.2.0) (2026-09-23)
 
 
