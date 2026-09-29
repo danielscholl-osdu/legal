@@ -37,13 +37,18 @@ public class AzureLegalTagUtils extends LegalTagUtils {
     private static String clientSecret = System.getProperty("AZURE_TESTER_SERVICEPRINCIPAL_SECRET", System.getenv("AZURE_TESTER_SERVICEPRINCIPAL_SECRET"));
     private static String clientId = System.getProperty("INTEGRATION_TESTER", System.getenv("INTEGRATION_TESTER"));
     private static String tenantId = System.getProperty("AZURE_AD_TENANT_ID", System.getenv("AZURE_AD_TENANT_ID"));
-    private static String storageAccount = System.getProperty("AZURE_LEGAL_STORAGE_ACCOUNT", System.getenv("AZURE_LEGAL_STORAGE_ACCOUNT")).toLowerCase();
+    private static String storageAccount = System.getProperty("AZURE_LEGAL_STORAGE_ACCOUNT", System.getenv("AZURE_LEGAL_STORAGE_ACCOUNT"));
+    private static String accessToken = System.getProperty("INTEGRATION_TESTER_ACCESS_TOKEN", System.getenv("INTEGRATION_TESTER_ACCESS_TOKEN"));
     private static String app_resource_id = System.getProperty("AZURE_AD_APP_RESOURCE_ID", System.getenv("AZURE_AD_APP_RESOURCE_ID"));
 
     @Override
     public synchronized void uploadTenantTestingConfigFile() {
+        // Without a storage account the deployment's own seeded config file is used.
+        if (Strings.isNullOrEmpty(storageAccount)) {
+            return;
+        }
         try {
-            String blobPath = generateBlobPath(storageAccount, CONTAINER_NAME_AZURE, FILE_NAME);
+            String blobPath = generateBlobPath(storageAccount.toLowerCase(), CONTAINER_NAME_AZURE, FILE_NAME);
             BlobUrlParts parts = BlobUrlParts.parse(blobPath);
             BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
             if (!blobContainerClient.exists()) {
@@ -133,7 +138,7 @@ public class AzureLegalTagUtils extends LegalTagUtils {
 
     public void createContainer(String containerName)
     {
-        String containerPath = generateContainerPath(storageAccount, containerName);
+        String containerPath = generateContainerPath(storageAccount.toLowerCase(), containerName);
         BlobUrlParts parts = BlobUrlParts.parse(containerPath);
         BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
         if(!blobContainerClient.exists()){
@@ -166,6 +171,9 @@ public class AzureLegalTagUtils extends LegalTagUtils {
 
     @Override
     public synchronized String accessToken() throws Exception {
+        if (Strings.isNullOrEmpty(token) && !Strings.isNullOrEmpty(accessToken)) {
+            token = accessToken;
+        }
         if (Strings.isNullOrEmpty(token)) {
             token = new AzureServicePrincipal().getIdToken(clientId, clientSecret, tenantId, app_resource_id);
         }
