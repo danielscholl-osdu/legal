@@ -2,6 +2,13 @@
 
 Official documentation is located at [https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/](https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/)
 
+## Prerequisites
+
+- [JDK 25](https://adoptium.net/)
+- [Maven 3.9.16+](https://maven.apache.org/download.cgi)
+
+Community / core-plus modules compile and run on Java 25. For core-plus local setup, see [legal-core-plus/README.md](./legal-core-plus/README.md).
+
 ## os-legal-azure
 
 The steps for running `os-legal-azure` can be found in the [Azure Implementation README.md file](./provider/legal-azure/README.md).
